@@ -1,5 +1,9 @@
 Revision history for Perl extension Aw.
 
+0.16.5 Sun Feb  9 13:19:10 EST 2003
+
+	- bin/PerlDemo.data renamed bin/PerDemo.adl
+
 0.16.4 Wed Feb  5 22:31:16 EST 2003
 
 	- bin/ttt_client.pl: now derived from Aw::Client.

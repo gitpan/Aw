@@ -7,7 +7,7 @@ Makefile.PL
 bin/eod.pl
 bin/eod-autotest.pl
 bin/index.html
-bin/PerlDemo.data
+bin/PerlDemo.adl
 bin/time_adapter.pl
 bin/time_test.pl
 bin/typedef-test1.pl

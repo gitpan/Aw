@@ -87,7 +87,7 @@ PerlDevKit::EventOfDoom.  The event is converted into a hash and nested
 date objects are printed as strings by invoking their "toString" methods.
 
 The PerlDevKit::EventOfDoom and the DemoClientGroup must first be
-set in the target broker from the PerlDemo.data file.
+set in the target broker from the PerlDemo.adl file.
 
 =head1 AUTHOR
 
