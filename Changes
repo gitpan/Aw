@@ -1,5 +1,14 @@
 Revision history for Perl extension Aw.
 
+0.13.5 Fri Apr  6 17:51:21 EDT 2001
+
+	- get<foo>Info methods working for Aw::Adapter, Aw::Util, and Aw::EventType.
+	- Aw/EventType.pm added.
+	- constant function added for Admin.xs.
+	- wantarray checking for char ** return types.
+	- "Please specify prototyping behavior" error is gone.
+
+
 0.13.4 Thu Apr  5 17:45:39 EDT 2001
 
 	- Introduction of Aw::Admin classes.
@@ -7,7 +16,6 @@ Revision history for Perl extension Aw.
 	- Changed back to setting $@ instead of $! which turned out to be
 	  unreliable.
 	  
-
 
 0.13.3 Wed Feb  7 16:02:19 EST 2001
 

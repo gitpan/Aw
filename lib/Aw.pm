@@ -238,7 +238,7 @@ require AutoLoader;
 	PLACE_HOLDER2
 	PLACE_HOLDER1
 );
-$VERSION = '0.13.4';
+$VERSION = '0.13.5';
 $VERSION_NAME = 'Tadpole Ninja';
 $DefaultBrokerName = 'test_broker';
 # $DefaultBrokerHost = 'active';
@@ -322,12 +322,21 @@ Aw - Perl extension for the ActiveWorks C Application Development Kit
 
 =head1 SYNOPSIS
 
-use Aw;
-require Aw::Adapter;
-require Aw::Event;
+ use Aw;
+ require Aw::Adapter;
+ require Aw::Event;
+ my %properties = (
+        clientId	=> 'TimeAdapter',
+        broker		=> "test\@active:7449",
+        adapterId	=> 0,
+        debug		=> 1,
+        clientGroup	=> 'devkitAdapter',
+        adapterType	=> 'Adapter40',
+        messageCatalog	=> 'time_adapter'
+ );
 
-my $adapter = new Aw::Adapter  ( "3.0", ) ;
-my $event = new Aw::Event;
+ my $adapter = new Aw::Adapter  ( \%properties ) ;
+ my $event = new Aw::Event;
 
 =head1 DESCRIPTION
 

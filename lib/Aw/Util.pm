@@ -6,15 +6,6 @@ use vars qw($VERSION);
 $VERSION = '0.1';
 
 
-
-sub getStringSeqInfo
-{
-	my $result = Aw::Util::getStringInfoRef ( @_ );
-	( wantarray ) ? @{ $result } : $result ;
-}
-
-
-
 sub getStringSeqInfo
 {
 	my $result = Aw::Util::getStringSeqInfoRef ( @_ );
@@ -23,9 +14,17 @@ sub getStringSeqInfo
 
 
 
-sub getStructSeqInfo
+sub getUCStringSeqInfoAsA
 {
-	my $result = Aw::Util::getStructSeqInfoRef ( @_ );
+	my $result = Aw::Util::getUCStringSeqInfoAsARef ( @_ );
+	( wantarray ) ? @{ $result } : $result ;
+}
+
+
+
+sub getUCStringSeqInfoAsUTF8
+{
+	my $result = Aw::Util::getUCStringSeqInfoAsUTF8Ref ( @_ );
 	( wantarray ) ? @{ $result } : $result ;
 }
 

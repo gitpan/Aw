@@ -47,3 +47,14 @@ EOF
     return $libawperl . $so . $string;
 }
 
+
+
+sub no_MY {
+    for (keys %MY::) {
+        if (defined &{ $MY::{$_} }) {
+            next if $_ eq 'dynamic';
+            undef &{ $MY::{$_} };
+            delete $MY::{$_};
+        }
+    }
+}

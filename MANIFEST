@@ -53,14 +53,17 @@ lib/Aw/Client.pm
 lib/Aw/ClientX.pm
 lib/Aw/ConnectionDescriptor.pm
 lib/Aw/Event.pm
+lib/Aw/EventType.pm
 lib/Aw/License.pm
 lib/Aw/Log.pm
 lib/Aw/TypeDef.pm
 lib/Aw/Util.pm
 lib/Aw/Admin.pm
+lib/Aw/Admin/AccessControlList.pm
 lib/Aw/Admin/Client.pm
 lib/Aw/Admin/LogConfig.pm
 lib/Aw/Admin/ServerClient.pm
+lib/Aw/Admin/TypeDef.pm
 xs/Aw.xs
 xs/Makefile.PL
 xs/Aw/Admin.xs

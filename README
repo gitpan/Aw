@@ -1,6 +1,6 @@
 SPECIAL NOTICE
 ==============
-Release 0.13.4 is an "in case my hard disk eats death or I get hit by
+Releases 0.13.4,5 are an "in case my hard disk eats death or I get hit by
 a truck release".  The main feature of this release are the ActiveWorks
 broker administrative APIs are supported.  They have not been thoroughly
 tested, they may not even work in a number of cases.  Following release

@@ -2562,6 +2562,8 @@ MODULE = Aw			PACKAGE = Aw
 
 #===============================================================================
 
+PROTOTYPES: DISABLE
+
 
 
 BOOT:
@@ -6259,18 +6261,95 @@ setStateShareLimit ( self, limit )
 	RETVAL
 
 
-#
-# BrokerError awGetEventTypeInfoset(BrokerClient client,
-#                                   char *event_type_name,
-#                                   char *infoset_name,
-#                                   BrokerEvent *infoset); /* output */
 
-#
-# BrokerError awGetEventTypeInfosets(BrokerClient client,
-#                                    char *event_type_name,
-#                                    int *n,             /* input/output */
-#                                    char **infoset_names,
-#                                    BrokerEvent **infosets); /* output */
+Aw::Event
+getEventTypeInfoset ( self, event_type_name, infoset_name )
+	Aw::Client self
+	char * event_type_name
+	char * infoset_name
+
+	PREINIT:
+		char CLASS[] = "Aw::Event";
+
+	CODE:
+		AWXS_CLEARERROR
+		
+		RETVAL = (xsBrokerEvent *)safemalloc ( sizeof(xsBrokerEvent) );	
+		if ( RETVAL == NULL ) {
+			self->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new event" );
+#ifdef AWXS_WARNS
+			if ( self->Warn )
+				warn ( self->errMsg );
+#endif /* AWXS_WARNS */
+			XSRETURN_UNDEF;
+		}
+		/* initialize the error cleanly */
+		RETVAL->err    = NULL;
+		RETVAL->errMsg = NULL;
+		RETVAL->Warn   = gWarn;
+
+		gErr = self->err = awGetEventTypeInfoset ( self->client, event_type_name, infoset_name, &RETVAL->event );
+
+		AWXS_CHECKSETERROR_RETURN
+
+	OUTPUT:
+	RETVAL
+
+
+
+AV *
+getEventTypeInfosetsRef ( self, event_type_name, infoset_names )
+	Aw::Client self
+	char *event_type_name
+	char ** infoset_names
+
+	PREINIT:
+		int n;
+		BrokerEvent * events;
+
+	CODE:
+		AWXS_CLEARERROR
+		
+		n = av_len ( (AV*)SvRV( ST(2) ) ) + 1;
+
+		gErr = self->err = awGetEventTypeInfosets ( self->client, event_type_name, &n, infoset_names, &events );
+
+		AWXS_CHECKSETERROR_RETURN
+
+		/* now convert reply_events into an AV */
+		{
+		SV *sv;
+		int i;
+		xsBrokerEvent * ev;
+
+			RETVAL = newAV();
+			for ( i = 0; i<n; i++ ) {
+				ev = (xsBrokerEvent *)safemalloc ( sizeof(xsBrokerEvent) );
+				if ( ev == NULL ) {
+					self->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new event" );
+#ifdef AWXS_WARNS
+					if ( self->Warn )
+						warn ( self->errMsg );
+#endif /* AWXS_WARNS */
+					continue;
+				}
+				ev->err      = NULL;
+				ev->errMsg   = NULL;
+				ev->Warn     = gWarn;
+				ev->deleteOk = 0;
+
+				ev->event    = events[i];
+				
+				sv = sv_newmortal();
+				sv_setref_pv( sv, "Aw::Event", (void*)ev );
+				SvREFCNT_inc(sv);
+				av_push( RETVAL, sv );
+			}
+		}
+
+	OUTPUT:
+	RETVAL
+
 
 
 
@@ -10770,24 +10849,35 @@ getEventTypeDef ( self, event_name )
 
 
 awaBool
-getBooleanInfoReq ( self, field_name, ... )
+getBooleanInfo ( self, field_name, ... )
 	char * field_name
 
 	ALIAS:
-		Aw::EventType::getBooleanInfoReq = 1
+		Aw::Adapter::getBooleanInfo   = 1
+		Aw::EventType::getBooleanInfo = 2
 
 	PREINIT:
 		awaBool test;
 
 	CODE:
-		// AWXS_CLEARERROR
+		if (ix < 2) {
+			xsBrokerTypeDef * self = AWXS_BROKERTYPEDEF(0);
+			AWXS_CLEARERROR
+		}
+		else {
+			AWXS_HANDLE_CLEARERROR(0)
+			gHandle
+			= (ix)
+			  ? AWXS_ADAPTER(0)->handle
+			  : AWXS_ADAPTERUTIL(0)->handle
+			;
+		}
 		
-		/*     get back to testing this.
 		test
 		= (ix)
-		  ? awAdapterETInfoGetBooleanReq ( AWXS_ADAPTERUTIL(0)->handle, field_name, &RETVAL )
-		  : awAdapterETInfoGetBoolean ( AWXS_ADAPTEREVENTTYPE(0), field_name, &RETVAL )
-		; */
+		  ? awAdapterETInfoGetBooleanReq ( gHandle, field_name, &RETVAL )
+		  : awAdapterETInfoGetBoolean ( AWXS_ADAPTEREVENTTYPE(0)->adapterET, field_name, &RETVAL )
+		;
 
 		if ( test == awaFalse ) {
 			if ( items == 3 )
@@ -10802,27 +10892,42 @@ getBooleanInfoReq ( self, field_name, ... )
 
 
 int
-getIntegerInfo ( self, field_name )
-	Aw::Util self
+getIntegerInfo ( self, field_name, ... )
 	char * field_name
 
 	ALIAS:
-		Aw::Util::getIntegerInfo = 1
+		Aw::Adapter::getIntegerInfo   = 1
+		Aw::EventType::getIntegerInfo = 2
 
 	PREINIT:
 		awaBool test;
 
 	CODE:
-		AWXS_CLEARERROR
-		
+		if (ix < 2) {
+			xsBrokerTypeDef * self = AWXS_BROKERTYPEDEF(0);
+			AWXS_CLEARERROR
+		}
+		else {
+			AWXS_HANDLE_CLEARERROR(0)
+			gHandle
+			= (ix)
+			  ? AWXS_ADAPTER(0)->handle
+			  : AWXS_ADAPTERUTIL(0)->handle
+			;
+		}
+
 		test
-		= (ix || gWarn || self->Warn )
-		  ? awAdapterETInfoGetIntegerReq ( self->handle, field_name, &RETVAL )
-		  : awAdapterETInfoGetInteger ( self->handle->eventDef, field_name, &RETVAL )
+		= (ix < 2)
+		  ? awAdapterETInfoGetIntegerReq ( gHandle, field_name, &RETVAL )
+		  : awAdapterETInfoGetInteger ( AWXS_ADAPTEREVENTTYPE(0)->adapterET, field_name, &RETVAL )
 		;
 
-		if ( test == awaFalse )
-			XSRETURN_UNDEF;
+		if ( test == awaFalse ) {
+			if ( items == 3 )
+				RETVAL = (int)SvIV ( ST(2) );
+			else
+				XSRETURN_UNDEF;
+		}
 
 	OUTPUT:
 	RETVAL
@@ -10830,57 +10935,115 @@ getIntegerInfo ( self, field_name )
 
 
 char *
-getStringInfo ( self, field_name )
-	Aw::Util self
+getStringInfo ( self, field_name, ... )
 	char * field_name
 
 	ALIAS:
-		Aw::Util::getStringInfo = 1
+		Aw::Adapter::getStringInfo           = 1
+		Aw::Util::getUCStringInfoAsA         = 2
+		Aw::Adapter::getUCStringInfoAsA      = 3
+		Aw::Util::getUCStringInfoAsUTF8      = 4
+		Aw::Adapter::getUCStringInfoAsUTF8   = 5
+
+		Aw::EventType::getStringInfo         = 6
+		Aw::EventType::getUCStringInfoAsA    = 7
+		Aw::EventType::getUCStringInfoAsUTF8 = 8
 
 	PREINIT:
 		awaBool test;
 
 	CODE:
-		AWXS_CLEARERROR
+		if (ix < 6) {
+			xsBrokerTypeDef * self = AWXS_BROKERTYPEDEF(0);
+			AWXS_CLEARERROR
+		}
+		else {
+			AWXS_HANDLE_CLEARERROR(0)
+			gHandle
+			= (ix)
+			  ? AWXS_ADAPTER(0)->handle
+			  : AWXS_ADAPTERUTIL(0)->handle
+			;
+		}
 		
 		test
-		= (ix || gWarn || self->Warn )
-		  ? awAdapterETInfoGetStringReq ( self->handle, field_name, &RETVAL )
-		  : awAdapterETInfoGetString ( self->handle->eventDef, field_name, &RETVAL )
+		= (ix > 6)
+		  ? (ix==8)
+		    ? awAdapterETInfoGetUCStringAsUTF8A ( AWXS_ADAPTEREVENTTYPE(0)->adapterET, field_name, &RETVAL )
+		    : (ix-6)
+		      ? awAdapterETInfoGetUCStringAsA ( AWXS_ADAPTEREVENTTYPE(0)->adapterET, field_name, &RETVAL )
+		      : awAdapterETInfoGetString ( AWXS_ADAPTEREVENTTYPE(0)->adapterET, field_name, &RETVAL )
+
+
+		  : (ix > 1)
+		    ? (ix > 3)
+		      ? awAdapterETInfoGetUCStringAsUTF8Req ( gHandle, field_name, &RETVAL )
+		      : awAdapterETInfoGetUCStringAsAReq ( gHandle, field_name, &RETVAL )
+
+		    : awAdapterETInfoGetStringReq ( gHandle, field_name, &RETVAL )
 		;
 
-		if ( test == awaFalse )
-			XSRETURN_UNDEF;
+		if ( test == awaFalse ) {
+			if ( items == 3 )
+				RETVAL = (char *)SvPV ( ST(2), PL_na );
+			else
+				XSRETURN_UNDEF;
+		}
 
 	OUTPUT:
 	RETVAL
 
 
 
-char *
-getUCStringInfoAsA ( self, field_name )
-	Aw::Util self
+char **
+getStringSeqInfoRef ( self, field_name )
 	char * field_name
 
 	ALIAS:
-		Aw::Util::getUCStringInfoAsA = 1
+		Aw::Adapter::getStringSeqInfoRef           = 1
+		Aw::Util::getUCStringSeqInfoAsARef         = 2
+		Aw::Adapter::getUCStringSeqInfoAsARef      = 3
+		Aw::Util::getUCStringSeqInfoAsUTF8Ref      = 4
+		Aw::Adapter::getUCStringSeqInfoAsUTF8Ref   = 5
+
+		Aw::EventType::getStringSeqInfoRef         = 6
+		Aw::EventType::getUCStringSeqInfoAsARef    = 7
+		Aw::EventType::getUCStringSeqInfoAsUTF8Ref = 8
 
 	PREINIT:
 		awaBool test;
+		int n;
 
 	CODE:
-		AWXS_CLEARERROR
+		if (ix < 6) {
+			xsBrokerTypeDef * self = AWXS_BROKERTYPEDEF(0);
+			AWXS_CLEARERROR
+		}
+		else {
+			AWXS_HANDLE_CLEARERROR(0)
+			gHandle
+			= (ix)
+			  ? AWXS_ADAPTER(0)->handle
+			  : AWXS_ADAPTERUTIL(0)->handle
+			;
+		}
 		
 		test
-		= (ix || gWarn || self->Warn )
-		  ? awAdapterETInfoGetUCStringAsAReq ( self->handle, field_name, &RETVAL )
-		  : awAdapterETInfoGetUCStringAsA ( self->handle->eventDef, field_name, &RETVAL )
+		= (ix > 6)
+		  ? (ix==8)
+		    ? awAdapterETInfoGetUCStringSeqAsUTF8 ( AWXS_ADAPTEREVENTTYPE(0)->adapterET, field_name, &n, &RETVAL )
+		    : (ix-6)
+		      ? awAdapterETInfoGetUCStringSeqAsA ( AWXS_ADAPTEREVENTTYPE(0)->adapterET, field_name, &n, &RETVAL )
+		      : awAdapterETInfoGetStringSeq ( AWXS_ADAPTEREVENTTYPE(0)->adapterET, field_name, &n, &RETVAL )
+
+
+		  : (ix > 1)
+		    ? (ix > 3)
+		      ? awAdapterETInfoGetUCStringSeqAsUTF8Req ( gHandle, field_name, &n, &RETVAL )
+		      : awAdapterETInfoGetUCStringSeqAsAReq ( gHandle, field_name, &n, &RETVAL )
+
+		    : awAdapterETInfoGetStringSeqReq ( gHandle, field_name, &n, &RETVAL )
 		;
-/*
-< AWPublic extern awaBool awAdapterETInfoGetUCStringAsA(awAdapterEventType *event,
-<                                                char *fieldName,
-<                                                char **value);
-*/
 
 		if ( test == awaFalse )
 			XSRETURN_UNDEF;
@@ -10892,24 +11055,37 @@ getUCStringInfoAsA ( self, field_name )
 
 Aw::Event
 findFieldInfo ( self, field_name )
-	Aw::Util self
 	char * field_name
 
 	ALIAS:
-		Aw::Util::findFieldInfo = 1
+		Aw::Adapter::findFieldInfo   = 1
+		Aw::EventType::findFieldInfo = 2
 
 	PREINIT:
 		char CLASS[] = "Aw::Event";
 
 	CODE:
-		AWXS_CLEARERROR
+
+		if (ix < 2) {
+			xsBrokerTypeDef * self = AWXS_BROKERTYPEDEF(0);
+			AWXS_CLEARERROR
+		}
+		else {
+			AWXS_HANDLE_CLEARERROR(0)
+			gHandle
+			= (ix)
+			  ? AWXS_ADAPTER(0)->handle
+			  : AWXS_ADAPTERUTIL(0)->handle
+			;
+		}
 
 		RETVAL = (xsBrokerEvent *)safemalloc ( sizeof(xsBrokerEvent) );	
 		if ( RETVAL == NULL ) {
-			self->errMsg = setErrMsg ( &gErrMsg, 1, "Aw::Adapter::getAdapterInfo:  unable to malloc new event" );
+			// self->errMsg = setErrMsg ( &gErrMsg, 1, "Aw::Adapter::getAdapterInfo:  unable to malloc new event" );
+			setErrMsg ( &gErrMsg, 1, "Aw::Adapter::getAdapterInfo:  unable to malloc new event" );
 #ifdef AWXS_WARNS
-			if ( self->Warn )
-				warn ( self->errMsg );
+			// if ( self->Warn )
+			// 	warn ( self->errMsg );
 #endif /* AWXS_WARNS */
 			XSRETURN_UNDEF;
 		}
@@ -10919,38 +11095,11 @@ findFieldInfo ( self, field_name )
 		RETVAL->Warn   = gWarn;
 
 		RETVAL->event
-		= (ix || gWarn || self->Warn )
-		  ? awAdapterETInfoFindFieldReq ( self->handle, field_name )
-		  : awAdapterETInfoFindField ( self->handle->eventDef, field_name )
+		= (ix < 2)
+		  ? awAdapterETInfoFindFieldReq ( gHandle, field_name )
+		  : awAdapterETInfoFindField ( AWXS_ADAPTEREVENTTYPE(0)->adapterET, field_name )
 		;
-
-	OUTPUT:
-	RETVAL
-
-
-
-char **
-getStringSeqInfoRef ( self, field_name )
-	Aw::Util self
-	char * field_name
-
-	ALIAS:
-		Aw::Util::getStringSeqInfoRef = 1
-
-	PREINIT:
-		int n;
-		awaBool test;
-
-	CODE:
-		AWXS_CLEARERROR
-		
-		test
-		= (ix || gWarn || self->Warn )
-		  ? awAdapterETInfoGetStringSeqReq ( self->handle, field_name, &n, &RETVAL )
-		  : awAdapterETInfoGetStringSeq ( self->handle->eventDef, field_name, &n, &RETVAL )
-		;
-
-		if ( test == awaFalse )
+		if ( !RETVAL->event ) 
 			XSRETURN_UNDEF;
 
 	OUTPUT:
@@ -10960,11 +11109,11 @@ getStringSeqInfoRef ( self, field_name )
 
 AV *
 getStructSeqInfoRef ( self, field_name )
-	Aw::Util self
 	char * field_name
 
 	ALIAS:
-		Aw::Util::getStructSeqInfoRef = 1
+		Aw::Adapter::getStructSeqInfoRef   = 1
+		Aw::EventType::getStructSeqInfoRef = 2
 
 	PREINIT:
 		int n;
@@ -10972,12 +11121,23 @@ getStructSeqInfoRef ( self, field_name )
 		BrokerEvent * events;
 
 	CODE:
-		AWXS_CLEARERROR
+		if (ix < 2) {
+			xsBrokerTypeDef * self = AWXS_BROKERTYPEDEF(0);
+			AWXS_CLEARERROR
+		}
+		else {
+			AWXS_HANDLE_CLEARERROR(0)
+			gHandle
+			= (ix)
+			  ? AWXS_ADAPTER(0)->handle
+			  : AWXS_ADAPTERUTIL(0)->handle
+			;
+		}
 		
 		test
-		= (ix || gWarn || self->Warn )
-		  ? awAdapterETInfoGetStructSeqAsEventsReq ( self->handle, field_name, &n, &events )
-		  : awAdapterETInfoGetStructSeqAsEvents ( self->handle->eventDef, field_name, &n, &events )
+		= (ix < 2)
+		  ? awAdapterETInfoGetStructSeqAsEventsReq ( gHandle, field_name, &n, &events )
+		  : awAdapterETInfoGetStructSeqAsEvents ( AWXS_ADAPTEREVENTTYPE(0)->adapterET, field_name, &n, &events )
 		;
 
 
@@ -10995,10 +11155,11 @@ getStructSeqInfoRef ( self, field_name )
 			for ( i = 0; i<n; i++ ) {
 				ev = (xsBrokerEvent *)safemalloc ( sizeof(xsBrokerEvent) );
 				if ( ev == NULL ) {
-					self->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new event" );
+					// self->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new event" );
+					setErrMsg ( &gErrMsg, 1, "unable to malloc new event" );
 #ifdef AWXS_WARNS
-					if ( self->Warn )
-						warn ( self->errMsg );
+					// if ( self->Warn )
+						// warn ( self->errMsg );
 #endif /* AWXS_WARNS */
 					continue;
 				}

@@ -332,6 +332,14 @@ sub newSubscription
 
 
 
+sub getEventTypeInfosets
+{
+	my $result = Aw::Client::getEventTypeInfosetsRef ( @_ );
+	( wantarray ) ? @{ $result } : $result ;
+}
+
+
+
 #########################################################
 # Do not change this, Do not put anything below this.
 # File must return "true" value at termination
@@ -349,7 +357,7 @@ Aw::Client - ActiveWorks Client Module.
 
 require Aw::Client;
 
-my $client = new Aw::Client;
+my $client = new Aw::Client ( @args );
 
 
 =head1 DESCRIPTION

@@ -1,17 +1,20 @@
-package Aw::TypeDef;
+package Aw::Admin::TypeDef;
 
 use strict;
 use vars qw($VERSION);
 
 $VERSION = '0.1';
 
+require Aw::Admin;
 
 
-sub getFieldNames
+
+sug getFieldNames
 {
-	my $result = Aw::TypeDef::getFieldNamesRef ( @_ );
+	my $result = Aw::Admin::Client::getFieldNamesRef ( @_ )
 	( wantarray ) ? @{ $result } : $result ;
 }
+
 
 
 #########################################################
@@ -31,12 +34,12 @@ Aw::TypeDef - ActiveWorks TypeDef Module.
 
 require Aw::TypeDef;
 
-my $typeDef = new Aw::TypeDef;
+my $client = new Aw::TypeDef;
 
 
 =head1 DESCRIPTION
 
-Enhanced interface for the Aw.xs TypeDef methods.
+Enhanced interface for the Aw/Admin.xs TypeDef methods.
 
 
 =head1 AUTHOR
@@ -46,5 +49,3 @@ Daniel Yacob Mekonnen,  L<Yacob@RCN.Com|mailto:Yacob@RCN.Com>
 =head1 SEE ALSO
 
 S<perl(1).  Aw(3).>
-
-=cut

@@ -1,17 +1,28 @@
-package Aw::TypeDef;
+package Aw::Admin::AccessControlList;
 
 use strict;
 use vars qw($VERSION);
 
 $VERSION = '0.1';
 
+require Aw::Admin;
 
 
-sub getFieldNames
+
+sub getUserNames
 {
-	my $result = Aw::TypeDef::getFieldNamesRef ( @_ );
+	my $result = Aw::Admin::Client::getUserNamesRef ( @_ );
 	( wantarray ) ? @{ $result } : $result ;
 }
+
+
+
+sub getAuthNames
+{
+	my $result = Aw::Admin::Client::getAuthNamesRef ( @_ );
+	( wantarray ) ? @{ $result } : $result ;
+}
+
 
 
 #########################################################
@@ -25,18 +36,18 @@ __END__
 
 =head1 NAME
 
-Aw::TypeDef - ActiveWorks TypeDef Module.
+Aw::Admin::AccessControlList - ActiveWorks AccessControlList Module.
 
 =head1 SYNOPSIS
 
-require Aw::TypeDef;
+require Aw::Admin::AccessControl;
 
-my $typeDef = new Aw::TypeDef;
+my $acl = new Aw::Admin::AccessControl;
 
 
 =head1 DESCRIPTION
 
-Enhanced interface for the Aw.xs TypeDef methods.
+Enhanced interface for the Aw/Admin.xs AccessControlList methods.
 
 
 =head1 AUTHOR

@@ -1,33 +1,39 @@
-package Aw::Admin::ServerClient;
+package Aw::EventType;
 
 use strict;
 use vars qw($VERSION);
 
 $VERSION = '0.1';
 
-require Aw::Admin;
 
 
-
-sub getServerLogEntries
+sub getStringSeqInfo
 {
-	my $result = Aw::Admin::ServerClient::getServerLogEntriesRef ( @_ );
+	my $result = Aw::EventType::getStringSeqInfoRef ( @_ );
 	( wantarray ) ? @{ $result } : $result ;
 }
 
 
 
-sub getServerBrokers
+sub getUCStringSeqInfoAsA
 {
-	my $result = Aw::Admin::ServerClient::getServerBrokersRef ( @_ );
+	my $result = Aw::EventType::getUCStringSeqInfoAsARef ( @_ );
 	( wantarray ) ? @{ $result } : $result ;
 }
 
 
 
-sub getDNsFromCertFile
+sub getUCStringSeqInfoAsUTF8
 {
-	my $result = Aw::Admin::ServerClient::getDNsFromCertFileRef ( @_ );
+	my $result = Aw::EventType::getUCStringSeqInfoAsUTF8Ref ( @_ );
+	( wantarray ) ? @{ $result } : $result ;
+}
+
+
+
+sub getStructSeqInfo
+{
+	my $result = Aw::EventType::getStructSeqInfoRef ( @_ );
 	( wantarray ) ? @{ $result } : $result ;
 }
 
@@ -44,18 +50,18 @@ __END__
 
 =head1 NAME
 
-Aw::Admin::ServerClient - ActiveWorks Admin::ServerClient Module.
+Aw::EventType - ActiveWorks EventType Module.
 
 =head1 SYNOPSIS
 
-require Aw::Admin::ServerClient;
+require Aw::EventType;
 
-my $client = new Aw::Admin::ServerClient ( @args );
+my $eventType = new Aw::EventType;
 
 
 =head1 DESCRIPTION
 
-Enhanced interface for the Aw/Admin.xs ServerClient methods.
+Enhanced interface for the Aw.xs EventType methods.
 
 
 =head1 AUTHOR

@@ -3,7 +3,7 @@ package Aw::Adapter;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '0.1';
+$VERSION = '0.2';
 
 use Aw;
 
@@ -92,6 +92,37 @@ my @args = ();
 	}
 
 	\@args;
+}
+
+
+sub getStringSeqInfo
+{
+	my $result = Aw::Adapter::getStringSeqInfoRef ( @_ );
+	( wantarray ) ? @{ $result } : $result ;
+}
+
+
+
+sub getUCStringSeqInfoAsA
+{
+	my $result = Aw::Adapter::getUCStringSeqInfoAsARef ( @_ );
+	( wantarray ) ? @{ $result } : $result ;
+}
+
+
+
+sub getUCStringSeqInfoAsUTF8
+{
+	my $result = Aw::Adapter::getUCStringSeqInfoAsUTF8Ref ( @_ );
+	( wantarray ) ? @{ $result } : $result ;
+}
+
+
+
+sub getStructSeqInfo
+{
+	my $result = Aw::Adapter::getStructSeqInfoRef ( @_ );
+	( wantarray ) ? @{ $result } : $result ;
 }
 
 

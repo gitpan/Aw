@@ -53,7 +53,6 @@ extern "C" {
 #include <admin/awetadm.h>
 #include <admin/awlog.h>
 #include <admin/awserver.h>
-#include <admin/awserver.h>
 
 
 /* includes for Aw.xs */
@@ -83,6 +82,256 @@ awaBool gWarn;
 
 SV * getBrokerClientSessions (  BrokerClientSession * sessions, int num_sessions );
 void BrokerServerConnectionCallbackFunc ( BrokerServerClient cbClient, int connect_status, void * vcb );
+
+
+
+static int
+not_here(char *s)
+{
+    croak("%s not implemented on this architecture", s);
+    return -1;
+}
+
+static double
+constant(char *name, int arg)
+{
+    errno = 0;
+    switch (*name) {
+    case 'A':
+	if (strEQ(name, "AW_AUTH_TYPE_NONE"))
+#ifdef AW_AUTH_TYPE_NONE
+	    return AW_AUTH_TYPE_NONE;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_AUTH_TYPE_SSL"))
+#ifdef AW_AUTH_TYPE_SSL
+	    return AW_AUTH_TYPE_SSL;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_LIFECYCLE_DESTROY_ON_DISCONNECT"))
+#ifdef AW_LIFECYCLE_DESTROY_ON_DISCONNECT
+	    return AW_LIFECYCLE_DESTROY_ON_DISCONNECT;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_LIFECYCLE_EXPLICIT_DESTROY"))
+#ifdef AW_LIFECYCLE_EXPLICIT_DESTROY
+	    return AW_LIFECYCLE_EXPLICIT_DESTROY;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_SERVER_LOG_ALL_ENTRIES"))
+#ifdef AW_SERVER_LOG_ALL_ENTRIES
+	    return AW_SERVER_LOG_ALL_ENTRIES;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_SERVER_LOG_MESSAGE_ALERT"))
+#ifdef AW_SERVER_LOG_MESSAGE_ALERT
+	    return AW_SERVER_LOG_MESSAGE_ALERT;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_SERVER_LOG_MESSAGE_INFO"))
+#ifdef AW_SERVER_LOG_MESSAGE_INFO
+	    return AW_SERVER_LOG_MESSAGE_INFO;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_SERVER_LOG_MESSAGE_UNKNOWN"))
+#ifdef AW_SERVER_LOG_MESSAGE_UNKNOWN
+	    return AW_SERVER_LOG_MESSAGE_UNKNOWN;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_SERVER_LOG_MESSAGE_WARNING"))
+#ifdef AW_SERVER_LOG_MESSAGE_WARNING
+	    return AW_SERVER_LOG_MESSAGE_WARNING;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_SERVER_STATUS_ERROR"))
+#ifdef AW_SERVER_STATUS_ERROR
+	    return AW_SERVER_STATUS_ERROR;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_SERVER_STATUS_RUNNING"))
+#ifdef AW_SERVER_STATUS_RUNNING
+	    return AW_SERVER_STATUS_RUNNING;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_SERVER_STATUS_STARTING"))
+#ifdef AW_SERVER_STATUS_STARTING
+	    return AW_SERVER_STATUS_STARTING;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_SERVER_STATUS_STOPPED"))
+#ifdef AW_SERVER_STATUS_STOPPED
+	    return AW_SERVER_STATUS_STOPPED;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_SERVER_STATUS_STOPPING"))
+#ifdef AW_SERVER_STATUS_STOPPING
+	    return AW_SERVER_STATUS_STOPPING;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_SSL_STATUS_DISABLED"))
+#ifdef AW_SSL_STATUS_DISABLED
+	    return AW_SSL_STATUS_DISABLED;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_SSL_STATUS_ENABLED"))
+#ifdef AW_SSL_STATUS_ENABLED
+	    return AW_SSL_STATUS_ENABLED;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_SSL_STATUS_ERROR"))
+#ifdef AW_SSL_STATUS_ERROR
+	    return AW_SSL_STATUS_ERROR;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_SSL_STATUS_NOT_SUPPORTED"))
+#ifdef AW_SSL_STATUS_NOT_SUPPORTED
+	    return AW_SSL_STATUS_NOT_SUPPORTED;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_TRACE_BROKER_ADDED"))
+#ifdef AW_TRACE_BROKER_ADDED
+	    return AW_TRACE_BROKER_ADDED;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_TRACE_BROKER_REMOVED"))
+#ifdef AW_TRACE_BROKER_REMOVED
+	    return AW_TRACE_BROKER_REMOVED;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_TRACE_CLIENT_CONNECT"))
+#ifdef AW_TRACE_CLIENT_CONNECT
+	    return AW_TRACE_CLIENT_CONNECT;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_TRACE_CLIENT_CREATE"))
+#ifdef AW_TRACE_CLIENT_CREATE
+	    return AW_TRACE_CLIENT_CREATE;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_TRACE_CLIENT_DESTROY"))
+#ifdef AW_TRACE_CLIENT_DESTROY
+	    return AW_TRACE_CLIENT_DESTROY;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_TRACE_CLIENT_DISCONNECT"))
+#ifdef AW_TRACE_CLIENT_DISCONNECT
+	    return AW_TRACE_CLIENT_DISCONNECT;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_TRACE_EVENT_DROP"))
+#ifdef AW_TRACE_EVENT_DROP
+	    return AW_TRACE_EVENT_DROP;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_TRACE_EVENT_ENQUEUE"))
+#ifdef AW_TRACE_EVENT_ENQUEUE
+	    return AW_TRACE_EVENT_ENQUEUE;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_TRACE_EVENT_PUBLISH"))
+#ifdef AW_TRACE_EVENT_PUBLISH
+	    return AW_TRACE_EVENT_PUBLISH;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_TRACE_EVENT_RECEIVE"))
+#ifdef AW_TRACE_EVENT_RECEIVE
+	    return AW_TRACE_EVENT_RECEIVE;
+#else
+	    goto not_there;
+#endif
+	if (strEQ(name, "AW_TRACE_OTHER"))
+#ifdef AW_TRACE_OTHER
+	    return AW_TRACE_OTHER;
+#else
+	    goto not_there;
+#endif
+	break;
+    case 'B':
+	break;
+    case 'C':
+	break;
+    case 'D':
+	break;
+    case 'E':
+	break;
+    case 'F':
+	break;
+    case 'G':
+	break;
+    case 'H':
+	break;
+    case 'I':
+	break;
+    case 'J':
+	break;
+    case 'K':
+	break;
+    case 'L':
+	break;
+    case 'M':
+	break;
+    case 'N':
+	break;
+    case 'O':
+	break;
+    case 'P':
+	break;
+    case 'Q':
+	break;
+    case 'R':
+	break;
+    case 'S':
+	break;
+    case 'T':
+	break;
+    case 'U':
+	break;
+    case 'V':
+	break;
+    case 'W':
+	break;
+    case 'X':
+	break;
+    case 'Y':
+	break;
+    case 'Z':
+	break;
+    }
+    errno = EINVAL;
+    return 0;
+
+not_there:
+    errno = ENOENT;
+    return 0;
+}
+
 
 
 SV *
@@ -197,11 +446,34 @@ xsServerClient * client;
 /*
 #=============================================================================*/
 
-MODULE = Aw::Admin		PACKAGE = Aw::Admin::AccessControlList
+MODULE = Aw::Admin		PACKAGE = Aw::Admin
 
 #===============================================================================
 
 PROTOTYPES: DISABLE
+
+
+BOOT:
+
+	if ( (int)SvIV(perl_get_sv("Aw::Admin::SPAM", FALSE)) )
+		printf ( "\nAw %s [%s] (c) RCN <yacob@rcn.com>\n\n" ,
+			 (char *)SvPV(perl_get_sv("Aw::Admin::VERSION", FALSE), PL_na),
+			 (char *)SvPV(perl_get_sv("Aw::Admin::VERSION_NAME", FALSE), PL_na)  );
+
+
+
+double
+constant(name,arg)
+	char *		name
+	int		arg
+
+
+
+#===============================================================================
+
+MODULE = Aw::Admin		PACKAGE = Aw::Admin::AccessControlList
+
+#===============================================================================
 
 Aw::Admin::AccessControlList
 new ( CLASS )
@@ -269,11 +541,11 @@ copy ( self )
 
 
 char **
-getAuthNames ( self )
+getAuthNamesRef ( self )
 	Aw::Admin::AccessControlList self
 
 	ALIAS:
-		Aw::Admin::AccessControlList::getUserNames = 1
+		Aw::Admin::AccessControlList::getUserNamesRef = 1
 
 	PREINIT:
 		int n;
@@ -631,7 +903,7 @@ getFieldType ( self, field_name )
 
 
 char **
-getFieldNames ( self, field_name )
+getFieldNamesRef ( self, field_name )
 	Aw::Admin::TypeDef self
 	char * field_name
 	
@@ -1210,7 +1482,7 @@ setACL ( self, acl )
 
 
 char **
-getDNsFromCertFile ( self, certificate_file, password )
+getDNsFromCertFileRef ( self, certificate_file, password )
 	Aw::Admin::ServerClient self
 	char * certificate_file
 	char * password
@@ -1878,7 +2150,7 @@ destroyClientGroup ( self, name, force_destroy )
 
 
 char **
-getClientGroupNames ( self )
+getClientGroupNamesRef ( self )
 	Aw::Admin::Client self
 
 	PREINIT:
@@ -1898,16 +2170,16 @@ getClientGroupNames ( self )
 
 
 char **
-getClientGroupCanPublishList ( self, string )
+getClientGroupCanPublishListRef ( self, string )
 	Aw::Admin::Client self
 	char * string
 
 	ALIAS:
-		Aw::Admin::Client::getClientGroupCanSubscribeList   = 1
-		Aw::Admin::Client::getClientGroupsWhichCanPublish   = 2
-		Aw::Admin::Client::getClientGroupsWhichCanSubscribe = 3
-		Aw::Admin::Client::getClientIdsByClientGroup        = 4
-		Aw::Admin::Client::getClientIdsWhichAreSubscribed   = 5
+		Aw::Admin::Client::getClientGroupCanSubscribeListRef   = 1
+		Aw::Admin::Client::getClientGroupsWhichCanPublishRef   = 2
+		Aw::Admin::Client::getClientGroupsWhichCanSubscribeRef = 3
+		Aw::Admin::Client::getClientIdsByClientGroupRef        = 4
+		Aw::Admin::Client::getClientIdsWhichAreSubscribedRef   = 5
 
 	PREINIT:
 		int n;
@@ -1936,7 +2208,7 @@ getClientGroupCanPublishList ( self, string )
 
 
 char **
-getClientIds ( self )
+getClientIdsRef ( self )
 	Aw::Admin::Client self
 
 	PREINIT:

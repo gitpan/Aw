@@ -2,7 +2,7 @@ package Aw::Admin;
 
 use strict;
 use Carp;
-use vars qw($VERSION $VERSION_NAME @ISA @EXPORT @EXPORT_OK $AUTOLOAD $DefaultBrokerName $DefaultBrokerHost $SPAM);
+use vars qw($VERSION $VERSION_NAME @ISA @EXPORT @EXPORT_OK $AUTOLOAD $SPAM %DefinedStrings);
 
 $ENV{LD_LIBRARY_PATH} .= ':/opt/active40/lib:/opt/active40/samples/adapter_devkit/c_lib/';
 
@@ -15,15 +15,68 @@ require AutoLoader;
 # Items to export into callers namespace by default. Note: do not export
 # names by default without a very good reason. Use EXPORT_OK instead.
 # Do not simply export all your public functions/methods/constants.
+@EXPORT = qw(
+	AW_AUTH_TYPE_NONE
+	AW_AUTH_TYPE_SSL
+	AW_LIFECYCLE_DESTROY_ON_DISCONNECT
+	AW_LIFECYCLE_EXPLICIT_DESTROY
+	AW_LOG_OUTPUT_NT_EVENT_LOG
+	AW_LOG_OUTPUT_SNMP
+	AW_LOG_OUTPUT_UNIX_SYSLOG
+	AW_LOG_TOPIC_ALERT
+	AW_LOG_TOPIC_INFO
+	AW_LOG_TOPIC_WARNING
+	AW_SERVER_LOG_ALL_ENTRIES
+	AW_SERVER_LOG_MESSAGE_ALERT
+	AW_SERVER_LOG_MESSAGE_INFO
+	AW_SERVER_LOG_MESSAGE_UNKNOWN
+	AW_SERVER_LOG_MESSAGE_WARNING
+	AW_SERVER_STATUS_ERROR
+	AW_SERVER_STATUS_RUNNING
+	AW_SERVER_STATUS_STARTING
+	AW_SERVER_STATUS_STOPPED
+	AW_SERVER_STATUS_STOPPING
+	AW_SSL_STATUS_DISABLED
+	AW_SSL_STATUS_ENABLED
+	AW_SSL_STATUS_ERROR
+	AW_SSL_STATUS_NOT_SUPPORTED
+	AW_TRACE_BROKER_ADDED
+	AW_TRACE_BROKER_REMOVED
+	AW_TRACE_CLIENT_CONNECT
+	AW_TRACE_CLIENT_CREATE
+	AW_TRACE_CLIENT_DESTROY
+	AW_TRACE_CLIENT_DISCONNECT
+	AW_TRACE_EVENT_DROP
+	AW_TRACE_EVENT_ENQUEUE
+	AW_TRACE_EVENT_PUBLISH
+	AW_TRACE_EVENT_RECEIVE
+	AW_TRACE_OTHER
+);
 
-
-$VERSION = '0.13.4';
+$VERSION = '0.13.5';
 $VERSION_NAME = 'Tadpole Ninja';
-$DefaultBrokerName = 'test_broker';
+# $DefaultBrokerName = 'test_broker';
 # $DefaultBrokerHost = 'active';
 # $DefaultBrokerName = 'Broker #1';
-$DefaultBrokerHost = 'localhost:6449';
+# $DefaultBrokerHost = 'localhost:6449';
 $SPAM = 0;
+
+
+%DefinedStrings = (
+	#
+	# Values for the log output code
+	#
+	AW_LOG_OUTPUT_UNIX_SYSLOG    => "syslog",
+	AW_LOG_OUTPUT_NT_EVENT_LOG   => "nteventlog",
+	AW_LOG_OUTPUT_SNMP           => "snmptrap",
+
+	#
+	# Values for the log topic code
+	#
+	AW_LOG_TOPIC_ALERT           => "alert",
+	AW_LOG_TOPIC_WARNING         => "warning",
+	AW_LOG_TOPIC_INFO            => "info",
+);
 
 
 sub import {
@@ -73,6 +126,8 @@ sub AUTOLOAD {
     my $constname;
     ($constname = $AUTOLOAD) =~ s/.*:://;
     my $val = constant($constname, @_ ? $_[0] : 0);
+    return ( $DefinedStrings{$constname} )
+        if ( exists($DefinedStrings{$constname}) );
     if ($! != 0) {
 	if ($! =~ /Invalid/) {
 	    $AutoLoader::AUTOLOAD = $AUTOLOAD;
@@ -97,16 +152,28 @@ __END__
 
 =head1 NAME
 
-Aw - Perl extension for the ActiveWorks C Application Development Kit
+Aw::Admin - Perl extension for the ActiveWorks C Application Development Kit
 
 =head1 SYNOPSIS
 
-use Aw;
-require Aw::Adapter;
-require Aw::Event;
+ use Aw 'MyFavoriteBroker@my.host.net:6449';
+ require Aw::Admin::ServerClient;
 
-my $adapter = new Aw::Adapter  ( "3.0", ) ;
-my $event = new Aw::Event;
+ my $desc = new Aw::ConnectionDescriptor;
+
+ my $server = new Aw::Admin::ServerClient ( "my.host.net:6449", $desc );
+             #
+             # fix new to use default host we've already set..
+             #
+
+ my @brokers = $server->getServerBrokers ( );
+
+ foreach ( @brokers ) {
+	print "Territory  : $_->{territory_name}\n";
+	print "Broker Host: $_->{broker_host}\n";
+	print "Broker Name: $_->{broker_name}\n";
+	print "Description: $_->{description}\n";
+ }
 
 =head1 DESCRIPTION
 

@@ -65,4 +65,5 @@ char * strings[5];
 	return ( *gErrMsg );
 
 }
+
 #endif /* AWXS_WARNS */
