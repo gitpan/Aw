@@ -238,7 +238,7 @@ require AutoLoader;
 	PLACE_HOLDER2
 	PLACE_HOLDER1
 );
-$VERSION = '0.13.3';
+$VERSION = '0.13.4';
 $VERSION_NAME = 'Tadpole Ninja';
 $DefaultBrokerName = 'test_broker';
 # $DefaultBrokerHost = 'active';

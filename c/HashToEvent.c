@@ -67,7 +67,7 @@ char * returnString = NULL;
 BrokerError
 awxsSetField ( BrokerEvent event, char * field_name, short field_type, SV* sv, BrokerEvent rootEvent, char * full_field_name )
 {
-BrokerError err = null;
+BrokerError err = NULL;
 
 
 #if	AWXS_DEBUG
@@ -218,7 +218,7 @@ awxsSetSequenceField ( BrokerEvent event, char * field_name, short field_type, i
 int i, n;
 SV ** sv;
 void * value;
-BrokerError err = null;
+BrokerError err = NULL;
 
 int * iValue;
 short * sValue;
@@ -451,7 +451,7 @@ BrokerEvent
 hashToEvent ( BrokerEvent Event, char * field_name, HV* hv )
 {
 BrokerEvent * myStruct;
-BrokerError err = null;
+BrokerError err = NULL;
 int i, n;
 char *key, *value;
 HE *entry;
@@ -492,7 +492,7 @@ HE *entry;
 SV* value;
 char * key;
 short field_type;
-BrokerError err = null;
+BrokerError err = NULL;
 BrokerEvent * childEvent;
 char * member_name;
 
@@ -586,7 +586,7 @@ HE *entry;
 SV* value;
 char * key;
 short field_type;
-BrokerError err = null;
+BrokerError err = NULL;
 
 
 
@@ -642,7 +642,7 @@ SV* value;
 SV** ssv;
 char * key;
 short field_type;
-BrokerError err = null;
+BrokerError err = NULL;
 
 
 

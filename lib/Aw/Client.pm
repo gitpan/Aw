@@ -33,7 +33,6 @@ my $app_name = (@_ == 3) ? $_[2] : $0.".Client";
 
 sub connect
 {
-# my $class = shift;
 my %config = ( ref $_[0] ) #  Reference?
            ?  %{$_[0]}        # Yes.
            : @_               # No.

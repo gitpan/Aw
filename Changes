@@ -1,5 +1,14 @@
 Revision history for Perl extension Aw.
 
+0.13.4 Thu Apr  5 17:45:39 EDT 2001
+
+	- Introduction of Aw::Admin classes.
+	- Reorganized code for Aw.so and Admin.so to share functions.
+	- Changed back to setting $@ instead of $! which turned out to be
+	  unreliable.
+	  
+
+
 0.13.3 Wed Feb  7 16:02:19 EST 2001
 
 	- Aw::Adapter::createTypeEvent accepts an initialization hash as a last
@@ -9,7 +18,7 @@ Revision history for Perl extension Aw.
 0.13.2 Mon Feb  5 14:06:27 EST 2001
 
 	- $! should be used through out the package now wherever a BrokerError
-      is possible.
+	  is possible.
 
 0.13.1 Mon Jan 29 15:19:18 EST 2001
 

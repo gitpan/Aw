@@ -1,7 +1,11 @@
 TYPEMAP
 awaBool			T_BOOL
+Aw::Admin::AccessControlList 	O_OBJECT
+Aw::Admin::Client	O_OBJECT
+Aw::Admin::LogConfig 	O_OBJECT
+Aw::Admin::TypeDef	O_OBJECT
+Aw::Admin::ServerClient	O_OBJECT
 Aw::Adapter 		O_OBJECT
-xsBrokerClient *	O_OBJECT
 Aw::Client 		O_OBJECT
 Aw::ConnectionDescriptor	O_OBJECT
 Aw::Date 		O_OBJECT
@@ -19,7 +23,6 @@ Aw::SSLCertificate	O_OBJECT
 Aw::Subscription	O_OBJECT
 Aw::TypeDef	 	O_OBJECT
 Aw::TypeDefCache 	O_OBJECT
-Aw::CBOSS::Selfcare 	O_OBJECT
 Aw::Util	 	O_OBJECT
 awVector *		T_OBJECT
 float			T_FLOAT

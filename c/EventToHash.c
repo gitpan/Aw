@@ -37,7 +37,8 @@ extern "C" {
 
 #include "EventToHash.h"
 
-BrokerError gErr = null;
+// BrokerError gErr = NULL;
+extern BrokerError gErr;
 
 
 BrokerError
@@ -82,7 +83,7 @@ BrokerBoolean isSet;
 
 
 
-SV*
+SV *
 getHV ( BrokerEvent event, char * key )
 {
 HV * hv;
@@ -104,7 +105,7 @@ BrokerEvent newEvent;
 
 
 
-SV*
+SV *
 _getAV ( BrokerEvent event, char * key, int offset, int max_n )
 {
 AV * av;
@@ -138,7 +139,7 @@ int x;
 
 
 
-SV*
+SV *
 getSV ( BrokerEvent event, char * key )
 {
 SV * sv;

@@ -8,7 +8,8 @@ use ExtUtils::MakeMaker;
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.
 WriteMakefile(
-	'NAME'		=> 'Aw',
+	'NAME'		=> 'installation',
+	'DISTNAME'	=> 'Aw',
 	'VERSION_FROM'	=> 'lib/Aw.pm', # finds $VERSION
 	'DEFINE'	=>
 		($] < 5.0045 ? '-DPERL5004_COMPAT -DAWXS_WARNS' : '-DAWXS_WARNS'),
@@ -21,9 +22,6 @@ WriteMakefile(
 	#
 	# Uncomment for 4.0
 	#
-	'LIBS'	=> ['-L/opt/active40/samples/adapter_devkit/c_lib -lcustcadk31 -L/opt/active40/lib -lawcadk31 -lawalog40 -lawl40 -lawc40 -lsocket -lnsl'],
-	'INC'		=> '-I./include -I/opt/active40/include -I/opt/active40/samples/adapter_devkit/c_lib',
-	'OBJECT'	=> '$(O_FILES)',
 	dist		=>	{ 
 		COMPRESS	=>	"gzip -9f",
 		SUFFIX		=>	"gz",

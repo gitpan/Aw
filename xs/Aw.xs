@@ -56,6 +56,7 @@ extern "C" {
 #include "exttypes.h"
 #include "HashToEvent.h"
 #include "EventToHash.h"
+#include "Util.h"
 
 
 
@@ -73,15 +74,15 @@ BrokerBoolean BrokerCallbackFunc ( BrokerClient cbClient, BrokerEvent cbEvent, v
  *   if ( Aw::Error::getCode == AW_ERROR_CLIENT_EXISTS )
  *
  */
-static BrokerError gErr = NULL;
-static char * gErrMsg   = NULL;
-static int gErrCode     = 0;
+BrokerError gErr = NULL;
+char * gErrMsg   = NULL;
+int gErrCode     = 0;
 
 
 /*
  *
  */
-static awaBool gWarn    = awaFalse;
+awaBool gWarn    = awaFalse;
 
 
 
@@ -91,7 +92,7 @@ static awaBool gWarn    = awaFalse;
  *  handle pointers need not be created.
  *
  */
-static awAdapterHandle * gHandle = NULL;
+awAdapterHandle * gHandle = NULL;
 
 
 static double
@@ -1544,8 +1545,9 @@ not_there:
 }
 
 
+// extern char * setErrMsg ( int count, ... );
 
-#ifdef AWXS_WARNS
+#if 0
 /* keep this simple for now, don't count % tokens, etc */
 char *
 setErrMsg ( int count, ... )
@@ -1587,7 +1589,8 @@ char * strings[5];
 			break;
 	}
 
-	sv_setpv ( perl_get_sv("!",0), gErrMsg );
+	// sv_setpv ( perl_get_sv("!",0), gErrMsg );
+	sv_setpv ( perl_get_sv("@",0), gErrMsg );
 
 	return ( gErrMsg );
 
@@ -1776,7 +1779,7 @@ xsBrokerEvent * requestEvent;
 
 	eventDef = (xsAdapterEventType *)safemalloc ( sizeof(xsAdapterEventType) );
 	if ( eventDef == NULL ) {
-		setErrMsg ( 1, "unable to malloc new adapter event" );
+		setErrMsg ( &gErrMsg, 1, "unable to malloc new adapter event" );
 #ifdef AWXS_WARNS
 		if ( gWarn )
 			warn ( gErrMsg );
@@ -1795,7 +1798,7 @@ xsBrokerEvent * requestEvent;
 
 	requestEvent = (xsBrokerEvent *)safemalloc ( sizeof(xsBrokerEvent) );
 	if ( requestEvent == NULL ) {
-		setErrMsg ( 1, "unable to malloc new adapter event" );
+		setErrMsg ( &gErrMsg, 1, "unable to malloc new adapter event" );
 #ifdef AWXS_WARNS
 		if ( gWarn )
 			warn ( gErrMsg );
@@ -1885,7 +1888,7 @@ xsBrokerEvent * requestEvent;
 
 	eventDef = (xsAdapterEventType *)safemalloc ( sizeof(xsAdapterEventType) );
 	if ( eventDef == NULL ) {
-		setErrMsg ( 1, "unable to malloc new adapter event" );
+		setErrMsg ( &gErrMsg, 1, "unable to malloc new adapter event" );
 #ifdef AWXS_WARNS
 		if ( gWarn )
 			warn ( gErrMsg );
@@ -1904,7 +1907,7 @@ xsBrokerEvent * requestEvent;
 
 	requestEvent = (xsBrokerEvent *)safemalloc ( sizeof(xsBrokerEvent) );
 	if ( requestEvent == NULL ) {
-		setErrMsg ( 1, "unable to malloc new adapter event" );
+		setErrMsg ( &gErrMsg, 1, "unable to malloc new adapter event" );
 #ifdef AWXS_WARNS
 		if ( gWarn )
 			warn ( gErrMsg );
@@ -1997,7 +2000,7 @@ xsBrokerEvent * requestEvent;
 
 	eventDef = (xsAdapterEventType *)safemalloc ( sizeof(xsAdapterEventType) );
 	if ( eventDef == NULL ) {
-		setErrMsg ( 1, "unable to malloc new adapter event" );
+		setErrMsg ( &gErrMsg, 1, "unable to malloc new adapter event" );
 #ifdef AWXS_WARNS
 		if ( gWarn )
 			warn ( gErrMsg );
@@ -2016,7 +2019,7 @@ xsBrokerEvent * requestEvent;
 
 	requestEvent = (xsBrokerEvent *)safemalloc ( sizeof(xsBrokerEvent) );
 	if ( requestEvent == NULL ) {
-		setErrMsg ( 1, "unable to malloc new adapter event" );
+		setErrMsg ( &gErrMsg, 1, "unable to malloc new adapter event" );
 #ifdef AWXS_WARNS
 		if ( gWarn )
 			warn ( gErrMsg );
@@ -2201,7 +2204,7 @@ xsAdapterEventType * eventDef;
 
 	eventDef = (xsAdapterEventType *)safemalloc ( sizeof(xsAdapterEventType) );
 	if ( eventDef == NULL ) {
-		setErrMsg ( 1, "unable to malloc new adapter event" );
+		setErrMsg ( &gErrMsg, 1, "unable to malloc new adapter event" );
  		return awaFalse;
 	}
 	/* initialize the error cleanly */
@@ -2460,7 +2463,7 @@ xsBrokerClient * client;
 
 	event = (xsBrokerEvent *)safemalloc ( sizeof(xsBrokerEvent) );
 	if ( event == NULL ) {
-		setErrMsg ( 1, "unable to malloc new broker event" );
+		setErrMsg ( &gErrMsg, 1, "unable to malloc new broker event" );
 #ifdef AWXS_WARNS
 		if ( gWarn )
 			warn ( gErrMsg );
@@ -2479,7 +2482,7 @@ xsBrokerClient * client;
 
 	client = (xsBrokerClient *)safemalloc ( sizeof(xsBrokerClient) );
 	if ( event == NULL ) {
-		setErrMsg ( 1, "unable to malloc new broker client" );
+		setErrMsg ( &gErrMsg, 1, "unable to malloc new broker client" );
 #ifdef AWXS_WARNS
 		if ( gWarn )
 			warn ( gErrMsg );
@@ -2612,7 +2615,7 @@ showHash ( hash )
 
 
 
-#=============================================================================*/
+#===============================================================================
 
 MODULE = Aw			PACKAGE = Aw::BaseClass
 
@@ -2885,18 +2888,18 @@ char *
 errmsg ( ... )
 
 	ALIAS:
-		Aw::errmsg                       =  0
-		Aw::Adapter::errmsg              =  1
-		Aw::EventType::errmsg            =  2
-		Aw::Util::errmsg                 =  3
-		Aw::Client::errmsg               =  4
-		Aw::ConnectionDescriptor::errmsg =  5
-		Aw::Event::errmsg                =  6
-		Aw::Error::errmsg                =  7
-		Aw::Filter::errmsg               =  8
-		Aw::Format::errmsg               =  9
-		Aw::TypeDef::errmsg              = 10
-		Aw::TypeDefCache::errmsg         = 11
+		Aw::errmsg                          =  0
+		Aw::Adapter::errmsg                 =  1
+		Aw::EventType::errmsg               =  2
+		Aw::Util::errmsg                    =  3
+		Aw::Client::errmsg                  =  4
+		Aw::ConnectionDescriptor::errmsg    =  5
+		Aw::Event::errmsg                   =  6
+		Aw::Error::errmsg                   =  7
+		Aw::Filter::errmsg                  =  8
+		Aw::Format::errmsg                  =  9
+		Aw::TypeDef::errmsg                 = 10
+		Aw::TypeDefCache::errmsg            = 11
 
 		Aw::getErrMsg                       = 100
 		Aw::Adapter::getErrMsg              = 101
@@ -3125,7 +3128,7 @@ throw ( self, newErrCode )
 		gErrCode = newErrCode;
 		strErrCode = (char *)safemalloc ( 8 * sizeof (char) );
 		sprintf ( strErrCode, "%i", gErrCode );
-		sv_setpv ( perl_get_sv("!",0), strErrCode );
+		sv_setpv ( perl_get_sv("@",0), strErrCode );
 		safefree ( strErrCode );
 
 
@@ -3803,7 +3806,7 @@ _new ( CLASS, version, ... )
 	CODE:
 		RETVAL = (xsAdapter *)safemalloc ( sizeof(xsAdapter) );	
 		if ( RETVAL == NULL ) {
-			setErrMsg ( 1, "Aw::Adapter::new:  unable to malloc new adapter" );
+			setErrMsg ( &gErrMsg, 1, "Aw::Adapter::new:  unable to malloc new adapter" );
 #ifdef AWXS_WARNS
 			if ( gWarn )
 				warn ( gErrMsg );
@@ -3992,7 +3995,7 @@ getAdapterInfo ( self )
 
 		RETVAL = (xsBrokerEvent *)safemalloc ( sizeof(xsBrokerEvent) );	
 		if ( RETVAL == NULL ) {
-			self->errMsg = setErrMsg ( 1, "Aw::Adapter::getAdapterInfo:  unable to malloc new event" );
+			self->errMsg = setErrMsg ( &gErrMsg, 1, "Aw::Adapter::getAdapterInfo:  unable to malloc new event" );
 #ifdef AWXS_WARNS
 			if ( self->Warn )
 				warn ( self->errMsg );
@@ -4070,7 +4073,7 @@ getAdminClient ( self )
 
 		RETVAL = (xsBrokerClient *)safemalloc ( sizeof(xsBrokerClient) );
 		if ( RETVAL == NULL ) {
-			self->errMsg = setErrMsg ( 1, "Aw::Adapter::getAdminClient:  unable to malloc new adapter" );
+			self->errMsg = setErrMsg ( &gErrMsg, 1, "Aw::Adapter::getAdminClient:  unable to malloc new adapter" );
 #ifdef AWXS_WARNS
 			if ( self->Warn )
 				warn ( self->errMsg );
@@ -4108,7 +4111,7 @@ getEventDef ( self, ... )
 
 		RETVAL = (xsAdapterEventType *)safemalloc ( sizeof(xsAdapterEventType) );
 		if ( RETVAL == NULL ) {
-			self->errMsg = setErrMsg ( 1, "unable to malloc new adapter event" );
+			self->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new adapter event" );
 #ifdef AWXS_WARNS
 			if ( self->Warn )
 				warn ( self->errMsg );
@@ -4157,7 +4160,7 @@ getEventDefsRef ( self )
 		for ( i = 0; i<n; i++ ) {
 			eventDef = (xsAdapterEventType *)safemalloc ( sizeof(xsAdapterEventType) );
 			if ( eventDef == NULL ) {
-				setErrMsg ( 1, "Aw::Adapter::getEventDefs: unable to malloc new adapter event" );
+				setErrMsg ( &gErrMsg, 1, "Aw::Adapter::getEventDefs: unable to malloc new adapter event" );
 #ifdef AWXS_WARNS
 				if ( self->Warn )
 					warn ( self->errMsg );
@@ -4480,7 +4483,7 @@ new ( CLASS, broker_host, broker_name, client_id, client_group, app_name, ... )
 	CODE:
 		RETVAL = (xsBrokerClient *)safemalloc ( sizeof(xsBrokerClient) );
 		if ( RETVAL == NULL ) {
-			setErrMsg ( 1, "unable to malloc new client" );
+			setErrMsg ( &gErrMsg, 1, "unable to malloc new client" );
 #ifdef AWXS_WARNS
 			if ( gWarn )
 				warn ( gErrMsg );
@@ -4509,7 +4512,7 @@ new ( CLASS, broker_host, broker_name, client_id, client_group, app_name, ... )
 
 
 		if ( RETVAL->err != AW_NO_ERROR ) {
-			setErrMsg ( 2, "unable to instantiate new event %s", awErrorToCompleteString ( RETVAL->err ) );
+			setErrMsg ( &gErrMsg, 2, "unable to instantiate new event %s", awErrorToCompleteString ( RETVAL->err ) );
 			Safefree ( RETVAL );
 #ifdef AWXS_WARNS
 			if ( gWarn )
@@ -4941,7 +4944,7 @@ deliverRequestAndWaitRef ( self, dest_id, event, msecs )
 			for ( i = 0; i<n; i++ ) {
 				ev = (xsBrokerEvent *)safemalloc ( sizeof(xsBrokerEvent) );
 				if ( ev == NULL ) {
-					self->errMsg = setErrMsg ( 1, "unable to malloc new event" );
+					self->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new event" );
 #ifdef AWXS_WARNS
 					if ( self->Warn )
 						warn ( self->errMsg );
@@ -5147,7 +5150,7 @@ getCanPublishTypeDefsRef ( self )
 			for ( i = 0; i<n; i++ ) {
 				typeDef = (xsBrokerTypeDef *)safemalloc ( sizeof(xsBrokerTypeDef) );
 				if ( typeDef == NULL ) {
-					self->errMsg = setErrMsg ( 1, "unable to malloc new type def" );
+					self->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new type def" );
 #ifdef AWXS_WARNS
 					if ( self->Warn )
 						warn ( self->errMsg );
@@ -5207,7 +5210,7 @@ getConnectionDescriptor ( self )
 		
 		RETVAL = (xsBrokerConnectionDescriptor *)safemalloc ( sizeof(xsBrokerConnectionDescriptor) );
 		if ( RETVAL == NULL ) {
-			self->errMsg = setErrMsg ( 1, "unable to malloc new connection descriptor copy" );
+			self->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new connection descriptor copy" );
 #ifdef AWXS_WARNS
 			if ( self->Warn )
 				warn ( self->errMsg );
@@ -5283,7 +5286,7 @@ getSubscriptionsRef ( self )
 				av_push( RETVAL, sv );
 				Safefree ( subs[i] );
 			}
-			/* haven't use this so I don't know which form of
+			/* haven't used this so I don't know which form of
 			 * free is appropriate.
 			 *  Safefree ( subs );
 			 */
@@ -5303,14 +5306,13 @@ getEvent ( self, ... )
 
 	PREINIT:
 		char CLASS[] = "Aw::Event";
-		int wait;
 
 	CODE:
 		AWXS_CLEARERROR
 		
 		RETVAL = (xsBrokerEvent *)safemalloc ( sizeof(xsBrokerEvent) );
 		if ( RETVAL == NULL ) {
-			self->errMsg = setErrMsg ( 1, "unable to malloc new event" );
+			self->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new event" );
 #ifdef AWXS_WARNS
 			if ( self->Warn )
 				warn ( self->errMsg );
@@ -5322,17 +5324,14 @@ getEvent ( self, ... )
 		RETVAL->Warn     = gWarn;
 		RETVAL->deleteOk = 0;
 
-		wait = (int)SvIV(ST(1));
-
 		gErr = self->err
 		= (ix)
 		  ? awGetClientInfoset( self->client, &RETVAL->event )
 		  : awGetEvent ( self->client, (int)SvIV(ST(1)), &RETVAL->event )
-		  // : awGetEvent ( self->client, wait, &RETVAL->event )
 		;
 
 		if ( self->err != AW_NO_ERROR ) {
-			self->errMsg = setErrMsg ( 2, "unable to instantiate new event %s", awErrorToCompleteString ( self->err ) );
+			self->errMsg = setErrMsg ( &gErrMsg, 2, "unable to instantiate new event %s", awErrorToCompleteString ( self->err ) );
 			Safefree ( RETVAL );
 #ifdef AWXS_WARNS
 			if ( self->Warn )
@@ -5384,7 +5383,7 @@ getEventsRef ( self, max_events, msecs, ... )
 		for ( i = 0; i<n; i++ ) {
 			ev = (xsBrokerEvent *)safemalloc ( sizeof(xsBrokerEvent) );
 			if ( ev == NULL ) {
-				self->errMsg = setErrMsg ( 1, "unable to malloc new event" );
+				self->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new event" );
 #ifdef AWXS_WARNS
 				if ( self->Warn )
 					warn ( self->errMsg );
@@ -5424,7 +5423,7 @@ getEventTypeDef ( self, event_type_name )
 		
 		RETVAL = (xsBrokerTypeDef *)safemalloc ( sizeof(xsBrokerTypeDef) );
 		if ( RETVAL == NULL ) {
-			self->errMsg = setErrMsg ( 1, "unable to malloc new type def" );
+			self->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new type def" );
 #ifdef AWXS_WARNS
 			if ( self->Warn )
 				warn ( self->errMsg );
@@ -5439,7 +5438,7 @@ getEventTypeDef ( self, event_type_name )
 		gErr = self->err = awGetEventTypeDef ( self->client, event_type_name, &RETVAL->type_def );
 
 		if ( self->err != AW_NO_ERROR ) {
-			self->errMsg = setErrMsg ( 2, "unable to instantiate new event %s", awErrorToCompleteString ( self->err ) );
+			self->errMsg = setErrMsg ( &gErrMsg, 2, "unable to instantiate new event %s", awErrorToCompleteString ( self->err ) );
 			Safefree ( RETVAL );
 #ifdef AWXS_WARNS
 			if ( self->Warn )
@@ -5482,7 +5481,7 @@ getEventTypeDefsRef ( self, event_type_names )
 		for ( i = 0; i<n; i++ ) {
 			typeDef = (xsBrokerTypeDef *)safemalloc ( sizeof(xsBrokerTypeDef) );
 			if ( typeDef == NULL ) {
-				setErrMsg ( 1, "unable to malloc new adapter event" );
+				setErrMsg ( &gErrMsg, 1, "unable to malloc new adapter event" );
 #ifdef AWXS_WARNS
 				if ( self->Warn || gWarn )
 					warn ( gErrMsg );
@@ -5655,7 +5654,7 @@ makeUniqueSubId ( self )
 		       ? awGetClientQueueLength ( self->client, &RETVAL )       // 3
 		       : awGetFd ( self->client, &RETVAL )                      // 2
 		     : (ix)
-	           ? awGetClientBrokerPort ( self->client, &RETVAL )            // 1
+		       ? awGetClientBrokerPort ( self->client, &RETVAL )        // 1
 		       : awMakeUniqueSubId     ( self->client, &RETVAL )        // 0
 		 ;
 
@@ -5731,7 +5730,7 @@ _newSubscription ( self, event_type_name, filter, ... )
 			xsBrokerClient * self = AWXS_BROKERCLIENT(0);
 			gErr = self->err = awNewSubscription ( self->client, event_type_name, filter );
 			if ( self->err != AW_NO_ERROR ) {
-				self->errMsg = setErrMsg ( 3, "Could not create subscription for \"\": \n", event_type_name, awErrorToCompleteString ( self->err ) );
+				self->errMsg = setErrMsg ( &gErrMsg, 3, "Could not create subscription for \"\": \n", event_type_name, awErrorToCompleteString ( self->err ) );
 				if ( self->Warn || gWarn )
 					warn ( self->errMsg );
 			}
@@ -5885,7 +5884,7 @@ publish ( self, event )
 		if ( !ix && self->err != AW_NO_ERROR ) {
 			event_type_name = awGetEventTypeName ( *events );
 
-			self->errMsg = setErrMsg ( 3, "Could not publish event %s : %s\n", event_type_name, awErrorToCompleteString ( self->err ) );
+			self->errMsg = setErrMsg ( &gErrMsg, 3, "Could not publish event %s : %s\n", event_type_name, awErrorToCompleteString ( self->err ) );
 			if ( self->Warn || gWarn )
 				warn ( gErrMsg );
 
@@ -5995,7 +5994,7 @@ publishRequestAndWaitRefX ( self, event, msecs )
 		
 		RETVAL = (xsBrokerEvent *)safemalloc ( sizeof(xsBrokerEvent) );
 		if ( RETVAL == NULL ) {
-			self->errMsg = setErrMsg ( 1, "unable to malloc new event" );
+			self->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new event" );
 #ifdef AWXS_WARNS
 			if ( self->Warn )
 				warn ( self->errMsg );
@@ -6046,7 +6045,7 @@ publishRequestAndWaitRef ( self, event, msecs )
 			for ( i = 0; i<n; i++ ) {
 				ev = (xsBrokerEvent *)safemalloc ( sizeof(xsBrokerEvent) );
 				if ( ev == NULL ) {
-					self->errMsg = setErrMsg ( 1, "unable to malloc new event" );
+					self->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new event" );
 #ifdef AWXS_WARNS
 					if ( self->Warn )
 						warn ( self->errMsg );
@@ -6090,7 +6089,7 @@ reconnect ( CLASS, broker_host, broker_name, client_id, ... )
 	CODE:
 		RETVAL = (xsBrokerClient *)safemalloc ( sizeof(xsBrokerClient) );
 		if ( RETVAL == NULL ) {
-			setErrMsg ( 1, "unable to malloc new client" );
+			setErrMsg ( &gErrMsg, 1, "unable to malloc new client" );
 #ifdef AWXS_WARNS
 			if ( gWarn )
 				warn ( gErrMsg );
@@ -6113,7 +6112,7 @@ reconnect ( CLASS, broker_host, broker_name, client_id, ... )
 		gErr = RETVAL->err = awReconnectBrokerClient(broker_host, broker_name, client_id, myDesc, &RETVAL->client);
 
 		if ( RETVAL->err != AW_NO_ERROR ) {
-			setErrMsg ( 2, "unable to instantiate new event %s", awErrorToCompleteString ( RETVAL->err ) );
+			setErrMsg ( &gErrMsg, 2, "unable to instantiate new event %s", awErrorToCompleteString ( RETVAL->err ) );
 			Safefree ( RETVAL );
 #ifdef AWXS_WARNS
 			if ( gWarn )
@@ -6320,7 +6319,7 @@ new ( CLASS )
 	CODE:
 		RETVAL = (xsBrokerConnectionDescriptor *)safemalloc ( sizeof(xsBrokerConnectionDescriptor) );
 		if ( RETVAL == NULL ) {
-			setErrMsg ( 1, "unable to malloc new connection descriptor" );
+			setErrMsg ( &gErrMsg, 1, "unable to malloc new connection descriptor" );
 #ifdef AWXS_WARNS
 			if ( gWarn )
 				warn ( gErrMsg );
@@ -6351,7 +6350,7 @@ copy ( self )
 
 		RETVAL = (xsBrokerConnectionDescriptor *)safemalloc ( sizeof(xsBrokerConnectionDescriptor) );
 		if ( RETVAL == NULL ) {
-			self->errMsg = setErrMsg ( 1, "unable to malloc new connection descriptor copy" );
+			self->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new connection descriptor copy" );
 #ifdef AWXS_WARNS
 			if ( self->Warn )
 				warn ( self->errMsg );
@@ -6849,7 +6848,7 @@ new ( CLASS )
 	CODE:
 		RETVAL = (xsBrokerError *)safemalloc ( sizeof(xsBrokerError) );
 		if ( RETVAL == NULL ) {
-			setErrMsg ( 1, "unable to malloc new error" );
+			setErrMsg ( &gErrMsg, 1, "unable to malloc new error" );
 #ifdef AWXS_WARNS
 			if ( gWarn )
 				warn ( gErrMsg );
@@ -7036,7 +7035,7 @@ _new ( CLASS, client, event_type_name, ... )
 	CODE:
 		RETVAL = (xsBrokerEvent *)safemalloc ( sizeof(xsBrokerEvent) );
 		if ( RETVAL == NULL ) {
-			setErrMsg ( 1, "unable to malloc new event" );
+			setErrMsg ( &gErrMsg, 1, "unable to malloc new event" );
 #ifdef AWXS_WARNS
 			if ( gWarn )
 				warn ( gErrMsg );
@@ -7066,7 +7065,7 @@ _new ( CLASS, client, event_type_name, ... )
 		  }
 
 		if ( RETVAL->err != AW_NO_ERROR ) {
-			setErrMsg ( 2, "unable to instantiate new event: %s", awErrorToCompleteString ( RETVAL->err ) );
+			setErrMsg ( &gErrMsg, 2, "unable to instantiate new event: %s", awErrorToCompleteString ( RETVAL->err ) );
 			Safefree ( RETVAL );
 #ifdef AWXS_WARNS
 			if ( gWarn )
@@ -7141,7 +7140,7 @@ fromBinData ( self, client, data, size )
 		
 		RETVAL = (xsBrokerEvent *)safemalloc ( sizeof(xsBrokerEvent) );	
 		if ( RETVAL == NULL ) {
-			self->errMsg = setErrMsg ( 1, "unable to malloc new event" );
+			self->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new event" );
 #ifdef AWXS_WARNS
 			if ( self->Warn )
 				warn ( self->errMsg );
@@ -7220,7 +7219,7 @@ getClient ( self )
 		
 		RETVAL = (xsBrokerClient *)safemalloc ( sizeof(BrokerClient) );
 		if ( RETVAL == NULL ) {
-			self->errMsg = setErrMsg ( 1, "unable to malloc new date" );
+			self->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new date" );
 #ifdef AWXS_WARNS
 			if ( self->Warn )
 				warn ( self->errMsg );
@@ -7259,7 +7258,7 @@ getDateField ( self, field_name )
 		
 		RETVAL = (BrokerDate *)safemalloc ( sizeof(BrokerDate) );
 		if ( RETVAL == NULL ) {
-			self->errMsg = setErrMsg ( 1, "unable to malloc new date" );
+			self->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new date" );
 #ifdef AWXS_WARNS
 			if ( self->Warn )
 				warn ( self->errMsg );
@@ -7270,7 +7269,7 @@ getDateField ( self, field_name )
 		gErr = self->err = awGetDateField ( self->event, field_name, RETVAL );
 
 		if ( self->err != AW_NO_ERROR ) {
-			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
+			sv_setpv ( perl_get_sv("@",0), awErrorToCompleteString ( gErr ) );
 			Safefree ( RETVAL );
 			XSRETURN_UNDEF;
 		}
@@ -7618,7 +7617,7 @@ getStructFieldAsEvent ( self, field_name )
 		
 		RETVAL = (xsBrokerEvent *)safemalloc ( sizeof(xsBrokerEvent) );	
 		if ( RETVAL == NULL ) {
-			self->errMsg = setErrMsg ( 1, "unable to malloc new event" );
+			self->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new event" );
 #ifdef AWXS_WARNS
 			if ( self->Warn )
 				warn ( self->errMsg );
@@ -7670,7 +7669,7 @@ getStructSeqFieldAsEventsRef ( self, field_name, offset, ... )
 			for ( i = 0; i<n; i++ ) {
 				ev = (xsBrokerEvent *)safemalloc ( sizeof(xsBrokerEvent) );
 				if ( ev == NULL ) {
-					self->errMsg = setErrMsg ( 1, "unable to malloc new event" );
+					self->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new event" );
 #ifdef AWXS_WARNS
 					if ( self->Warn )
 						warn ( self->errMsg );
@@ -7753,7 +7752,7 @@ getTypeDef ( self )
 		
 		RETVAL = (xsBrokerTypeDef *)safemalloc ( sizeof(xsBrokerTypeDef) );
 		if ( RETVAL == NULL ) {
-			self->errMsg = setErrMsg ( 1, "unable to malloc new type def" );
+			self->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new type def" );
 #ifdef AWXS_WARNS
 			if ( self->Warn )
 				warn ( self->errMsg );
@@ -7831,7 +7830,7 @@ getUCStringField ( self, field_name )
 		}
 		
 		if ( self->err != AW_NO_ERROR ) {
-			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
+			sv_setpv ( perl_get_sv("@",0), awErrorToCompleteString ( gErr ) );
 			Safefree ( RETVAL );
 			XSRETURN_UNDEF;
 		}
@@ -8062,7 +8061,7 @@ setSequenceField ( self, field_name, ... )
 
 
 		if ( self->err != AW_NO_ERROR ) {
-			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
+			sv_setpv ( perl_get_sv("@",0), awErrorToCompleteString ( gErr ) );
 			warn ( "Error Found!!" );
 			warn ( awErrorToCompleteString( self->err ) );
 		}
@@ -8260,7 +8259,7 @@ toBinData ( self )
 		   unclear to me (byte offsets) so I am just returning a string
 		   for now */
 		if ( self->err != AW_NO_ERROR ) {
-			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
+			sv_setpv ( perl_get_sv("@",0), awErrorToCompleteString ( gErr ) );
 			Safefree ( RETVAL );
 			XSRETURN_UNDEF;
 		}
@@ -8280,7 +8279,7 @@ toFormattedString ( self, format_string )
 
 		gErr = self->err = awEventToFormattedString ( self->event, format_string, &RETVAL );
 		if ( self->err != AW_NO_ERROR ) {
-			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
+			sv_setpv ( perl_get_sv("@",0), awErrorToCompleteString ( gErr ) );
 			Safefree ( RETVAL );
 			XSRETURN_UNDEF;
 		}
@@ -8418,7 +8417,7 @@ new ( CLASS, event_type_name )
 	CODE:
 		RETVAL = (xsAdapterEventType *)safemalloc ( sizeof(xsAdapterEventType) );
 		if ( RETVAL == NULL ) {
-			setErrMsg ( 1, "unable to malloc new adapter event" );
+			setErrMsg ( &gErrMsg, 1, "unable to malloc new adapter event" );
 #ifdef AWXS_WARNS
 			if ( gWarn )
 				warn ( gErrMsg );
@@ -8842,7 +8841,7 @@ new ( CLASS, client, event_type_name, filter_string )
 	CODE:
 		RETVAL = (xsBrokerFilter *)safemalloc ( sizeof(xsBrokerFilter) );
 		if ( RETVAL == NULL ) {
-			setErrMsg ( 1, "unable to malloc new filter" );
+			setErrMsg ( &gErrMsg, 1, "unable to malloc new filter" );
 #ifdef AWXS_WARNS
 			if ( gWarn )
 				warn ( gErrMsg );
@@ -8857,7 +8856,7 @@ new ( CLASS, client, event_type_name, filter_string )
 		gErr = RETVAL->err = awNewBrokerFilter ( client->client, event_type_name, filter_string, &RETVAL->filter);
 
 		if ( RETVAL->err != AW_NO_ERROR ) {
-			setErrMsg ( 1, "filter creation failed" );
+			setErrMsg ( &gErrMsg, 1, "filter creation failed" );
 			Safefree ( RETVAL );
 #ifdef AWXS_WARNS
 			if ( gWarn )
@@ -8908,7 +8907,7 @@ match ( self, event )
 		gErr = self->err = awMatchFilter ( self->filter, event->event, &bRV);
 
 		if ( self->err != AW_NO_ERROR ) {
-			self->errMsg = setErrMsg ( 1, "unable to instantiate new event %s", awErrorToCompleteString ( self->err ) );
+			self->errMsg = setErrMsg ( &gErrMsg, 1, "unable to instantiate new event %s", awErrorToCompleteString ( self->err ) );
 #ifdef AWXS_WARNS
 			if ( self->Warn )
 				warn ( self->errMsg );
@@ -8956,7 +8955,7 @@ new ( CLASS, ... )
 	CODE:
 		RETVAL = (xsBrokerFormat *)safemalloc ( sizeof(xsBrokerFormat) );
 		if ( RETVAL == NULL ) {
-			setErrMsg ( 1, "unable to malloc new format" );
+			setErrMsg ( &gErrMsg, 1, "unable to malloc new format" );
 #ifdef AWXS_WARNS
 			if ( gWarn )
 				warn ( gErrMsg );
@@ -9006,7 +9005,7 @@ assemble ( self, ... )
 		gErr = self->err = awEventFormatAssemble ( *self->event, self->tokens, &RETVAL);
 
 		if ( self->err != AW_NO_ERROR ) {
-			self->errMsg = setErrMsg ( 1, "unable to instantiate new event %s", awErrorToCompleteString ( self->err ) );
+			self->errMsg = setErrMsg ( &gErrMsg, 1, "unable to instantiate new event %s", awErrorToCompleteString ( self->err ) );
 #ifdef AWXS_WARNS
 			if ( self->Warn )
 				warn ( self->errMsg );
@@ -9168,7 +9167,7 @@ new ( CLASS, license_string )
 	CODE:
 		RETVAL = (xsAdapterLicense *)safemalloc ( sizeof(xsAdapterLicense) );
 		if ( RETVAL == NULL ) {
-			setErrMsg ( 1, "unable to malloc new license" );
+			setErrMsg ( &gErrMsg, 1, "unable to malloc new license" );
 #ifdef AWXS_WARNS
 			if ( gWarn )
 				warn ( gErrMsg );
@@ -9316,7 +9315,7 @@ new ( CLASS, ... )
 	CODE:
 		RETVAL = (xsAdapterLog *)safemalloc ( sizeof(xsAdapterLog) );	
 		if ( RETVAL == NULL ) {
-			setErrMsg ( 1, "unable to malloc new adapter log" );
+			setErrMsg ( &gErrMsg, 1, "unable to malloc new adapter log" );
 #ifdef AWXS_WARNS
 			if ( gWarn )
 				warn ( gErrMsg );
@@ -9753,7 +9752,7 @@ new ( CLASS, ... )
 	CODE:
 		RETVAL = (xsBrokerTypeDef *)safemalloc ( sizeof(xsBrokerTypeDef) );
 		if ( RETVAL == NULL ) {
-			setErrMsg ( 1, "unable to malloc new type def" );
+			setErrMsg ( &gErrMsg, 1, "unable to malloc new type def" );
 #ifdef AWXS_WARNS
 			if ( gWarn )
 				warn ( gErrMsg );
@@ -9853,7 +9852,7 @@ getFieldDef ( self, field_name )
 
 		RETVAL = (xsBrokerTypeDef *)safemalloc ( sizeof(xsBrokerTypeDef) );
 		if ( RETVAL == NULL ) {
-			self->errMsg = setErrMsg ( 1, "unable to malloc new type def" );
+			self->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new type def" );
 #ifdef AWXS_WARNS
 			if ( self->Warn )
 				warn ( self->errMsg );
@@ -9941,7 +9940,7 @@ getTypeName ( self )
 		if ( ix == 3 )
 #ifndef AW_COMPATIBLE
 			{	
-			self->errMsg = setErrMsg ( 1, "getFamilyName not available: AW_COMPATIBLE was set to false at compile time." );
+			self->errMsg = setErrMsg ( &gErrMsg, 1, "getFamilyName not available: AW_COMPATIBLE was set to false at compile time." );
 #ifdef AWXS_WARNS
 			if ( self->Warn )
 				warn ( self->errMsg );
@@ -9989,7 +9988,7 @@ new ( CLASS, ... )
 	CODE:
 		RETVAL = (xsBrokerTypeDefCache *)safemalloc ( sizeof(xsBrokerTypeDefCache) );
 		if ( RETVAL == NULL ) {
-			setErrMsg ( 1, "unable to malloc new type def cache" );
+			setErrMsg ( &gErrMsg, 1, "unable to malloc new type def cache" );
 #ifdef AWXS_WARNS
 			if ( gWarn )
 				warn ( gErrMsg );
@@ -10025,7 +10024,7 @@ flushCache ( self, ... )
 		if ( self->client )
 			gErr = self->err = awFlushTypeDefCache ( *self->client );
 		else {
-			self->errMsg = setErrMsg ( 1, "(cache)->client is NULL" );
+			self->errMsg = setErrMsg ( &gErrMsg, 1, "(cache)->client is NULL" );
 #ifdef AWXS_WARNS
 			if ( self->Warn )
 				warn ( self->errMsg );
@@ -10091,7 +10090,7 @@ new ( CLASS, adapter )
 	CODE:
 		RETVAL = (xsAdapterReplies *)safemalloc ( sizeof(xsAdapterReplies) );
 		if ( RETVAL == NULL ) {
-			setErrMsg ( 1, "unable to malloc new replies" );
+			setErrMsg ( &gErrMsg, 1, "unable to malloc new replies" );
 #ifdef AWXS_WARNS
 			if ( gWarn )
 				warn ( gErrMsg );
@@ -10212,7 +10211,7 @@ getBeginDate ( self )
 	CODE:
 		RETVAL = (BrokerDate *)safemalloc ( sizeof(BrokerDate) );
 		if ( RETVAL == NULL ) {
-			setErrMsg ( 1, "unable to malloc new date" );
+			setErrMsg ( &gErrMsg, 1, "unable to malloc new date" );
 #ifdef AWXS_WARNS
 			if ( gWarn )
 				warn ( gErrMsg );
@@ -10295,7 +10294,7 @@ new ( CLASS, ... )
 	CODE:
 		RETVAL = (BrokerSubscription *)safemalloc ( sizeof(BrokerSubscription) );
 		if ( RETVAL == NULL ) {
-			setErrMsg ( 1, "unable to malloc new filter" );
+			setErrMsg ( &gErrMsg, 1, "unable to malloc new filter" );
 #ifdef AWXS_WARNS
 			if ( gWarn )
 				warn ( gErrMsg );
@@ -10425,7 +10424,7 @@ new ( CLASS, adapter, ... )
 	CODE:
 		RETVAL = (xsAdapterUtil *)safemalloc ( sizeof(xsAdapterUtil) );
 		if ( RETVAL == NULL ) {
-			setErrMsg ( 1, "unable to malloc new adapter util" );
+			setErrMsg ( &gErrMsg, 1, "unable to malloc new adapter util" );
 #ifdef AWXS_WARNS
 			if ( gWarn )
 				warn ( gErrMsg );
@@ -10474,7 +10473,7 @@ new ( CLASS, adapter, ... )
 			RETVAL->handle = (awAdapterHandle *)safemalloc ( sizeof(awAdapterHandle) );
 			if ( RETVAL->handle == NULL ) {
 				Safefree (RETVAL);
-				setErrMsg ( 1, "unable to malloc new adapter util" );
+				setErrMsg ( &gErrMsg, 1, "unable to malloc new adapter util" );
 #ifdef AWXS_WARNS
 				if ( gWarn )
 					warn ( gErrMsg );
@@ -10508,9 +10507,9 @@ createEvent ( self, ... )
 		RETVAL = (xsBrokerEvent *)safemalloc ( sizeof(xsBrokerEvent) );	
 		if ( RETVAL == NULL ) {
 			if (ix && ix != 2)
-				AWXS_ADAPTER(0)->errMsg = setErrMsg ( 1, "unable to malloc new event" );
+				AWXS_ADAPTER(0)->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new event" );
 			else
-				AWXS_ADAPTERUTIL(0)->errMsg = setErrMsg ( 1, "unable to malloc new event" );
+				AWXS_ADAPTERUTIL(0)->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new event" );
 #ifdef AWXS_WARNS
 			if (ix && ix != 2) {
 				if ( AWXS_ADAPTER(0)->Warn )
@@ -10546,9 +10545,9 @@ createEvent ( self, ... )
 		if ( gHandle == NULL || RETVAL->event == NULL ) {
 			Safefree ( RETVAL );
 			if (ix && ix != 2)
-				AWXS_ADAPTER(0)->errMsg = setErrMsg ( 1, "requestEvent: Null Handle" );
+				AWXS_ADAPTER(0)->errMsg = setErrMsg ( &gErrMsg, 1, "requestEvent: Null Handle" );
 			else
-				AWXS_ADAPTERUTIL(0)->errMsg = setErrMsg ( 1, "requestEvent: Null Handle" );
+				AWXS_ADAPTERUTIL(0)->errMsg = setErrMsg ( &gErrMsg, 1, "requestEvent: Null Handle" );
 #ifdef AWXS_WARNS
 			if (ix && ix != 2) {
 				if ( AWXS_ADAPTER(0)->Warn )
@@ -10576,7 +10575,7 @@ createEvent ( self, ... )
 			gErr = RETVAL->err = awxsSetEventFromHash ( RETVAL->event, hv );
 
 			if ( RETVAL->err != AW_NO_ERROR ) {
-				setErrMsg ( 2, "unable to instantiate new event: %s", awErrorToCompleteString ( RETVAL->err ) );
+				setErrMsg ( &gErrMsg, 2, "unable to instantiate new event: %s", awErrorToCompleteString ( RETVAL->err ) );
 				Safefree ( RETVAL );
 #ifdef AWXS_WARNS
 				if ( gWarn )
@@ -10728,9 +10727,9 @@ getEventTypeDef ( self, event_name )
 		RETVAL = (xsBrokerTypeDef *)safemalloc ( sizeof(xsBrokerTypeDef) );
 		if ( RETVAL == NULL ) {
 			if (ix)
-				AWXS_ADAPTER(0)->errMsg = setErrMsg ( 1, "unable to malloc new event" );
+				AWXS_ADAPTER(0)->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new event" );
 			else
-				AWXS_ADAPTERUTIL(0)->errMsg = setErrMsg ( 1, "unable to malloc new event" );
+				AWXS_ADAPTERUTIL(0)->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new event" );
 #ifdef AWXS_WARNS
 			if (ix) {
 				if ( AWXS_ADAPTER(0)->Warn )
@@ -10756,7 +10755,7 @@ getEventTypeDef ( self, event_name )
 		test = awAdapterGetEventTypeDef ( gHandle, event_name, &RETVAL->type_def );
 		
 		if ( test == awaFalse ) {
-			setErrMsg ( 1, "::getEventTypeDef:  awAdapterGetEventTypeDef failed, reason unknown" );
+			setErrMsg ( &gErrMsg, 1, "::getEventTypeDef:  awAdapterGetEventTypeDef failed, reason unknown" );
 			Safefree ( RETVAL );
 #ifdef AWXS_WARNS
 			if ( gWarn )
@@ -10907,7 +10906,7 @@ findFieldInfo ( self, field_name )
 
 		RETVAL = (xsBrokerEvent *)safemalloc ( sizeof(xsBrokerEvent) );	
 		if ( RETVAL == NULL ) {
-			self->errMsg = setErrMsg ( 1, "Aw::Adapter::getAdapterInfo:  unable to malloc new event" );
+			self->errMsg = setErrMsg ( &gErrMsg, 1, "Aw::Adapter::getAdapterInfo:  unable to malloc new event" );
 #ifdef AWXS_WARNS
 			if ( self->Warn )
 				warn ( self->errMsg );
@@ -10996,7 +10995,7 @@ getStructSeqInfoRef ( self, field_name )
 			for ( i = 0; i<n; i++ ) {
 				ev = (xsBrokerEvent *)safemalloc ( sizeof(xsBrokerEvent) );
 				if ( ev == NULL ) {
-					self->errMsg = setErrMsg ( 1, "unable to malloc new event" );
+					self->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new event" );
 #ifdef AWXS_WARNS
 					if ( self->Warn )
 						warn ( self->errMsg );

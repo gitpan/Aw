@@ -1,5 +1,5 @@
 /* This is part of the Aw:: Perl module.  A Perl interface to the ActiveWorks(tm) 
-   libraries.  Copyright (C) 1999-2000 Daniel Yacob.
+   libraries.  Copyright (C) 1999-2001 Daniel Yacob.
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -16,23 +16,13 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef EVENTTOHASH_H
-#define EVENTTOHASH_H 1
+#ifndef UTIL_H
+#define UTIL_H 1
 
+#include "awxs.def"
 
-BrokerError getEventToHashErr ( void );
-BrokerError awxsSetHashFromEvent ( BrokerEvent event, HV * hv );
+#ifdef AWXS_WARNS
+char * setErrMsg ( char ** gErrMsg, int count, ... );
+#endif /* AWXS_WARNS */
 
-SV* getSV ( BrokerEvent event, char * key );
-SV* getHV ( BrokerEvent event, char * key );
-
-SV* _getValue ( short type, void * value, int i, bool array );
-#define getValue(type, value) _getValue(type, value, 0, 0)
-#define getValueI(type, value, i) _getValue(type, value, i, 1)
-
-SV* _getAV ( BrokerEvent event, char * key, int offset, int max_n );
-#define getAV( event, key ) _getAV( event, key, 0, AW_ENTIRE_SEQUENCE )
-#define getAVN( event, key, offset, max_n ) _getAV( event, key, offset, max_n )
-
-
-#endif /* EVENTTOHASH_H */
+#endif /* UTIL_H */
