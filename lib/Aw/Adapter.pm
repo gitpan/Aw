@@ -63,7 +63,8 @@ my $self = shift;
 				$self->_loadProperties ( $_[0] );
 			}
 		}
-	} else {
+	}
+	else {
 		unshift ( @_, "$0" );
 		$self->_loadProperties ( \@_ );
 	}

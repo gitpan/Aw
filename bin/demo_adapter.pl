@@ -3,13 +3,12 @@
 $| =1;
 
 package PerlDemoAdapter;
+use base qw( Aw::Adapter );
 
-use Aw;
-require Aw::Adapter;
+require Aw;
 require Aw::Event;
-use HelloWorld;
 
-@PerlDemoAdapter::ISA=qw(Aw::Adapter);
+use HelloWorld;
 
 
 my ($false, $true) = (0,1);
@@ -19,12 +18,11 @@ sub startup {
 
 	my $self = shift;
 
-	#  subscribe to AdapterDevKit::PerlDemo2 
-	return $false if ( $self->newSubscription ( "AdapterDevKit::PerlDemo2", 0 ) );
-
+	#  subscribe to PerlDevKit::PerlDemo
+	return $false if ( $self->newSubscription ( "PerlDevKit::PerlDemo", 0 ) );
 
 	#  register the event
-	my $event = new Aw::EventType ( "AdapterDevKit::PerlDemo2" );
+	my $event = new Aw::EventType ( "PerlDevKit::PerlDemo" );
 	$self->addEvent( $event );
 
 	
@@ -43,7 +41,7 @@ sub processPublication {
 	print "Hello from processPublication Method\n";
 
 
-	if ( $eventDef->name eq "AdapterDevKit::PerlDemo2" ) {
+	if ( $eventDef->name eq "PerlDevKit::PerlDemo" ) {
 		$self->deliverAckReplyEvent;
 		return $true;
 	}
@@ -61,9 +59,12 @@ my ($self, $requestEvent, $eventDef) = @_;
 	print "Hello from processRequest Method\n";
 
 	my %hash = $requestEvent->toHash;
-	my $world = eval ( $hash{structA}{structB}{stringC} );
 	print "==============================================\n";
-	print "           World Test:\n\n";
+	print "Received:\n";
+	print $requestEvent->toString;
+	print "==============================================\n";
+	print "Executing World Test:\n\n";
+	my $world = eval ( $hash{moreData}{structA}{structB}{stringC} );
 	$world->run;
 	print "==============================================\n";
 	$self->deliverAckReplyEvent;
@@ -81,20 +82,19 @@ package main;
 
 main: {
 
-	my @properties = (
-	        "Perl Demo Adapter",
-	        "test_broker\@active",
-	        "0",
-	        "debug=1",
-	        "clientgroup=test",
-	        "adapterType=perl_adapter",
-	        "messageCatalog=perl_adapter"
+	my %properties = (
+	        clientId 	=> "Perl Demo Adapter",
+	        broker		=> 'test_broker@localhost:6449',
+	        adapterId	=> 0,
+	        debug		=> 1,
+	        clientGroup	=> "PerlDemoAdapter",
+	        adapterType	=> "perl_adapter"
 	);
 
 
 	#  Start with one step...
 	#
-	my $adapter = new PerlDemoAdapter ( \@properties );
+	my $adapter = new PerlDemoAdapter ( \%properties );
 
 
 	my $retVal = 0;
@@ -121,3 +121,33 @@ main: {
 
 	print "\nRetval = $retVal\n";
 }
+
+__END__
+
+=head1 NAME
+
+  demo_adapter.pl
+
+=head1 SYNOPSIS
+
+  ./demo_adapter.pl
+
+=head1 DESCRIPTION
+
+  Adapter to handle request for the PerlDevKit::PerlDemo, goes with
+  the demo_client.pl script.  The adapter simply prints the event it
+  receives as a string.  It will also recreate the dumped HelloWorld
+  object embedded in the event and invoke a method.
+
+  The HelloWorld.pm must be installed where both the demo_client.pl
+  and demo_adapter.pl scripts are executed from.
+
+=head1 AUTHOR
+
+Daniel Yacob Mekonnen,  L<Yacob@RCN.Com|mailto:Yacob@RCN.Com>
+
+=head1 SEE ALSO
+
+S<perl(1). ActiveWorks Supplied Documentation>
+
+=cut

@@ -1,12 +1,13 @@
 #!/usr/bin/perl -I. -w
 
-use Aw 'test_broker@localhost:8849';
+use Aw 'test_broker@localhost:6449';
 require Aw::Client;
 require Aw::Event;
 
 use Data::Dumper;
 
 my %basic	= (
+	_name => "PerlDevKit::EventOfDoom",
 	b 	=> 1,
 	by	=> 0x10,
 	c	=> 'c',
@@ -14,10 +15,10 @@ my %basic	= (
 	l	=> 111111111,
 	f	=> 3.1415927,
 	i	=> 100,
-	's'	=> "Ahadu",
+	's'	=> "hello",
 	sh	=> 4000,
 	'uc'	=> 'u',
-	us 	=> 'hello',
+	us 	=> 'world',
 	b_array		=> [ 0, 1, 0, 1, 0 ],
 	by_array	=> [ 0x0f, 0x10, 0xff ],
 	c_array		=> [ 'a', 'b', 'c' ],
@@ -56,9 +57,9 @@ my %structC        = %$doom;
 
 $doom->{st_array}  = [ \%structA, \%structB, \%structC ];
 
-my $client = newEZ Aw::Client ( "devkitClient" );
+my $client = new Aw::Client ( "PerlDemoClient" );
 
-my $event = new Aw::Event ( $client, "Fp::EventOfDoom", $doom );
+my $event = new Aw::Event ( $client, $doom );
 
 %basic = ();
 
@@ -69,4 +70,31 @@ print Dumper(\%hash);
 print "\$hash{dt} time is:  ", $hash{dt}->toString, "\n";
 print "\$hash{st_array}[1]{st}{dt_array}[2] time is: ",  $hash{st_array}[1]{st}{dt_array}[2]->toString, "\n";
 
+__END__
 
+=head1 NAME
+
+eod.pl
+
+=head1 SYNOPSIS
+
+./eod.pl
+
+=head1 DESCRIPTION
+
+The script connect to the broker set on line 3 and creates a populated
+PerlDevKit::EventOfDoom.  The event is converted into a hash and nested
+date objects are printed as strings by invoking their "toString" methods.
+
+The PerlDevKit::EventOfDoom and the DemoClientGroup must first be
+set in the target broker from the PerlDemo.data file.
+
+=head1 AUTHOR
+
+Daniel Yacob Mekonnen,  L<Yacob@RCN.Com|mailto:Yacob@RCN.Com>
+
+=head1 SEE ALSO
+
+S<perl(1). ActiveWorks Supplied Documentation>
+
+=cut

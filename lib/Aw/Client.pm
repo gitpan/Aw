@@ -3,29 +3,35 @@ package Aw::Client;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '0.1';
+$VERSION = '0.2';
 
 use Aw;
 
 
 
-sub newEZ
+sub new
 {
-my ($class, $client_group)  = @_;
-my $app_name = (@_ == 3) ? $_[2] : $0.".Client";
 
-	Aw::Client::new ( $class, $Aw::DefaultBrokerHost, $Aw::DefaultBrokerName, "", $client_group, $app_name );
+	return ( Aw::Client::_new ( @_ ) ) if ( @_ > 3 );
+
+	my ($class, $client_group)  = @_;
+	my $app_name = (@_ == 3) ? $_[2] : $0.".Client";
+
+	Aw::Client::_new ( $class, $Aw::DefaultBrokerHost, $Aw::DefaultBrokerName, "", $client_group, $app_name );
 
 }
 
 
 
-sub newOrReconnectEZ
+sub newOrReconnect
 {
-my ($class, $client_group)  = @_;
-my $app_name = (@_ == 3) ? $_[2] : $0.".Client";
 
-	Aw::Client::newOrReconnect ( $class, $Aw::DefaultBrokerHost, $Aw::DefaultBrokerName, "", $client_group, $app_name );
+	return ( Aw::Client::_newOrReconnect ( @_ ) ) if ( @_ > 3 );
+
+	my ($class, $client_group)  = @_;
+	my $app_name = (@_ == 3) ? $_[2] : $0.".Client";
+
+	Aw::Client::_newOrReconnect ( $class, $Aw::DefaultBrokerHost, $Aw::DefaultBrokerName, "", $client_group, $app_name );
 
 }
 
@@ -55,7 +61,7 @@ my %config = ( ref $_[0] ) #  Reference?
 
 	unless ( $c || !$config{clientId} ) {
 		if ( Aw::Error::getCode == AW_ERROR_CLIENT_EXISTS ) {
-			$c = reconnect Aw::Client ( $config{brokerHost}, $config{brokerName}, $config{clientId} );
+			$c = _reconnect Aw::Client ( $config{brokerHost}, $config{brokerName}, $config{clientId} );
 			unless ( $c ) {
 				print STDERR "Could not reconnect.\n";
 				print STDERR Aw::Error::toString, "\n";
@@ -72,14 +78,16 @@ my %config = ( ref $_[0] ) #  Reference?
 
 
 
-sub reconnectEZ
+sub reconnect
 {
-my ($class)  = $_[0];
-my ($bHost, $bName, $clientId)
-    = ($class->getBrokerHost.":".$class->getBrokerPort, $class->getBrokerName, $class->getClientId);
 
-	# Aw::Client::reconnect ( $class, $Aw::DefaultBrokerHost, $Aw::DefaultBrokerName, $client_id );
-	Aw::Client::reconnect ( $class, $bHost, $bName, $clientId );
+	return ( Aw::Client::_reconnect ( @_ ) ) if ( @_ > 1 );
+	
+	my ($class)  = $_[0];
+	my ($bHost, $bName, $clientId)
+	    = ($class->getBrokerHost.":".$class->getBrokerPort, $class->getBrokerName, $class->getClientId);
+
+	Aw::Client::_reconnect ( $class, $bHost, $bName, $clientId );
 
 }
 

@@ -14,7 +14,7 @@ sub setEventOfDoomDef
 {
 
 my %basic	= (
-	_name		=> "Perl::EventOfDoom",
+	_name		=> "PerlDevKit::EventOfDoom",
 	_description	=> "If this works, nothing can break me!",
 	_timeToLive	=> 10,
 
@@ -24,7 +24,7 @@ my %basic	= (
 	d	=> FIELD_TYPE_DOUBLE,
 	dt	=> FIELD_TYPE_DATE,
 	l	=> FIELD_TYPE_LONG,
-	f	=> FIELD_TYPE_FLOAT
+	f	=> FIELD_TYPE_FLOAT,
 	i	=> FIELD_TYPE_INT,
 	's'	=> FIELD_TYPE_STRING,
 	sh	=> FIELD_TYPE_SHORT,
@@ -65,6 +65,7 @@ my %basic	= (
 sub setEventOfDoom
 {
 my %basic	= (
+	_name	=> "PerlDevKit::EventOfDoom",
 	b 	=> 1,
 	by	=> 0x10,
 	c	=> 'c',
@@ -72,10 +73,10 @@ my %basic	= (
 	l	=> 111111111,
 	f	=> 3.1415927,
 	i	=> 100,
-	's'	=> "Ahadu",
+	's'	=> "hello",
 	sh	=> 4000,
 	'uc'	=> 'u',
-	us 	=> 'hello',
+	us 	=> 'world',
 	b_array		=> [ 0, 1, 0, 1, 0 ],
 	by_array	=> [ 0x0f, 0x10, 0xff ],
 	c_array		=> [ 'a', 'b', 'c' ],
@@ -115,7 +116,7 @@ my %basic	= (
 	$doom->{st_array}  = [ \%structA, \%structB, \%structC ];
 
 	my $client = shift;
-	new Aw::Event ( $client, "Perl::EventOfDoom", $doom );
+	new Aw::Event ( $client, $doom );
 }
 
 
@@ -174,7 +175,7 @@ main: {
                 "The Creator", "" ) || die "Admin Connection Failed\n";
 
 	my $client_group_name = "GroupOfDoom";
-	my $event_type_name   = "Perl::EventOfDoom";
+	my $event_type_name   = "PerlDevKit::EventOfDoom";
 	if ( grep /$client_group_name/, $a->getClientGroupNames ) {
 		print STDERR "'$client_group_name' already exists!?\n";
 	}
@@ -184,12 +185,6 @@ main: {
 
 		print STDERR "Giving the ClientGroup a Description...";
 		$a->setClientGroupDescription ( $client_group_name, "Just here for testing..." );
-
-		#
-		# subscribe list must be a list, since have only one add the [ ]
-		#
-		print STDERR "Adding $event_type_name publish permission to $client_group_name.\n";
-		$a->setClientGroupCanPublishList ( $client_group_name, [ $event_type_name ] );
 	}
 
 	print STDERR "Creating a Client of our new ClientGroup:\n";
@@ -204,6 +199,12 @@ main: {
 		
 	print STDERR "Writing Doom TypeDef to Broker:\n";
 	die "We Have Failed to Define Doom $!\n" if ( $a->setEventAdminTypeDef ( $t ) );
+
+	#
+	# subscribe list must be a list, since have only one add the [ ]
+	#
+	print STDERR "Adding $event_type_name publish permission to $client_group_name.\n";
+	$a->setClientGroupCanPublishList ( $client_group_name, [ $event_type_name ] );
 	
 	print STDERR "Creating an Aw::Event of Doom:\n";
 	my $eod = setEventOfDoom ( $c ) || die "Failed to Create Doom: $!";
@@ -211,26 +212,48 @@ main: {
 	print STDERR "We Have Doom!\n";
 	print STDERR $eod->toString, "\n";
 
-	print STDERR "Destroing Perl::EventOfDoom EventType on $broker_name\@$broker_host\n";
+	print STDERR "Destroying PerlDevKit::EventOfDoom EventType on $broker_name\@$broker_host\n";
 	$a->destroyEventType ( $event_type_name, 1 );      # 1 is "force"
 
-	print STDERR "Destorying $client_group_name on $broker_name\@$broker_host\n";
+	print STDERR "Destroying $client_group_name on $broker_name\@$broker_host\n";
 	$a->destroyClientGroup ( $client_group_name, 1 );  # 1 is "force"
 
-	print STDERR "Destorying $broker_name on $broker_host\n";
+	print STDERR "Destroying $broker_name on $broker_host\n";
 	$a->destroyBroker;  # strange this isn't also an Aw::Admin::ServerClient method
 
 	print STDERR "Test Complete\n";
 }
 
-
 __END__
 
+=head1 NAME
+
+eod-autotest.pl
+
+=head1 SYNOPSIS
+
+./eod-autotest.pl MyHost:1234
+
+=head1 DESCRIPTION
+
 This test comes close to running "one of each" as far as class types go.
+The script will connect to the broker server passed as the first argument,
+create a test broker (Perl_CADK_Test), create a client group (GroupOfDoom),
+create and write an event type definition (PerlDevKit::EventOfDoom), create
+a client to attach to the new broker and client group, and finally create
+and print a populated PerlDevKit::EventOfDoom.  The script cleans up after
+itself before exiting.
 
-./eod-autotest.pl  myhost.net:6996
+The script does try to start the broke server if it wasn't already up and
+running.  This does not seem to work as expected, the bug was reported to
+WebMethods.
 
-It starts the broker server you specify if not already running, creates a broker,
-a client group, sets permissions, adds the dreaded EventOfDoom, connects a client
-to the new group, creates a populated EventOfDoom and prints to prove it worked.
-The event type, client group and broker are destroyed on the way out.
+=head1 AUTHOR
+
+Daniel Yacob Mekonnen,  L<Yacob@RCN.Com|mailto:Yacob@RCN.Com>
+
+=head1 SEE ALSO
+
+S<perl(1). ActiveWorks Supplied Documentation>
+
+=cut

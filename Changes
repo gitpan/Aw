@@ -1,5 +1,17 @@
 Revision history for Perl extension Aw.
 
+0.15.0 Sun Jan 19 21:41:51 EST 2003
+
+	- xs/Aw.xs removed a stray ;
+	- xs/Aw/Admin.xs fix in joinTerritory.
+	- bin/ documentation added to many scripts.
+	- bin/index.html added to list bin contents.
+	- bin/apache TicTacToe files have returned.
+	- doc/ tweaks to a few files.
+	- c/EventToHash.c uncommented code that skips created keys
+          for unset fields.
+	- lib/Aw/Client.pm removed merged "EZ" method into bases.
+
 0.15.0-120402
 
 	- bin/eod-autotest.pl

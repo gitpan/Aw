@@ -5,12 +5,13 @@ use strict;
 use Aw;
 use Aw::Admin;
 
+
 my %basic	=(
 	#
 	# all of the '_' fields are optional, they can be set at any
 	# time with the respective ->set* methods
 	#
-	_name		=> "Perl::EventOfDoom",
+	_name 		=> "PerlDevKit::EventOfDoom",
 	_description	=> "If this works, nothing can break me!",
 	_timeToLive	=> 50,
 	#
@@ -60,7 +61,7 @@ my %basic	=(
 my %basicA = %basic;
 my %basicB = %basic;
 
-my $doom           = \%basic;
+my $doom   = \%basic;
 
 
 #
@@ -91,8 +92,11 @@ my $t = new Aw::Admin::TypeDef ( $doom );
 #
 #  or do in two steps, if you likes more typing:
 #
-#  my $event_type_name = "Fp::EventOfDoom";	
+#  my $event_type_name = "PerlDevKit::EventOfDoom";	
 #  my $t = new Aw::Admin::TypeDef ( $event_type_name, $doom );
+#
+#  or
+#
 #  my $t = new Aw::Admin::TypeDef ( $event_type_name, EVENT_TYPE_EVENT, $doom );
 #
 

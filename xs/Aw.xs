@@ -4468,7 +4468,7 @@ MODULE = Aw			PACKAGE = Aw::Client
 
 
 Aw::Client
-new ( CLASS, broker_host, broker_name, client_id, client_group, app_name, ... )
+_new ( CLASS, broker_host, broker_name, client_id, client_group, app_name, ... )
 	char * CLASS
 	char * broker_host;
 	char * broker_name;
@@ -4477,7 +4477,7 @@ new ( CLASS, broker_host, broker_name, client_id, client_group, app_name, ... )
 	char * app_name;
 
 	ALIAS:
-		Aw::Client::newOrReconnect = 1
+		Aw::Client::_newOrReconnect = 1
 
 	PREINIT:
 		BrokerConnectionDescriptor myDesc = NULL;
@@ -5708,7 +5708,7 @@ nameTest ( self )
 awaBool
 _newSubscription ( self, event_type_name, filter, ... )
 	char * event_type_name
-	char * filter; 
+	char * filter
 
 	ALIAS:
 		Aw::Adapter::newSubscription = 1
@@ -6063,7 +6063,7 @@ publishRequestAndWaitRef ( self, event, msecs )
 # this could be ALIASed to new
 #
 Aw::Client
-reconnect ( CLASS, broker_host, broker_name, client_id, ... )
+_reconnect ( CLASS, broker_host, broker_name, client_id, ... )
 	char * CLASS
 	char * broker_host
 	char * broker_name
@@ -11310,9 +11310,9 @@ setEventField (self, event, field_name, typeDef, value)
 
 
 awaBool
-setStringField ( self, event, fieldName, value )
+setStringField ( self, event, field_name, value )
 	Aw::Event event
-	char * fieldName
+	char * field_name
 	char * value
 
 	ALIAS:
@@ -11327,7 +11327,7 @@ setStringField ( self, event, fieldName, value )
 		  : AWXS_ADAPTERUTIL(0)->handle
 		;
 
-		RETVAL = awAdapterSetStringField ( gHandle, event->event, fieldName, value );
+		RETVAL = awAdapterSetStringField ( gHandle, event->event, field_name, value );
 
 	OUTPUT:
 	RETVAL

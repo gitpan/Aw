@@ -1,17 +1,14 @@
 SPECIAL NOTICE
 ==============
-This is a developmental release.  0.15 will be stamped complete when
-some of the demo scripts and documentation are updated.  0.15 features
-the introduction of setting and getting event type definitions as hashes.
+0.15 introduces the setting and getting event type definitions as hashes.
 
 See bin/typedef-test1.pl and bin/typedef-test2.pl for examples of hash
-and typedef usage.
+and typedef usage.  bin/eod-autotest.pl has become a "tour de force" of
+sorts of what the package is capable of admin wise and for basic client use.
+bin/index.html provides a summary of what each script does.
 
-bin/eod-autotest.pl has become a "tour de force" of sorts of what the
-package is capable of admin wise and for basic client use.
-
-Some of the demo scripts under bin/ may be broken, if so they will be
-repaired in the near future.
+The mod_perl TicTacToe example is again a part of the distribution, found
+in the bin/apache directory.
 
 
 INTRODUCTION
@@ -88,10 +85,9 @@ Has not been tested against the ActiveWorks 3.1 libraries.
 TODO
 ====
 
- *  Admin methods...
  *  Make sure that it is thread safe when multiple adapters live
     in a single script.
- *  Maybe split Aw.xs into component files for each package.
+ *  Update for newer breeds of Perl and WebMethods Enterprise Server.
 
 
 AUTHOR'S COMMENTS

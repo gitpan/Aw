@@ -7,7 +7,7 @@ Assuming GNU tar:
   %  cd Aw-XY
   %  perl Makefile.PL
   %  make
-  %  make install  # if you have admin privaledges (untested)
+  %  make install  # if you have admin privileges (untested)
 
 The Makefile.PL may or may not detect the library directories where you have 
 the ActiveWorks libraries installed.  If "perl Makefile.PL" gives warnings of
@@ -21,7 +21,17 @@ contain "EXTRALIBS" and "LDLOADLIBS" appear as follows:
   EXTRALIBS = -lcustcadk30 -lawalog30 -lawl30 -lawc30 -lsocket -lnsl
   LDLOADLIBS = -lcustcadk30 -lawalog30 -lawl30 -lawc30 -lsocket -lnsl
 
-ActiveWorks CADK header files are also provided with this release.
+The Makefile.PL is set for the 4.0 libraries by default.
+
+If when running a test script you find an error like:
+
+Can't load '/opt/lib/perl5/site_perl/5.005/sun4-solaris/auto/Aw/Aw.so' for module Aw: ld.so.1: perl: fatal: libawalog31.so: open failed: No such file or directory at /opt/lib/perl5/5.00503/sun4-solaris/DynaLoader.pm line 169.
+
+then you will need to set your library path:
+
+% export LD_LIBRARY_PATH=/opt/active40/lib
+
+(or wherever you have the libraries installed) and rerun the script.
 
 
 Testing
@@ -38,4 +48,5 @@ In one window or two:
   
 
 The best test of your system will be the EventOfDoom script (eod.pl) which
-tries to create an event with one of each data type and deaply nested.
+tries to create an event with one of each data type and deeply nested.  See
+the bin/index.html for a complete list of provided test and demo scripts.

@@ -1,6 +1,5 @@
 #!/usr/bin/perl -w
 
-
 use Aw;
 require Aw::Adapter;
 require Aw::Client;
@@ -35,13 +34,18 @@ my $c = shift;
 	}
 
 	my $eventName = $e->getTypeName; 
-	print STDERR "Received a $eventName event\n";
+	print STDERR "Received an $eventName event\n";
 
 	if ( $eventName eq "Adapter::ack" ) {
-		my %eventData = $e->toHash;
+		#
+		# awGetFieldNames used in the toHash method does not
+		# get the _env field (not that we normally want it),
+		# but we can still extract it like so:
+		#
+		my %eventData = $e->getField ( "_env" );
 
-		foreach my $key (sort keys %{$eventData{_env}}) {
-			print STDERR "  $key => $eventData{_env}{$key}\n";
+		foreach my $key (sort keys %eventData) {
+			print STDERR "  $key => $eventData{$key}\n";
 		}
 	} else {
 		print STDERR $e->toString;
@@ -56,8 +60,8 @@ main:
 my %Config = (
 	# Adapter configuration structure.
 	brokerName	=> 'test_broker',	#  Name of the broker.
-	brokerHost 	=> 'active',		#  FQDN of the broker host.
-	clientGroup	=> 'test',		#  Client group we're in.
+	brokerHost 	=> 'localhost:6449',	#  FQDN of the broker host.
+	clientGroup	=> 'PerlDemoClient',	#  Client group we're in.
 	clientName	=> 'PerlDemo',		#  Name of client, for queueing.
 	application	=> 'PerlDemo',		#  The application's name.
 	adapterName	=> 'Perl Demo Adapter' 	#  The application's name.
@@ -95,28 +99,18 @@ my %FieldData = (
 );
 
 %MoreData = (
-	intA		=> 11,
-	structA		=>	{
-				intB		=> 22,
-				structB		=> { 
-							intC	=> 33,
-							stringC	=> "Hello From StructB"
-						   } 
-				}
+	intA	=> 11,
+	structA	=> {
+		intB	=> 22,
+		structB	=> { 
+			intC	=> 33,
+			stringC	=> "Hello From StructB"
+		} 
+	}
 );
 
 
-# my $eventName = "AdapterDevKit::PerlDemo";
-my $eventName = "AdapterDevKit::PerlDemo2";
-# my $eventName = "Ia::TestEvent";
-my %TestEventData = (
-			services => [
-				{ service => "RIM", action => "DEL", args => "a=b,c=d" },
-				{ service => "MAIL", action => "ACT", args => "a=b,c=d" },
-				{ service => "WEB", action => "CRE", args => "a=b,c=d" },
-
-				]
-                    );
+my $eventName = "PerlDevKit::PerlDemo";
 
 	my $world = new HelloWorld;
 	$world->store(5);
@@ -126,6 +120,8 @@ my %TestEventData = (
 	my $eventTime = new Aw::Date;
 	$eventTime->setDateCtime ( time );
 	$FieldData{dateDemo} = $eventTime;
+
+	$FieldData{moreData} = \%MoreData;
 
 
 	#  Create the client object, and check if we can publish to the
@@ -143,16 +139,17 @@ my %TestEventData = (
 
 	#  Create a new broker Event.
 	#
-	# my $e = new Aw::Event ( $c, $eventName, \%FieldData );
-	my $e = new Aw::Event ( $c, $eventName, \%MoreData );
-	# my $e = new Aw::Event ( $c, $eventName, %TestEventData );
-	# my $e = new Aw::Event ( $c, $eventName );
+	my $e = new Aw::Event ( $c, $eventName, \%FieldData );
+	# my $e = new Aw::Event ( $c, $eventName );  # two step approach
+
 	unless ( $e ) {	
 		print STDERR $e->errmsg, "\n";
 		exit ( $EXIT_FAILURE );
 	}
 
-	# $e->init ( \%TestEventData );
+	# or if event is created in two steps:
+	#
+	# $e->init ( \%FieldData );
 
 
 	#  Now that all event strings are set, publish the event to
@@ -171,3 +168,34 @@ my %TestEventData = (
 
 	exit ( 0 );
 }
+
+__END__
+
+=head1 NAME
+
+  demo_client.pl
+
+=head1 SYNOPSIS
+
+  ./demo_client.pl
+
+=head1 DESCRIPTION
+
+  Client to submit the PerlDevKit::PerlDemo event, goes with
+  the demo_adapter.pl script.  The adapter simply prints the event it
+  receives as a string.  The script demonstrates client and event
+  creation for a modestly complex event.  The script will also create
+  dump and embed a HelloWorld object that the adapter will revive.
+
+  The HelloWorld.pm must be installed where both the demo_client.pl
+  and demo_adapter.pl scripts are executed from.
+
+=head1 AUTHOR
+
+Daniel Yacob Mekonnen,  L<Yacob@RCN.Com|mailto:Yacob@RCN.Com>
+
+=head1 SEE ALSO
+
+S<perl(1). ActiveWorks Supplied Documentation>
+
+=cut

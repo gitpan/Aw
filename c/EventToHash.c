@@ -59,12 +59,12 @@ BrokerBoolean isSet;
 	for ( i = 0; i < numKeys; i++ ) {
 		/*
 		 *  Don't even create a key if the field is unset.
+		 */
 		gErr = awIsEventFieldSet ( event, Keys[i], &isSet );
 		if ( gErr != AW_NO_ERROR )
 			break;
 		if ( isSet == awaFalse )
 			continue;
-		 */
 
 		sv = getSV ( event, Keys[i] );
 

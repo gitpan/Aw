@@ -1,24 +1,31 @@
 package Aw::ClientX;
 
-# use strict;
-# use vars qw($VERSION);
+use strict;
+use vars qw($VERSION);
 
-$VERSION = '0.1';
+$VERSION = '0.2';
 
 use Aw;
 require Aw::Client;
 
 
 
-sub newEZ
+sub new
 {
-my ($class, $client_group)  = @_;
-my $app_name = (@_ == 3) ? $_[2] : $0.".Client";
 my $self = {};
 
-	my $blessing = bless $self, $class;
+	my $blessing = bless $self, shift;
 
-	$self->{_client} = Aw::Client::new ( "Aw::Client", $Aw::DefaultBrokerHost, $Aw::DefaultBrokerName, "", $client_group, $app_name );
+	if ( @_ > 2 ) {
+		$self->{_client} = Aw::Client::_new ( "Aw::Client", @_ )
+	}
+	else {
+		my ($client_group)  = @_;
+		my $app_name = (@_ == 2) ? $_[1] : $0.".Client";
+
+		$self->{_client} = Aw::Client::_new ( "Aw::Client", $Aw::DefaultBrokerHost, $Aw::DefaultBrokerName, "", $client_group, $app_name );
+
+	}
 
 	$blessing;
 }

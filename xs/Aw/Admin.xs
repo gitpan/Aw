@@ -4699,7 +4699,7 @@ joinTerritory ( self, broker_host, broker_name )
 	char * broker_name
 
 	PREINIT:
-		BrokerJoinFailureInfo * failure_info;
+		BrokerJoinFailureInfo * failure_info = NULL;
 		SV * sv;
 
 	CODE:
@@ -4709,10 +4709,13 @@ joinTerritory ( self, broker_host, broker_name )
 
 		// return undef on success
 		//
-		if ( gErr == AW_NO_ERROR ) {
-			sv_setpv ( perl_get_sv("@",0), awErrorToCompleteString ( gErr ) );
+		if ( gErr == AW_NO_ERROR )
 			XSRETURN_UNDEF;
-		}
+
+		sv_setpv ( perl_get_sv("@",0), awErrorToCompleteString ( gErr ) );
+
+		if ( failure_info == NULL )
+			XSRETURN_UNDEF;
 
 		RETVAL = newHV();
 

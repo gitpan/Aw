@@ -1,13 +1,13 @@
 #!/usr/bin/perl -I. -w
 
-use Aw 'test@active:7449';
+use Aw 'test_broker@localhost:6449';
 require Aw::Client;
 require Aw::Event;
 
 
 
 print "Creating client...\n";
-my $client = newEZ Aw::Client ( "devkitClient" );
+my $client = new Aw::Client ( "devkitClient" );
 
 print "Subscribing to AdapterDevKit::time...\n";
 $client->newSubscription ( "AdapterDevKit::time" );
@@ -41,3 +41,32 @@ while ( $event = $client->getEvent( AW_INFINITE ) ) {
 }
 
 print "done!\n";
+
+__END__
+
+=head1 NAME
+
+time_test.pl
+
+=head1 SYNOPSIS
+
+./time_test.pl
+
+=head1 DESCRIPTION
+
+This script is the analog of the ActiveWorks 3.0 and 4.0 ADK
+"time_test.c" and "TimeTest.java" clients.  The script is the
+counterpart of the time_adapter.pl.
+
+The AdapterDevKit::time, AdapterDevKit::timeRequest and the
+devkitClient client group are assumed already set in the target broker.
+
+=head1 AUTHOR
+
+Daniel Yacob Mekonnen,  L<Yacob@RCN.Com|mailto:Yacob@RCN.Com>
+
+=head1 SEE ALSO
+
+S<perl(1). ActiveWorks Supplied Documentation>
+
+=cut

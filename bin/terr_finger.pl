@@ -129,7 +129,7 @@ main: {
 		elsif ( ref($info->{$_}) eq "CORBA::LongLong" ) {
 			print "  $_ => ", int $info->{$_}, "\n"; # this may not really be longlong
 		}
-		elsif ( !/num_/ ) {
+		elsif ( !/num_/ && !/^_/ ) {
 			print "  $_ => $info->{$_}\n";
 		}
 	}

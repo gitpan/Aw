@@ -3,15 +3,15 @@
 package TimeAdapter;
 use base qw( Aw::Adapter );
 
-use Aw 'test@active:7449';
-use Aw::Event;
-require Aw::Adapter;
+require Aw;
+require Aw::Event;
 
 
 my ($false, $true) = (0,1);
 
 #  for use in the AdapterDevKit::time event
-my $eventTime = new Aw::Date;   # should be empty and must be in the scope of startup and createTimeEvent
+my $eventTime = new Aw::Date;   # should be empty and must be in the
+                                # scope of startup and createTimeEvent
 
 
 
@@ -47,7 +47,7 @@ sub startup {
 
 
 #
-#  A subroutined used by the call backs
+#  A subroutine used by the call backs
 #
 sub createTimeEvent {
 
@@ -132,26 +132,31 @@ package main;
 
 main: {
 
+	#
+	# traditional style (use awAdapterLoadProperties):
+	#
 	my @properties = (
-	        # "XS Time Adapter",
-	        "TimeAdapter",
-	        "test\@active:7449",
-	        "0",
-		"./adapters.cfg",
-	        "debug=1",
-	        "clientGroup=devkitAdapter",
-	        # "adapterType=time_adapter",
-	        "adapterType=Adapter40",
-	        "messageCatalog=time_adapter"
+	        'TimeAdapter',
+	        'test_broker@localhost:6449',
+	        0,
+	        # './adapters.cfg', # required if not in the system adapters.cfg
+	        'debug=1',
+	        'clientGroup=devkitAdapter',
+	        'adapterType=Adapter40',
+	        'messageCatalog=time_adapter'
 	);
+	#
+	#  or use a hash!  no .cfg file needed:
+	#
 	my %properties = (
 	        clientId	=> 'TimeAdapter',
-	        broker		=> "test\@active:7449",
+	        broker		=> 'test_broker@localhost:6449',
 	        adapterId	=> 0,
 	        debug		=> 1,
 	        clientGroup	=> 'devkitAdapter',
 	        adapterType	=> 'Adapter40',
-	        messageCatalog	=> 'time_adapter'
+	        messageCatalog	=> 'time_adapter'   # optional
+		# configFile	=> '/path/to/file'  # optional
 	);
 
 
@@ -162,7 +167,7 @@ main: {
 
 
 	#
-	# Alternately
+	# Alternately, two steps...
 	#
 	# $adapter = new TimeAdapter;
 	# $adapter->loadProperties ( @properties );
@@ -192,3 +197,32 @@ main: {
 
 	print "\nRetval = $retVal\n";
 }
+
+__END__
+
+=head1 NAME
+
+time_test.pl
+
+=head1 SYNOPSIS
+
+./time_test.pl
+
+=head1 DESCRIPTION
+
+This script is the analog of the ActiveWorks 3.0 and 4.0 ADK
+"time_adapter.c" and "TimeAdapter.java" adapters.  The script is the
+counterpart of the time_test.pl script.
+
+The AdapterDevKit::time, AdapterDevKit::timeRequest and the
+devkitAdapter client group are assumed already set in the target broker.
+
+=head1 AUTHOR
+
+Daniel Yacob Mekonnen,  L<Yacob@RCN.Com|mailto:Yacob@RCN.Com>
+
+=head1 SEE ALSO
+
+S<perl(1). ActiveWorks Supplied Documentation>
+
+=cut

@@ -6,7 +6,7 @@ BEGIN
 	use strict;
 	use vars qw($VERSION);
 
-	$VERSION = '0.2';
+	$VERSION = '0.3';
 
 	use Aw;
 }
@@ -17,15 +17,26 @@ sub new
 {
 my $self = undef;
 
-	if ( @_ == 3 || ( @_ == 4 && ref($_[3]) eq "HASH" ) ) {
+	if ( @_ == 3 && ( ref($_[2]) eq "HASH" ) ) {
+		my ( $class, $client, $hash ) = @_;
+		if ( defined($hash->{_name}) && ($hash->{_name} =~ /\w+/) ) {
+			$self = Aw::Event::_new ( $class, $client, $hash->{_name}, $hash );
+		}
+		else {
+			croak("Event name is undefined. Can not create anonymous event.");
+		}
+	}
+	elsif ( @_ == 3 || ( @_ == 4 && ref($_[3]) eq "HASH" ) ) {
 		$self = Aw::Event::_new ( @_ );
-	} elsif ( @_ >= 4 ) {
+	}
+	elsif ( @_ >= 4 ) {
 		# we are passed at least 4 elements, the 4th is not a ref
 		my ( $class, $client, $event_type_name ) = ( shift, shift, shift );
 		my %hash = @_;
 		$self = Aw::Event::_new ( $class, $client, $event_type_name, \%hash );
-	} else {
-		croak("Usage: Aw::Event::new(self, client, event_type_name, [hash_data])");
+	}
+	else {
+		croak("Usage: Aw::Event::new(self, client, [event_type_name], [hash_data])");
 	}
 
 
@@ -260,9 +271,11 @@ my ($self, $fieldName) = (shift, shift);
 
 	if ( $ref eq "ARRAY" ) {
 		return $self->setSequenceField ( $fieldName, $_[0] );
-	} elsif ( @_ > 1 ) {
+	}
+	elsif ( @_ > 1 ) {
 		return $self->setSequenceField ( $fieldName, \@_ );
-	} elsif ( $ref eq "HASH" ) {
+	}
+	elsif ( $ref eq "HASH" ) {
 		return $self->_setField ( $fieldName, $_[0] );
 	}
 
