@@ -238,7 +238,7 @@ require AutoLoader;
 	PLACE_HOLDER2
 	PLACE_HOLDER1
 );
-$VERSION = '0.14.1';
+$VERSION = '0.15.0';
 $VERSION_NAME = 'Tadpole Samurai';
 $DefaultBrokerHost = 'localhost';
 $DefaultBrokerName = 'Broker #1';

@@ -69,11 +69,12 @@ extern "C" {
 #include "Av_CharPtrPtr.h"
 #include "exttypes.h"
 #include "Util.h"
+#include "HashToTypeDef.h"
 
 typedef HV * Aw__Info;
 
 
-BrokerError gErr = NULL;
+BrokerError gErr = AW_NO_ERROR;
 char * gErrMsg   = NULL;
 int gErrCode     = 0;
 awaBool gWarn    = awaFalse;
@@ -1555,10 +1556,8 @@ MODULE = Aw::Admin		PACKAGE = Aw::Admin::TypeDef
 #===============================================================================
 
 Aw::Admin::TypeDef
-new ( CLASS, type_name, type )
+new ( CLASS, ... )
 	char * CLASS
-	char * type_name
-	short type
 
 	CODE:
 		RETVAL = (xsBrokerAdminTypeDef *)safemalloc ( sizeof(xsBrokerAdminTypeDef) );
@@ -1575,18 +1574,53 @@ new ( CLASS, type_name, type )
 		RETVAL->errMsg = NULL;
 		RETVAL->Warn   = gWarn;
 
-		if ( items == 3 )
+		// this is grotesque but i'm in a hurry...
+		if ( items == 4 )  { // the full monty
 			gErr = RETVAL->err = awNewBrokerAdminTypeDef ( (char *)SvPV(ST(1),PL_na), (short)SvIV(ST(2)), &RETVAL->type_def );
+
+			if ( gErr == AW_NO_ERROR )
+				gErr = RETVAL->err = awxsSetEventTypeDefFromHash ( RETVAL->type_def, (HV*)SvRV(ST(3)) );
+		}
+		else if ( items == 3 ) {
+			if ( SvTYPE(ST(2)) == SVt_RV && SvTYPE(SvRV(ST(2))) == SVt_PVHV ) {
+				if ( SvTYPE(ST(1)) == SVt_IV )
+					gErr = RETVAL->err = awNewBrokerAdminTypeDef ( NULL, FIELD_TYPE_STRUCT, &RETVAL->type_def );
+				else if ( SvTYPE(ST(1)) == SVt_PV )
+					gErr = RETVAL->err = awNewBrokerAdminTypeDef ( (char *)SvPV(ST(1),PL_na), FIELD_TYPE_EVENT, &RETVAL->type_def );
+				else
+		        		warn( "Aw:Admin::TypeDefEvent::new() -- inappropriate args." );
+
+				fprintf(stderr, "Error: %i\n", gErr );
+				if ( gErr == AW_NO_ERROR )
+					gErr = RETVAL->err = awxsSetEventTypeDefFromHash ( RETVAL->type_def, (HV*)SvRV(ST(2)) );
+			}
+			else
+				gErr = RETVAL->err = awNewBrokerAdminTypeDef ( (char *)SvPV(ST(1),PL_na), (short)SvIV(ST(2)), &RETVAL->type_def );
+		}
+		else if ( items == 2 ) {
+			if ( SvTYPE(ST(1)) == SVt_RV && SvTYPE(SvRV(ST(1))) == SVt_PVHV ) {
+				gErr = RETVAL->err = awNewBrokerAdminTypeDef ( "Change::Me", FIELD_TYPE_EVENT, &RETVAL->type_def );
+				if ( gErr == AW_NO_ERROR )
+					gErr = RETVAL->err = awxsSetEventTypeDefFromHash ( RETVAL->type_def, (HV*)SvRV(ST(1)) );
+			}
+			else if ( SvTYPE(ST(1)) == SVt_IV )
+				gErr = RETVAL->err = awNewBrokerAdminTypeDef ( NULL, (short)SvIV(ST(1)), &RETVAL->type_def );
+			else if ( SvTYPE(ST(1)) == SVt_PV )
+				// default is an event type?
+				gErr = RETVAL->err = awNewBrokerAdminTypeDef ( (char *)SvPV(ST(1),PL_na), FIELD_TYPE_EVENT, &RETVAL->type_def );
+			else
+		        	warn( "Aw:Admin::TypeDefEvent::new() -- inappropriate args." );
+		}
 		else if ( sv_isobject ( ST(1) ) ) {
 			if ( sv_derived_from ( ST(1), "Aw::Admin::TypeDef" ) )
 				RETVAL->type_def = awCopyBrokerAdminTypeDef ( AWXS_BROKERADMINTYPEDEF(1)->type_def );
 			else if ( sv_derived_from ( ST(1), "Aw::TypeDef" ) )
 				RETVAL->type_def = awCopyBrokerTypeDef ( AWXS_BROKERTYPEDEF(1)->type_def );
 			else
-			        warn( "Aw::Event::new() -- Arg 1 is not an Aw::TypeDef or Aw::Admin::TypeDef reference." );
+			        warn( "Aw:Admin::TypeDefEvent::new() -- Arg 2 is not an Aw::TypeDef or Aw::Admin::TypeDef reference." );
 		}
-		else
-			gErr = RETVAL->err = awNewBrokerAdminTypeDef ( NULL, (short)SvIV(ST(1)), &RETVAL->type_def );
+		else	// only structs can be anonymous
+			gErr = RETVAL->err = awNewBrokerAdminTypeDef ( NULL, FIELD_TYPE_STRUCT, &RETVAL->type_def );
 
 
 		if ( RETVAL->err != AW_NO_ERROR ) {
@@ -1915,13 +1949,16 @@ awaBool
 setFieldDef ( self, field_name, field_def )
 	Aw::Admin::TypeDef self
 	char * field_name
-	Aw::Admin::TypeDef field_def
 	
 	CODE:
 		AWXS_CLEARERROR
 
-		gErr = self->err = awSetAdminTypeDefFieldDef ( self->type_def, field_name, field_def->type_def );
-
+		gErr = self->err
+		= ( SvTYPE(ST(2)) == SVt_RV && SvTYPE(SvRV(ST(2))) == SVt_PVHV ) 
+		  ? awxsSetStructFieldType ( self->type_def, field_name, (HV*)SvRV(ST(2)) )
+		  : awSetAdminTypeDefFieldDef ( self->type_def, field_name, AWXS_BROKERADMINTYPEDEF(2)->type_def )
+		;
+				
 		AWXS_CHECKSETERROR
 
 		RETVAL = ( self->err == AW_NO_ERROR ) ? awaFalse : awaTrue;
@@ -3079,8 +3116,8 @@ getClientGroupCanPublishListRef ( self, string )
 		gErr = self->err
 		= (ix>3)
 		  ? (ix==5)
-		    ? awGetClientIdsWhichAreSubscribed ( self->client, string, &n, &RETVAL )
-		    : awGetClientIdsByClientGroup      ( self->client, string, &n, &RETVAL )
+		    ? awGetClientIdsWhichAreSubscribed     ( self->client, string, &n, &RETVAL )
+		    : awGetClientIdsByClientGroup          ( self->client, string, &n, &RETVAL )
 		  : (ix>1)
 		    ? (ix==3)
 		      ? awGetClientGroupsWhichCanSubscribe ( self->client, string, &n, &RETVAL )

@@ -67,3 +67,25 @@ char * strings[5];
 }
 
 #endif /* AWXS_WARNS */
+
+
+
+char *
+stradd ( char* stringA, char* stringB )
+{
+char * returnString = NULL;
+
+	if ( stringB == NULL )
+		return ( NULL );
+	
+	if ( stringA == NULL )
+		returnString = strdup (stringB);
+	else
+	  {
+		returnString = (char *)safemalloc ( sizeof(char)*( strlen(stringA) + strlen(stringB) + 1) );
+
+		sprintf ( returnString, "%s%s", stringA, stringB );	
+	  }
+
+	return ( returnString );
+}

@@ -19,10 +19,10 @@
 #ifndef UTIL_H
 #define UTIL_H 1
 
-#include "awxs.def"
-
 #ifdef AWXS_WARNS
 char * setErrMsg ( char ** gErrMsg, int count, ... );
 #endif /* AWXS_WARNS */
+
+char * stradd ( char* stringA, char* stringB );
 
 #endif /* UTIL_H */

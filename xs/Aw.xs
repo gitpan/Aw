@@ -74,7 +74,7 @@ BrokerBoolean BrokerCallbackFunc ( BrokerClient cbClient, BrokerEvent cbEvent, v
  *   if ( Aw::Error::getCode == AW_ERROR_CLIENT_EXISTS )
  *
  */
-BrokerError gErr = NULL;
+BrokerError gErr = AW_NO_ERROR;
 char * gErrMsg   = NULL;
 int gErrCode     = 0;
 awaBool gWarn    = awaFalse;

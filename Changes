@@ -1,5 +1,12 @@
 Revision history for Perl extension Aw.
 
+0.15.0-110402
+
+	* ...just in case i'm hit by a truck before i can complete 0.15 :-)
+	- Aw::Admin::TypeDef creation with %hashes!
+	- bin/typedef-test1.pl, bin/typedef-test2.pl
+	- c/HashToTypeDef.c, include/HashToType.h
+
 0.14.1 Wed Apr 10 11:07:44 EDT 2002
 
 	- last arg of setFieldType dropped since by definition it isn't used 

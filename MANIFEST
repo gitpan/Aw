@@ -4,6 +4,8 @@ MANIFEST
 CLASSES
 README
 Makefile.PL
+bin/typedef-test1.pl
+bin/typedef-test2.pl
 bin/client_finger.pl
 bin/terr_finger.pl
 bin/eod.pl
@@ -18,6 +20,7 @@ c/Av_CharPtrPtr.c
 c/exttypes.c
 c/EventToHash.c
 c/HashToEvent.c
+c/HashToTypeDef.c
 c/Util.c
 c/Makefile.PL
 doc/Aw.html
