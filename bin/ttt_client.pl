@@ -8,7 +8,6 @@ require Aw::Event;
 
 
 my %board           = ();
-my $eventTime       = new Aw::Date;
 my $tttEvent        = "PerlDevKit::TicTacToe";
 my $tttEventRequest = "PerlDevKit::TicTacToeRequest";
 
@@ -45,7 +44,7 @@ my $moves = 0;
 
 sub checkWin
 {
-my @check_win = (
+my @check_win =(
 	"1,1", "1,2", "1,3",
 	"2,1", "2,2", "2,3",
 	"3,1", "3,2", "3,3",
@@ -173,7 +172,7 @@ main:
 
 		my $eventTypeName = $r->getTypeName;
 		if ( ($eventTypeName eq $tttEventRequest)
-		      || ($eventTypeName eq "Adapter::ack")
+		     || ($eventTypeName eq "Adapter::ack")
 		   ) {
 			print "You Go First!\n";
 			nextCoord ($c, $e);
