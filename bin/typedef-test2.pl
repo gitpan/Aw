@@ -6,7 +6,7 @@ use Aw;
 use Aw::Admin;
 
 
-my %basic	=(
+my %basic		=(
 	#
 	# all of the '_' fields are optional, they can be set at any
 	# time with the respective ->set* methods
@@ -24,19 +24,19 @@ my %basic	=(
 	#  simple types, 's' and 'uc' are quoted because the
 	#  have special meanings in perl:
 	#
-	b 	=> FIELD_TYPE_BOOLEAN,
-	by	=> FIELD_TYPE_BYTE,
-	c	=> FIELD_TYPE_CHAR,
-	d	=> FIELD_TYPE_DOUBLE,
-	dt	=> FIELD_TYPE_DATE,
-	l	=> FIELD_TYPE_LONG,
-	f	=> FIELD_TYPE_FLOAT,
-	i	=> FIELD_TYPE_INT,
-	's'	=> FIELD_TYPE_STRING,
-	sh	=> FIELD_TYPE_SHORT,
-	'uc'	=> FIELD_TYPE_UNICODE_CHAR,
-	us 	=> FIELD_TYPE_UNICODE_STRING,
-	x	=> { x_key => FIELD_TYPE_LONG },
+	b 		=> FIELD_TYPE_BOOLEAN,
+	by		=> FIELD_TYPE_BYTE,
+	c		=> FIELD_TYPE_CHAR,
+	d		=> FIELD_TYPE_DOUBLE,
+	dt		=> FIELD_TYPE_DATE,
+	l		=> FIELD_TYPE_LONG,
+	f		=> FIELD_TYPE_FLOAT,
+	i		=> FIELD_TYPE_INT,
+	's'		=> FIELD_TYPE_STRING,
+	sh		=> FIELD_TYPE_SHORT,
+	'uc'		=> FIELD_TYPE_UNICODE_CHAR,
+	us 		=> FIELD_TYPE_UNICODE_STRING,
+	x		=> { x_key => FIELD_TYPE_LONG },
 
 	#
 	#  only one element of an array need be populated to setup

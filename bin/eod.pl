@@ -6,19 +6,19 @@ require Aw::Event;
 
 use Data::Dumper;
 
-my %basic	= (
-	_name => "PerlDevKit::EventOfDoom",
-	b 	=> 1,
-	by	=> 0x10,
-	c	=> 'c',
-	d	=> 999999999,
-	l	=> 111111111,
-	f	=> 3.1415927,
-	i	=> 100,
-	's'	=> "hello",
-	sh	=> 4000,
-	'uc'	=> 'u',
-	us 	=> 'world',
+my %basic		=(
+	_name		=> "PerlDevKit::EventOfDoom",
+	b 		=> 1,
+	by		=> 0x10,
+	c		=> 'c',
+	d		=> 999999999,
+	l		=> 111111111,
+	f		=> 3.1415927,
+	i		=> 100,
+	's'		=> "hello",
+	sh		=> 4000,
+	'uc'		=> 'u',
+	us 		=> 'world',
 	b_array		=> [ 0, 1, 0, 1, 0 ],
 	by_array	=> [ 0x0f, 0x10, 0xff ],
 	c_array		=> [ 'a', 'b', 'c' ],

@@ -1551,7 +1551,7 @@ char * string;
 
 
 	int count       = av_len ( strings ) + 2;
-	returnString    = (char **)safemalloc ( count * sizeof( char *) );
+	returnString    = (char **)safemalloc ( count * sizeof( char * ) );
 
 	returnString[0] = strdup ( element );
 

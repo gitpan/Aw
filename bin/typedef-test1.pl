@@ -17,11 +17,11 @@ my $t = new Aw::Admin::TypeDef ( $event_type_name, FIELD_TYPE_EVENT );
 #  $t->setTypeName ( $event_type_name );
 #
 
-$t->setFieldType ( "strAlpha", FIELD_TYPE_STRING  );
-$t->setFieldType ( "bBeta",    FIELD_TYPE_BOOLEAN );
-$t->setFieldType ( "iGamma",   FIELD_TYPE_INT     );
-$t->setFieldType ( "dDelta",   FIELD_TYPE_DATE    );
-$t->setFieldType ( "uEpsilon", FIELD_TYPE_UNICODE_CHAR    );
+$t->setFieldType ( "strAlpha", FIELD_TYPE_STRING       );
+$t->setFieldType ( "bBeta",    FIELD_TYPE_BOOLEAN      );
+$t->setFieldType ( "iGamma",   FIELD_TYPE_INT          );
+$t->setFieldType ( "dDelta",   FIELD_TYPE_DATE         );
+$t->setFieldType ( "uEpsilon", FIELD_TYPE_UNICODE_CHAR );
 
 print $t->toString, "\n";
 
@@ -95,7 +95,7 @@ $t->setFieldDef  ( "yArray[]",   \%hash    );
 #
 #  finally, an array of structures:
 #
-$t->setFieldType ( "zMyStruct[]",          FIELD_TYPE_STRUCT );
+$t->setFieldType ( "zMyStruct[]",          FIELD_TYPE_STRUCT  );
 $t->setFieldType ( "zMyStruct[].strAlpha", FIELD_TYPE_STRING  );
 $t->setFieldType ( "zMyStruct[].bBeta",    FIELD_TYPE_BOOLEAN );
 $t->setFieldType ( "zMyStruct[].iGamma",   FIELD_TYPE_INT     );

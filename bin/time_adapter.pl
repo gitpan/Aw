@@ -135,7 +135,7 @@ main: {
 	#
 	# traditional style (use awAdapterLoadProperties):
 	#
-	my @properties = (
+	my @properties =(
 	        'TimeAdapter',
 	        'test_broker@localhost:6449',
 	        0,
@@ -148,7 +148,7 @@ main: {
 	#
 	#  or use a hash!  no .cfg file needed:
 	#
-	my %properties = (
+	my %properties		=(
 	        clientId	=> 'TimeAdapter',
 	        broker		=> 'test_broker@localhost:6449',
 	        adapterId	=> 0,

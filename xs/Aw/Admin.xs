@@ -380,17 +380,17 @@ int i;
 
 		sv = sv_newmortal();
 		SvREFCNT_inc(sv);
-		sv_setref_pv( sv, "Aw::Date", (void*)&sessions[i].connect_time );
+		sv_setref_pv( sv, "Aw::Date", (void*)awCopyDate(&sessions[i].connect_time) );
 		hv_store ( hv, "connect_time", 12, sv, 0 );
 
 		sv = sv_newmortal();
 		SvREFCNT_inc(sv);
-		sv_setref_pv( sv, "Aw::Date", (void*)&sessions[i].create_time );
+		sv_setref_pv( sv, "Aw::Date", (void*)awCopyDate(&sessions[i].create_time) );
 		hv_store ( hv, "create_time", 11, sv, 0 );
 
 		sv = sv_newmortal();
 		SvREFCNT_inc(sv);
-		sv_setref_pv( sv, "Aw::Date", (void*)&sessions[i].last_activity_time );
+		sv_setref_pv( sv, "Aw::Date", (void*)awCopyDate(&sessions[i].last_activity_time) );
 		hv_store ( hv, "last_activity_time", 18, sv, 0 );
 
 		if ( sessions[i].num_platform_info ) {
@@ -2598,12 +2598,12 @@ getLogStatus ( self )
 		RETVAL = newHV();
 
 		sv = sv_newmortal();
-		sv_setref_pv( sv, "Aw::Date", (void*)&info->first_entry );
+		sv_setref_pv( sv, "Aw::Date", (void*)awCopyDate(&info->first_entry) );
 		SvREFCNT_inc(sv);
 		hv_store ( RETVAL, "first_entry", 11, sv, 0 );
 
 		sv = sv_newmortal();
-		sv_setref_pv( sv, "Aw::Date", (void*)&info->last_entry );
+		sv_setref_pv( sv, "Aw::Date", (void*)awCopyDate(&info->last_entry) );
 		SvREFCNT_inc(sv);
 		hv_store ( RETVAL, "last_entry", 10, sv, 0 );
 
@@ -2657,7 +2657,7 @@ getLogEntriesRef ( self, first_entry, locale )
 			hv_store ( hv, "_info",           5, sv, 0 );
 
 			sv = sv_newmortal();
-			sv_setref_pv( sv, "Aw::Date", (void*)&entries[i].time_stamp );
+			sv_setref_pv( sv, "Aw::Date", (void*)awCopyDate(&entries[i].time_stamp) );
 			SvREFCNT_inc(sv);
 			hv_store ( hv, "time_stamp",     10, sv, 0 );
 

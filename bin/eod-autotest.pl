@@ -13,23 +13,23 @@ require Aw::Admin::ServerClient;
 sub setEventOfDoomDef
 {
 
-my %basic	= (
+my %basic		=(
 	_name		=> "PerlDevKit::EventOfDoom",
 	_description	=> "If this works, nothing can break me!",
 	_timeToLive	=> 10,
 
-	b 	=> FIELD_TYPE_BOOLEAN,
-	by	=> FIELD_TYPE_BYTE,
-	c	=> FIELD_TYPE_CHAR,
-	d	=> FIELD_TYPE_DOUBLE,
-	dt	=> FIELD_TYPE_DATE,
-	l	=> FIELD_TYPE_LONG,
-	f	=> FIELD_TYPE_FLOAT,
-	i	=> FIELD_TYPE_INT,
-	's'	=> FIELD_TYPE_STRING,
-	sh	=> FIELD_TYPE_SHORT,
-	'uc'	=> FIELD_TYPE_UNICODE_CHAR,
-	us 	=> FIELD_TYPE_UNICODE_STRING,
+	b 		=> FIELD_TYPE_BOOLEAN,
+	by		=> FIELD_TYPE_BYTE,
+	c		=> FIELD_TYPE_CHAR,
+	d		=> FIELD_TYPE_DOUBLE,
+	dt		=> FIELD_TYPE_DATE,
+	l		=> FIELD_TYPE_LONG,
+	f		=> FIELD_TYPE_FLOAT,
+	i		=> FIELD_TYPE_INT,
+	's'		=> FIELD_TYPE_STRING,
+	sh		=> FIELD_TYPE_SHORT,
+	'uc'		=> FIELD_TYPE_UNICODE_CHAR,
+	us 		=> FIELD_TYPE_UNICODE_STRING,
 
 	b_array		=> [ FIELD_TYPE_BOOLEAN        ],
 	by_array	=> [ FIELD_TYPE_BYTE           ],
