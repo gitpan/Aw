@@ -27,17 +27,16 @@ extern "C" {
 #endif
 
 
-#include "awadapter.h"
-#include "aweb.h"
+#include <awadapter.h>
+#include <aweb.h>
 
-#include "awxs.h"
-#include "awxs.def"
+#include <awxs.h>
+#include <awxs.def>
 
 #include "exttypes.h"
 
 #include "EventToHash.h"
 
-// BrokerError gErr = NULL;
 extern BrokerError gErr;
 
 
@@ -60,12 +59,12 @@ BrokerBoolean isSet;
 	for ( i = 0; i < numKeys; i++ ) {
 		/*
 		 *  Don't even create a key if the field is unset.
-		 */
 		gErr = awIsEventFieldSet ( event, Keys[i], &isSet );
 		if ( gErr != AW_NO_ERROR )
 			break;
 		if ( isSet == awaFalse )
 			continue;
+		 */
 
 		sv = getSV ( event, Keys[i] );
 
@@ -109,12 +108,11 @@ SV *
 _getAV ( BrokerEvent event, char * key, int offset, int max_n )
 {
 AV * av;
-BrokerEvent newEvent;
 int i, numKeys;
 short type;
 void * seqValue;
 SV * sv;
-int x;
+
 
 	av = newAV();
 	gErr = awGetSequenceField ( event, key, offset, max_n, &type, &numKeys, &seqValue );
@@ -129,9 +127,6 @@ int x;
 		av_push( av, sv );
 	}
 
-	// if ( type == FIELD_TYPE_DATE  /* because we had to copy dates */
-	  //    || type == FIELD_TYPE_STRUCT )
-	// 	Safefree ( seqValue );
 	free ( seqValue );
 
 	return ( newRV_noinc((SV*) av) );
@@ -276,13 +271,3 @@ SV * sv;
 
 	return ( sv );
 }
-
-
-
-BrokerError
-getEventToHashErr ( void )
-{
-
-	return ( gErr );
-}
-

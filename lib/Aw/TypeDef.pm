@@ -14,6 +14,13 @@ sub getFieldNames
 }
 
 
+sub toHash
+{
+	my $result = Aw::TypeDef::toHashRef ( @_ );
+	( wantarray ) ? %{ $result } : $result ;
+}
+
+
 #########################################################
 # Do not change this, Do not put anything below this.
 # File must return "true" value at termination

@@ -1,8 +1,14 @@
 SPECIAL NOTICE
 ==============
-The main feature of this release are the ActiveWorks broker administrative
-APIs are enhanced.  They have not been thoroughly tested, they may not even
-work in a number of cases.
+This is a developmental release.  0.15 will be stamped complete when
+some of the demo scripts and documentation are updated.  0.15 features
+the introduction of setting and getting event type definitions as hashes.
+
+See bin/typedef-test1.pl and bin/typedef-test2.pl for examples of hash
+and typedef usage.
+
+bin/eod-autotest.pl has become a "tour de force" of sorts of what the
+package is capable of admin wise and for basic client use.
 
 Some of the demo scripts under bin/ may be broken, if so they will be
 repaired in the near future.
@@ -41,7 +47,7 @@ GNU GPL vs 2.0 or later.
 DISCLAIMERS
 ===========
 In addition to the disclaimers in the GPL: this interface to the ActiveWorks
-libraries is NOT in any way endorsed by ActiveSoft or RCN.
+libraries is NOT in any way endorsed by ActiveSoft, WebMethods or RCN.
 
 
 FEATURES
@@ -71,8 +77,6 @@ What it Can't Do..
 ----------------
 Multiple adapters running simultaneously in a single script are not
 guaranteed to operate sanely.
-
-Broker administration.
 
 Not every API that has been mapped into Perl has actually be used.  There
 will likely be bugs waiting to snip at the first person to invoke said

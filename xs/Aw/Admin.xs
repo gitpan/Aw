@@ -1590,7 +1590,6 @@ new ( CLASS, ... )
 				else
 		        		warn( "Aw:Admin::TypeDefEvent::new() -- inappropriate args." );
 
-				fprintf(stderr, "Error: %i\n", gErr );
 				if ( gErr == AW_NO_ERROR )
 					gErr = RETVAL->err = awxsSetEventTypeDefFromHash ( RETVAL->type_def, (HV*)SvRV(ST(2)) );
 			}

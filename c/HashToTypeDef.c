@@ -52,12 +52,10 @@ BrokerError err = AW_NO_ERROR;
 short field_type;
 
 
-	fprintf (stderr, "        Hello from setFieldType \n" );
 	field_type = (short)SvIV(value);
 
 	err = awSetAdminTypeDefFieldType ( type_def, field_name, field_type, NULL );
 
-	fprintf (stderr, "        GoodBye from setFieldType \n" );
 	return ( err );
 }
 
@@ -93,9 +91,7 @@ awxsSetStructFieldType ( BrokerAdminTypeDef type_def, char * field_name, HV* hv 
 BrokerError err = AW_NO_ERROR;
 
 
-	fprintf ( stderr, "        Hello from awxsSetStruct\n" );
 	err = awSetAdminTypeDefFieldType ( type_def, field_name, FIELD_TYPE_STRUCT, NULL );
-
 
 	if ( err == AW_NO_ERROR ) {
 		field_name = stradd ( field_name, "." );
@@ -103,7 +99,6 @@ BrokerError err = AW_NO_ERROR;
 		err = awxsNavigateHash ( type_def, field_name, hv );
 	}
 
-	fprintf ( stderr, "        GoodBye from awxsSetStruct\n" );
 	return ( err );
 }
 
@@ -115,13 +110,11 @@ awxsSetFieldDef ( BrokerAdminTypeDef type_def, char * field_name, SV* object )
 BrokerError err = AW_NO_ERROR;
 xsBrokerAdminTypeDef * field_def;
 
-fprintf(stderr, "in setFieldDef:  %s\n", field_name );
 
 	field_def = (xsBrokerAdminTypeDef *)SvIV(object);
 
 	err = awSetAdminTypeDefFieldDef ( type_def, field_name, field_def->type_def );
 
-fprintf(stderr, "leaving setFieldDef:  %i\n", err );
 	return ( err );
 }
 
@@ -130,10 +123,14 @@ fprintf(stderr, "leaving setFieldDef:  %i\n", err );
 BrokerError
 awxsSetEventTypeDefFromHash ( BrokerAdminTypeDef type_def, HV * hv )
 {
-SV** value;
-int storage = AW_STORAGE_VOLATILE; // default
 BrokerError err = AW_NO_ERROR;
-fprintf(stderr, "in awxsSet..\n" );
+int testStorage;
+
+
+	if ( awGetAdminTypeDefStorageType ( type_def, &testStorage ) == AW_NO_ERROR ) {
+		  
+	SV** value;
+	int storage = AW_STORAGE_VOLATILE; // default
 
 	value = hv_fetch ( hv, "_name", 5, 0 );
 	if ( value != NULL )
@@ -166,7 +163,8 @@ fprintf(stderr, "in awxsSet..\n" );
 	if ( value != NULL )
 		err = awSetAdminTypeDefDescription ( type_def, (char *)SvPV(*value, PL_na) );
 
-fprintf(stderr, "leaving awxsSet..\n" );
+
+	}
 
 	err = awxsNavigateHash ( type_def, NULL, hv );
 	return ( err );
@@ -185,7 +183,6 @@ char * field_name = NULL;
 BrokerError err = AW_NO_ERROR;
 
 
-	fprintf (stderr, "        Hello from awxsNavigateHash \n" );
 
 #if    AWXS_DEBUG
 	printf ( "        Hello from awxsSetEventTypeDefFromHash \n" );
@@ -202,7 +199,6 @@ BrokerError err = AW_NO_ERROR;
 
 	for ( i=0; i<n; i++ )
 	  {
-		fprintf (stderr, "Cycle %i\n", i );
 		if ( err != AW_NO_ERROR )
 			return ( err );
 
@@ -210,8 +206,6 @@ BrokerError err = AW_NO_ERROR;
 		key   = HeKEY ( entry );
 		value = HeVAL ( entry );
 
-		fprintf (stderr, "Key %s\n", key );
-		fprintf (stderr, "SvType %i\n", SvTYPE(value) );
 		if ( key[0] == '_' )
 			continue;
 
@@ -243,6 +237,5 @@ BrokerError err = AW_NO_ERROR;
 	printf ( "        GoodBye from setEventTypeDefFromHash\n" );
 #endif /* DEBUG */
 
-	fprintf ( stderr, "        GoodBye from awxsNavigateHash\n" );
 	return ( err );
 }

@@ -77,18 +77,8 @@ $doom->{st_array}  = [ \%structA ];
 #
 #  setup an anonymous struct: 
 #
-#  this might look a little awkward..
-#  since we are being efficient and recycling %basicA here as a copy of %basic
-#  but actually setting up a FIELD_TYPE_STRUCT we need to eliminate the _keys
-#  to avoid triggering the automatic ->set* calls which would throw an error when
-#  applied to a STRUCT type:
-#
-delete($basicA{_name});
-delete($basicA{_description});
-delete($basicA{_timeToLive});
-delete($basicA{_storageType});
-
 my $tt = new Aw::Admin::TypeDef ( FIELD_TYPE_STRUCT, \%basicA );
+
 $doom->{type_def} = $tt;
 $doom->{type_def_array} = [ $tt ];
 

@@ -16,22 +16,14 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef EVENTTOHASH_H
-#define EVENTTOHASH_H 1
+#ifndef TYPEDEFTOHASH_H
+#define TYPEDEFTOHASH_H 1
+
+BrokerError awxsSetHashFromTypeDef ( BrokerTypeDef type_def, HV * hv );
+
+SV* getFieldTypeAsSV   ( BrokerTypeDef type_def, char * key );
+SV* getFieldTypeFromHV ( BrokerTypeDef type_def, char * key );
+SV* getFieldTypeFromAV ( BrokerTypeDef type_def, char * key );
 
 
-BrokerError awxsSetHashFromEvent ( BrokerEvent event, HV * hv );
-
-SV* getSV ( BrokerEvent event, char * key );
-SV* getHV ( BrokerEvent event, char * key );
-
-SV* _getValue ( short type, void * value, int i, bool array );
-#define getValue(type, value) _getValue(type, value, 0, 0)
-#define getValueI(type, value, i) _getValue(type, value, i, 1)
-
-SV* _getAV ( BrokerEvent event, char * key, int offset, int max_n );
-#define getAV( event, key ) _getAV( event, key, 0, AW_ENTIRE_SEQUENCE )
-#define getAVN( event, key, offset, max_n ) _getAV( event, key, offset, max_n )
-
-
-#endif /* EVENTTOHASH_H */
+#endif /* TYPEDEFTOHASH_H */

@@ -1,31 +1,14 @@
 package Aw::Event;
 
 
-my ( $types, %TypeMap );
-
 BEGIN
 {
 	use strict;
 	use vars qw($VERSION);
 
-	$VERSION = '0.1';
+	$VERSION = '0.2';
 
 	use Aw;
-
-	$types = "((boolean)|(byte)|(char)|(date)|(double)|(float)|(int)|(long)|(short)|(string))";
-
-	%TypeMap = (
-		boolean	=> FIELD_TYPE_BOOLEAN,
-		byte	=> FIELD_TYPE_BYTE,
-		char	=> FIELD_TYPE_CHAR,
-		date	=> FIELD_TYPE_DATE,
-		double	=> FIELD_TYPE_DOUBLE,
-		float	=> FIELD_TYPE_FLOAT,
-		'int'	=> FIELD_TYPE_INT,
-		long	=> FIELD_TYPE_LONG,
-		short	=> FIELD_TYPE_SHORT,
-		string	=> FIELD_TYPE_STRING
-	);
 }
 
 
@@ -63,79 +46,6 @@ sub toHash
 {
 	my $result = Aw::Event::toHashRef ( @_ );
 	(wantarray) ? %{$result} : $result ;
-}
-
-
-
-sub toHashOld
-{
-my $self = shift;
-
-
-	$_ = $self->toString;
-	# print "======================================\n";
-	# print $_;
-	s/^event (.*?) \{$/( _name => '$1',/m;
-	s/^(\s+)$types /$1/mg;
-	s/^(.*?) = /$1 => /mg;
-	s/;$/,/mg;
-
-	s/^(\s+)struct \{(.*?)\} (\w+(\[\])? =>)/$1$3/smg;
-	# s/^(\s+)struct \{(.*?)\}\s+(\w+ =)/$1$3/smg;
-
-	#
-	# don't think [] appear else where but lets enforce the
-	# => context here.
-	#
-	s/^(\s+)(\w+)\[\] => \{(.*?)\n\1\}/$1$2 => [$3\n$1]/osmg;
-
-
-	#
-	# this works on perl 5.005_62
-	#
-	# s/^(\s+)(\w+) => \{(\s+)\{(.*?)\3\}\n\1};/$1$2 => [$3\{$4$3\}\n$1];/osmg;
-	#
-	# use this for now
-	#
-	s/^(\s+)(\w+) => \{(\s+)\{/$1$2 => [$3\{/mg;
-	s/(\s+)\}(\s+)},/$1\}$2],/mg;
-
-
-	#
-	# brackets with nothing being hashed is an array.
-	#
-	# s/^(\s+)(\w+) => \{((=(?!> ))*?)\n\1\}/$1$2 => [$3\n$1]/osmg;
-	#
-
-	#
-	# the above is not working but we notice that AW denotes the
-	# start of an array with "{ \n" and the start of a struct with
-	# "{\n".  So we look for the tell tale " " and pray that AW
-	# does not change this in the future (damn it's subtle!).
-	#
-	s/^(\s+)(\w+) => \{ \n(.*?)\n\1\}/$1$2 => [\n$3\n$1]/osmg;
-
-
-	# 
-	#  this works but chokes when the pattern nests within itself at
-	#  greater indention, check some books on this.  Haven't tried
-	#  it since the "{ \n" discover (though the code is updated for it).
-
-	# s/^(\s+)(\w+) => \{ \n(.*?)\n\1\}/
-	# 	my ($a,$b,$c) = ($1,$2,$3);
-	# 	# print "  C => $c\n";
-	# 	my ($l,$r)    = ( $c =~ m# => # ) ? ('{','}') : ('[',']');
-	# 	"$a$b => $l$c\n$a$r"/osmge;
-
-	s/((true)|(false))/"$1"/g;
-	s/([\%\$\@])/\\$1/g;
-	s/,(\s+\})/$1/sg;
-	s/\},$/)/;
-
-	# print "======================================\n";
-	# print $_;
-	# print "======================================\n";
-	eval ($_);
 }
 
 
@@ -192,29 +102,6 @@ my $struct;
 
 
 
-sub toTypedHash
-{
-my $self = shift;
-
-
-	$_ = $self->toString;
-	s/^event (.*?) \{$/(/m;
-	# s/^(\s+)$types (\w+) = (.*);$/$1$7 = "$2",/mg;
-	s/^(\s+)$types (\w+) = (.*);$/$1$7 = $TypeMap{$2},/mg;
-	s/ = / => /mg;
-	s/;$/,/mg;
-
-	s/^(\s+)struct (.*?)\n\1\},$/$1 . update($2)  . "\n$1],"/smge;
-
-	s/((true)|(false))/"$1"/g;
-	s/\@/\\@/g;
-	s/,(\s+\})/$1/sg;
-	s/},$/)/;
-	eval ($_);
-}
-
-
-
 sub getClientId
 {
 
@@ -227,14 +114,6 @@ sub getStructFieldAsHash
 {
 	my $sfEvent = Aw::Event::getStructFieldAsEvent ( @_ );
 	$sfEvent->toHash;
-}
-
-
-
-sub getStructFieldAsTypedHash
-{
-	my $sfEvent = Aw::Event::getStructFieldAsEvent ( @_ );
-	$sfEvent->toTypedHash;
 }
 
 

@@ -56,6 +56,7 @@ extern "C" {
 #include "exttypes.h"
 #include "HashToEvent.h"
 #include "EventToHash.h"
+#include "TypeDefToHash.h"
 #include "Util.h"
 
 
@@ -7426,7 +7427,7 @@ getFieldRef ( self, field_name )
 		RETVAL = getSV ( self->event, field_name );
 
 		if ( RETVAL == Nullsv ) {
-			gErr = self->err = getEventToHashErr(); 
+			// gErr = self->err = getEventToHashErr(); 
 			AWXS_CHECKSETERROR_RETURN
 		}
 
@@ -7456,7 +7457,7 @@ char **
 getFieldNamesRef ( self, ... )
 
 	ALIAS:
-		Aw::TypeDef::getTypeDefFieldNamesRef = 1
+		Aw::TypeDef::getFieldNamesRef = 1
 
 	PREINIT:
 		int n;
@@ -7597,7 +7598,7 @@ getSequenceFieldRef ( self, field_name, ... )
 		RETVAL = getAVN ( self->event, field_name, offset, max_n );
 
 		if ( RETVAL == Nullsv ) {
-			gErr = self->err = getEventToHashErr(); 
+			// gErr = self->err = getEventToHashErr(); 
 			AWXS_CHECKSETERROR_RETURN
 		}
 
@@ -7687,6 +7688,7 @@ getStringField ( self, field_name )
 			AWXS_CLEARERROR
 		
 			gErr = self->err = awGetStringField ( self->event, field_name, &RETVAL );
+
 			AWXS_CHECKSETERROR_RETURN
 
 		OUTPUT:
@@ -8266,26 +8268,6 @@ init ( self, data )
 		AWXS_CLEARERROR
 
 		gErr = self->err = awxsSetEventFromHash ( self->event, data );
-
-		AWXS_CHECKSETERROR
-
-		RETVAL = ( self->err == AW_NO_ERROR ) ? awaFalse : awaTrue;
-
-	OUTPUT:
-	RETVAL
-
-
-
-awaBool
-initTyped ( self, data, type )
-	Aw::Event self
-	HV * data
-	HV * type
-
-	CODE:
-		AWXS_CLEARERROR
-
-		gErr = self->err = awxsSetEventFromTypedHash ( self->event, data, type );
 
 		AWXS_CHECKSETERROR
 
@@ -9870,7 +9852,7 @@ MODULE = Aw			PACKAGE = Aw::TypeDef
 
 
 Aw::TypeDef
-new ( CLASS, ... )
+new ( CLASS, agent )
 	char * CLASS
 
 	CODE:
@@ -9889,6 +9871,7 @@ new ( CLASS, ... )
 		RETVAL->errMsg = NULL;
 		RETVAL->Warn   = gWarn;
 
+		// this doesn't make sense, items is always 2, do a strcmp from the object name
 
 		if ( items == 2 ) {
 			xsBrokerEvent * event = AWXS_BROKEREVENT(1);
@@ -10081,6 +10064,49 @@ getTypeName ( self )
 
 	OUTPUT:
 	RETVAL
+
+
+
+HV *
+toHashRef ( self )
+	Aw::TypeDef self
+
+	PREINIT:
+		char * string = NULL;
+		int number;
+
+	CODE:
+		AWXS_CLEARERROR
+
+		RETVAL = newHV();
+
+		gErr = self->err = awxsSetHashFromTypeDef ( self->type_def, RETVAL );
+
+		AWXS_CHECKSETERROR_RETURN
+
+		hv_store ( RETVAL, "_name", 5, newSVpv ( awGetTypeDefTypeName(self->type_def), 0), 0 );
+
+	        gErr = self->err = awGetTypeDefTimeToLive ( self->type_def, &number );
+		AWXS_CHECKSETERROR
+		if ( self->err == AW_NO_ERROR )
+			hv_store ( RETVAL, "_timeToLive", 11, newSViv ( number ), 0 );
+
+	        gErr = self->err = awGetTypeDefStorageType ( self->type_def, &number );
+		AWXS_CHECKSETERROR
+		if ( self->err == AW_NO_ERROR )
+			hv_store ( RETVAL, "_storageType", 12, newSViv ( number ), 0 );
+
+	        gErr = self->err = awGetTypeDefDescription ( self->type_def, &string );
+		AWXS_CHECKSETERROR
+		if ( self->err == AW_NO_ERROR && string != NULL && string[0] != '\0' )
+			hv_store ( RETVAL, "_description", 12, newSVpv ( string, 0), 0 );
+
+
+	OUTPUT:
+		RETVAL
+	
+	CLEANUP:
+		SvREFCNT_dec ( RETVAL );
 
 
 

@@ -1,5 +1,11 @@
 Revision history for Perl extension Aw.
 
+0.15.0-120402
+
+	- bin/eod-autotest.pl
+	- c/TypeDefToHash.c include/TypeDefToHash.h
+	- ripped out the TypedHash stuff probably not so useful after all
+
 0.15.0-110402
 
 	* ...just in case i'm hit by a truck before i can complete 0.15 :-)
@@ -17,8 +23,8 @@ Revision history for Perl extension Aw.
 
 	- Aw::Admin reference web pages added.
 	- many leaks plugged over last release.
-	- Aw::Info added for awadmin.h structures that are other represented as hashes
-	  but can benefit from their respective "ToString" functions.
+	- Aw::Info added for awadmin.h structures that are otherwise represented
+	  as hashes but can benefit from their respective "ToString" functions.
 	- some code clean up with XS "CLEANUP".
 
 0.13.7 Tue Feb 26 16:40:50 EST 2002

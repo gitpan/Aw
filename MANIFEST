@@ -8,6 +8,7 @@ bin/typedef-test1.pl
 bin/typedef-test2.pl
 bin/client_finger.pl
 bin/terr_finger.pl
+bin/eod-autotest.pl
 bin/eod.pl
 bin/eod.data
 bin/PerlDemo.data
@@ -19,6 +20,7 @@ bin/tictactoe
 c/Av_CharPtrPtr.c
 c/exttypes.c
 c/EventToHash.c
+c/TypeDefToHash.c
 c/HashToEvent.c
 c/HashToTypeDef.c
 c/Util.c
@@ -59,7 +61,9 @@ include/admin/adminxs.m
 include/Av_CharPtrPtr.h
 include/exttypes.h
 include/EventToHash.h
+include/TypeDefToHash.h
 include/HashToEvent.h
+include/HashToTypeDef.h
 include/Util.h
 include/porbit-perl.h
 lib/Aw.pm
