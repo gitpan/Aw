@@ -238,7 +238,7 @@ require AutoLoader;
 	PLACE_HOLDER2
 	PLACE_HOLDER1
 );
-$VERSION = '0.15.2';
+$VERSION = '0.15.3';
 $VERSION_NAME = 'Dromedary Samurai';
 $DefaultBrokerHost = 'localhost';
 $DefaultBrokerName = 'Broker #1';

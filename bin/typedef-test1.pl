@@ -120,7 +120,7 @@ __END__
 
 =head1 NAME
 
-typedef-test1.pl
+typedef-test1.pl - An Aw::Admin::TypeDef Demonstrator.
 
 =head1 SYNOPSIS
 

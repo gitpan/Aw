@@ -47,7 +47,7 @@ __END__
 
 =head1 NAME
 
-time_test.pl
+time_test.pl - Perlized Version of the CADK Time Client.
 
 =head1 SYNOPSIS
 

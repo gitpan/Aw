@@ -291,7 +291,7 @@ __END__
 
 =head1 NAME
 
-Apache::Toe - A mod_perl for playing TicTacToe with ActiveWorks
+Apache::Toe - A mod_perl web client for playing TicTacToe with ActiveWorks.
 
 =head1 SYNOPSIS
 

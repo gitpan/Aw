@@ -126,7 +126,7 @@ __END__
 
 =head1 NAME
 
-demo_adapter.pl
+demo_adapter.pl - An Aw Package Demonstration Client.
 
 =head1 SYNOPSIS
 

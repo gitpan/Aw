@@ -138,6 +138,11 @@ main: {
 		$iStarted = 1;
 	}
 
+	#
+	# expect that the status may not be obtainable when the
+	# broker is remote.  In which case, we can skip this part
+	# and the rest shall work with out error.
+	#
 	my $status = $s->getProcessRunStatus ( $broker_host );
 
 	if ( $status == -1 ) {
@@ -228,7 +233,7 @@ __END__
 
 =head1 NAME
 
-eod-autotest.pl
+eod-autotest.pl - An Aw::Admin Demonstration Client.
 
 =head1 SYNOPSIS
 

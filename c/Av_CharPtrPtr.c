@@ -106,16 +106,16 @@ SV *rv;
  * Will convert a C char** to a Perl AV*.
  */
 void
-#ifdef PERL56_COMPAT
-XS_pack_charPtrPtr( st, s, n )
-SV *st;
-char **s;
-int n;
+#ifdef PERL58_COMPAT
+  XS_pack_charPtrPtr( st, s, n )
+  SV *st;
+  char **s;
+  int n;
 #else
-XS_pack_charPtrPtr( st, s )
-SV *st;
-char **s;
-#endif /* PERL56_COMPAT */
+  XS_pack_charPtrPtr( st, s )
+  SV *st;
+  char **s;
+#endif /* PERL58_COMPAT */
 {
 	AV *av = newAV();
 	SV *sv;

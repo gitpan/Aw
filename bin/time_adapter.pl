@@ -202,7 +202,7 @@ __END__
 
 =head1 NAME
 
-time_adapter.pl
+time_adapter.pl - Perlized Version of the CADK Time Adapter.
 
 =head1 SYNOPSIS
 

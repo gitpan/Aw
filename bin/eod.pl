@@ -74,7 +74,7 @@ __END__
 
 =head1 NAME
 
-eod.pl
+eod.pl - An Aw::Event Demonstrator.
 
 =head1 SYNOPSIS
 

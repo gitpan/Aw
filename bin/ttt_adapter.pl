@@ -180,7 +180,7 @@ sub myMove
 	$white |= 1 << $best;
 
 	# print "  X's move is $best\n";
-	$staticBoard [ $best ] = 'X';  # client script hack
+	$staticBoard [ $best ] = 'O';  # client script hack
 
 	$best;
 }
@@ -204,7 +204,7 @@ my $i = 0;
 		#
 		# we are playing against a client script
 		#
-		$staticBoard [ $hash{Coordinate} ] = 'O';
+		$staticBoard [ $hash{Coordinate} ] = 'X';
 		@board = @staticBoard;
 	}
 
@@ -287,7 +287,7 @@ main: {
 	        # broker		=> 'test_broker@localhost:6449',
 	        broker		=> $ARGV[0],
 	        adapterId	=> 0,
-	        debug		=> 1,
+	        debug		=> 0,
 	        clientGroup	=> "PerlDemoAdapter",
 	        adapterType	=> "ttt_adapter",
 	);

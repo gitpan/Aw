@@ -4177,7 +4177,11 @@ getAllTerritoryGatewaysRef ( self )
 			hv_store ( hv, "num_accessible_territories", 26, newSViv ( (int)infos[i].num_accessible_territories ), 0 );
 
 			sv = sv_newmortal();
+#ifdef PERL58_COMPAT
 			XS_pack_charPtrPtr ( sv, infos[i].accessible_territories, infos[i].num_accessible_territories );
+#else
+			XS_pack_charPtrPtr ( sv, infos[i].accessible_territories );
+#endif /* PERL58_COMPAT */
 			hv_store ( hv, "accessible_territories", 22, sv, 0 );
 			
 			av_push( RETVAL, sv_bless( newRV_noinc((SV*)hv), gv_stashpv("Aw::Info",1) ) );
@@ -4720,11 +4724,19 @@ joinTerritory ( self, broker_host, broker_name )
 		RETVAL = newHV();
 
 		sv = sv_newmortal();
+#ifdef PERL58_COMPAT
 		XS_pack_charPtrPtr ( sv, failure_info->event_type_names, failure_info->num_event_type_names );
+#else
+		XS_pack_charPtrPtr ( sv, failure_info->event_type_names );
+#endif /* PERL58_COMPAT */
 		hv_store ( RETVAL, "event_type_names",       16, sv, 0 );
 
 		sv = sv_newmortal();
+#ifdef PERL58_COMPAT
 		XS_pack_charPtrPtr ( sv, failure_info->client_group_names, failure_info->num_client_group_names );
+#else
+		XS_pack_charPtrPtr ( sv, failure_info->client_group_names );
+#endif /* PERL58_COMPAT */
 		hv_store ( RETVAL, "client_group_names",     18, sv, 0 );
 
 		hv_store ( RETVAL, "num_client_group_names", 22, newSViv ( (int)failure_info->num_client_group_names ), 0 );
