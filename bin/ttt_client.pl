@@ -1,9 +1,12 @@
 #!/usr/bin/perl -w
 
+
+package TicTacToeClient;
+use base qw(Aw::Client);
+
 use strict;
 
 use Aw 'test_broker@localhost:6449';
-require Aw::Client;
 require Aw::Event;
 
 
@@ -88,7 +91,7 @@ my @check_win =(
 
 sub updateBoard
 {
-
+shift;
 	if ( ref($_[0]) eq "ARRAY" ) {
 		#
 		#  Local Move
@@ -113,7 +116,7 @@ sub updateBoard
 
 sub nextCoord
 {
-my ($c, $e) = @_;
+my ($self, $e) = @_;
 
 	RESTART:
     	print "Enter coordinates (r,c): ";
@@ -134,8 +137,8 @@ my ($c, $e) = @_;
 
 	$e->setField ( 'Coordinate', (($coord[0]-1)*3 + ($coord[1]-1)) );
 
-	print "  publish Error!\n" if ( $c->publish ( $e ) );
-	updateBoard ( \@coord  );
+	print "  publish Error!\n" if ( $self->publish ( $e ) );
+	$self->updateBoard ( \@coord  );
 	printBoard;
 }
 
@@ -144,7 +147,7 @@ my ($c, $e) = @_;
 main:
 {
 
-	my $c = new Aw::Client ( "PerlDemoClient", "TicTacToe" );
+	my $c = new TicTacToeClient ( "PerlDemoClient", "TicTacToe" );
 	
 	unless ( $c->canPublish ( $tttEvent ) ) {
 		printf STDERR "Cannot publish to %s: %s\n", $tttEvent, $c->errmsg;
@@ -175,13 +178,13 @@ main:
 		     || ($eventTypeName eq "Adapter::ack")
 		   ) {
 			print "You Go First!\n";
-			nextCoord ($c, $e);
+			$c->nextCoord ( $e );
   			print "Waiting for O's move...\n";
 		}
 		elsif ( $eventTypeName eq $tttEvent ) {
-			updateBoard ( $r );
+			$c->updateBoard ( $r );
 			printBoard;
-			nextCoord ($c, $e);
+			$c->nextCoord ( $e );
   			print "Waiting for O's move...\n";
 		}
 		else {

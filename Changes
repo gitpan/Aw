@@ -1,5 +1,9 @@
 Revision history for Perl extension Aw.
 
+0.16.4 Wed Feb  5 22:31:16 EST 2003
+
+	- bin/ttt_client.pl: now derived from Aw::Client.
+
 0.16.3 Sat Feb  1 23:05:59 EST 2003
 
 	- bin/ttt_client.pl: unused $eventDate removed.
