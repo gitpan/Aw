@@ -1545,60 +1545,6 @@ not_there:
 }
 
 
-// extern char * setErrMsg ( int count, ... );
-
-#if 0
-/* keep this simple for now, don't count % tokens, etc */
-char *
-setErrMsg ( int count, ... )
-{
-int i;
-int argLength = 1, length;
-char * strings[5];
-
-	va_list ap;
-	va_start ( ap, count );
-
-	for ( i = 0; i < count; i++ ) {
-		strings[i] =  va_arg ( ap, char* );
-		argLength += strlen ( strings[i] );
-	}
-
-	va_end ( ap );
-
-	if ( gErrMsg )
-	  free ( gErrMsg );
-
-	gErrMsg = (char *)safemalloc ( argLength * sizeof (char) );
-
-	switch ( count ) {
-		case 1:
-			strcpy ( gErrMsg, strings[0] );
-			break;
-		case 2:
-			sprintf ( gErrMsg, strings[0], strings[1] );
-			break;
-		case 3:
-			sprintf ( gErrMsg, strings[0], strings[1], strings[2] );
-			break;
-		case 4:
-			sprintf ( gErrMsg, strings[0], strings[1], strings[2], strings[3] );
-			break;
-		case 5:
-			sprintf ( gErrMsg, strings[0], strings[1], strings[2], strings[3], strings[4] );
-			break;
-	}
-
-	// sv_setpv ( perl_get_sv("!",0), gErrMsg );
-	sv_setpv ( perl_get_sv("@",0), gErrMsg );
-
-	return ( gErrMsg );
-
-}
-#endif /* AWXS_WARNS */
-
-
-
 char **
 unshiftAndAvCharPtrPtr ( AV * strings, char * element )
 {
@@ -5732,7 +5678,7 @@ _newSubscription ( self, event_type_name, filter, ... )
 			xsBrokerClient * self = AWXS_BROKERCLIENT(0);
 			gErr = self->err = awNewSubscription ( self->client, event_type_name, filter );
 			if ( self->err != AW_NO_ERROR ) {
-				self->errMsg = setErrMsg ( &gErrMsg, 3, "Could not create subscription for \"\": \n", event_type_name, awErrorToCompleteString ( self->err ) );
+				self->errMsg = setErrMsg ( &gErrMsg, 3, "Could not create subscription for \"%s\": %s\n", event_type_name, awErrorToCompleteString ( self->err ) );
 				if ( self->Warn || gWarn )
 					warn ( self->errMsg );
 			}

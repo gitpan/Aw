@@ -1,5 +1,11 @@
 Revision history for Perl extension Aw.
 
+0.13.6 Fri May  4 16:25:30 EDT 2001
+
+	- typemap path is set.
+	- setErrMsg fixes.
+	- AWXS_*CLEARERROR clears $@ correctly.
+
 0.13.5 Fri Apr  6 17:51:21 EDT 2001
 
 	- get<foo>Info methods working for Aw::Adapter, Aw::Util, and Aw::EventType.

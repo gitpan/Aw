@@ -21,7 +21,7 @@
 #define AWXS_BROKERSUBSCRIPTION(x)   ((BrokerSubscription *)SvIV((SV*)SvRV( ST(x) )))
 
 
-#define AWXS_CLEARERROR { self->err = AW_NO_ERROR; if (self->errMsg == gErrMsg) gErrMsg = NULL; safefree (self->errMsg); self->errMsg = NULL; gErrCode = 0x0; }
+#define AWXS_CLEARERROR { self->err = AW_NO_ERROR; if (self->errMsg == gErrMsg) gErrMsg = NULL; safefree (self->errMsg); self->errMsg = NULL; gErrCode = 0x0;  sv_setpv ( perl_get_sv("@",0), "" ); }
 
 #define AWXS_HANDLE_CLEARERROR(x) {\
 	if ( ix && ix != x ) {\
@@ -31,10 +31,12 @@
 		xsAdapterUtil * self = AWXS_ADAPTERUTIL(0);\
 		AWXS_CLEARERROR\
 	}\
+	sv_setpv ( perl_get_sv("@",0), "" );\
 }
 
-#define AWXS_CHECKSETERROR { if ( gErr != AW_NO_ERROR ) sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) ); }
-#define AWXS_CHECKSETERROR_RETURN { if ( gErr != AW_NO_ERROR ) { sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) ); XSRETURN_UNDEF; } }
+
+#define AWXS_CHECKSETERROR { if ( gErr != AW_NO_ERROR ) sv_setpv ( perl_get_sv("@",0), awErrorToCompleteString ( gErr ) ); }
+#define AWXS_CHECKSETERROR_RETURN { if ( gErr != AW_NO_ERROR ) { sv_setpv ( perl_get_sv("@",0), awErrorToCompleteString ( gErr ) ); XSRETURN_UNDEF; } }
 
 
 #endif /* AWXS_M */

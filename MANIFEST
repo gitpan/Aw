@@ -68,4 +68,4 @@ xs/Aw.xs
 xs/Makefile.PL
 xs/Aw/Admin.xs
 xs/Aw/Makefile.PL
-typemap
+xs/typemap

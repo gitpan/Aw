@@ -11,6 +11,10 @@ my $root = "/blib/arch/auto/libawperl";
 use Cwd;
 my $pwd = fastcwd;
 
+# my @typemaps =  ( "$pwd/../typemap" );
+
+my $p = $pwd;
+
 $pwd =~ s/(\w+)\/(\w+)$//;
 # $root =~ s/^\.\.//;
 $root = $pwd.$root;
@@ -35,6 +39,9 @@ WriteMakefile(
 	'OBJECT'	=> '$(O_FILES)',
 	'AUTHOR'	=> "Daniel Yacob <Yacob\@RCN.Com>",
 	'ABSTRACT'	=> "Interface to the ActiveWorks Libraries.",
+	# 'TYPEMAPS'	=> "$pwd/../typemap"
+	# 'TYPEMAPS'	=> \@typemaps
+	'TYPEMAPS'	=> [ "$p/../typemap" ]
 );
 
 # unlink "$root/libawperl.a";
