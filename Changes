@@ -1,5 +1,11 @@
 Revision history for Perl extension Aw.
 
+0.14.1 Wed Apr 10 11:07:44 EDT 2002
+
+	- last arg of setFieldType dropped since by definition it isn't used 
+	- getBrokers map fixed in Aw::Admin::ServerClient
+	- territory_name and description not set in hash key getBrokers when NULL
+
 0.14.0 Thu Apr  4 18:22:54 EST 2002
 
 	- Aw::Admin reference web pages added.

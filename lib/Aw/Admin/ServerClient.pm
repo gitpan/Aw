@@ -9,17 +9,18 @@ require Aw::Admin;
 
 
 
-sub getServerLogEntries
+
+sub getBrokers
 {
-	my $result = Aw::Admin::ServerClient::getServerLogEntriesRef ( @_ );
+	my $result = Aw::Admin::ServerClient::getBrokersRef ( @_ );
 	( wantarray ) ? @{ $result } : $result ;
 }
 
 
 
-sub getServerBrokers
+sub getServerLogEntries
 {
-	my $result = Aw::Admin::ServerClient::getServerBrokersRef ( @_ );
+	my $result = Aw::Admin::ServerClient::getServerLogEntriesRef ( @_ );
 	( wantarray ) ? @{ $result } : $result ;
 }
 

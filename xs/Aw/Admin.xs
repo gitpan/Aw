@@ -1870,16 +1870,16 @@ orderFields ( self, field_name, field_names )
 
 
 awaBool
-setFieldType ( self, field_name, field_type, type_name )
+setFieldType ( self, field_name, field_type )
 	Aw::Admin::TypeDef self
 	char * field_name
 	short field_type
-	char * type_name
 	
 	CODE:
 		AWXS_CLEARERROR
 
-		gErr = self->err = awSetAdminTypeDefFieldType ( self->type_def, field_name, field_type, type_name );
+		// the last arg is "Currently not used and should be set to NULL" C Platform Vol 2 9-141
+		gErr = self->err = awSetAdminTypeDefFieldType ( self->type_def, field_name, field_type, NULL );
 
 		AWXS_CHECKSETERROR
 
@@ -2772,7 +2772,6 @@ getBrokersRef ( self )
 
 		{
 		HV * hv;
-		SV * sv;
 		int i;
 
 		RETVAL = newAV();
@@ -2780,10 +2779,13 @@ getBrokersRef ( self )
 		for ( i = 0; i < n; i++ ) {	
 			hv = newHV();
 
-			hv_store ( hv, "territory_name", 14, newSVpv ( broker_infos[i].territory_name, 0 ), 0 );
+			if ( broker_infos[i].territory_name )
+				hv_store ( hv, "territory_name", 14, newSVpv ( broker_infos[i].territory_name, 0 ), 0 );
 			hv_store ( hv, "broker_host", 11, newSVpv ( broker_infos[i].broker_host, 0 ), 0 );
 			hv_store ( hv, "broker_name", 11, newSVpv ( broker_infos[i].broker_name, 0 ), 0 );
-			hv_store ( hv, "description", 11, newSVpv ( broker_infos[i].description, 0 ), 0 );
+
+			if ( broker_infos[i].description )
+				hv_store ( hv, "description", 11, newSVpv ( broker_infos[i].description, 0 ), 0 );
 			
 			av_push( RETVAL, newRV_noinc((SV*) hv) );
 		
@@ -3553,8 +3555,8 @@ destroyClientGroup ( self, event_type_names, force_destroy )
 	awaBool force_destroy
 
 	ALIAS:
-		Aw::Admin::destroyEventType  = 1
-		Aw::Admin::destroyEventTypes = 2
+		Aw::Admin::Client::destroyEventType  = 1
+		Aw::Admin::Client::destroyEventTypes = 2
 
 	CODE:
 		AWXS_CLEARERROR
