@@ -5,6 +5,9 @@ package Apache::Toe;
 #
 
 use strict;
+use vars qw($VERSION);
+$VERSION = '0.2';
+
 use Apache::Constants qw(:common);
 use Apache::Request;
 
@@ -291,7 +294,7 @@ __END__
 
 =head1 NAME
 
-Apache::Toe - A mod_perl web client for playing TicTacToe with ActiveWorks.
+Apache::Toe - A mod_perl Web Client for Playing TicTacToe Against An ActiveWorks Adapter.
 
 =head1 SYNOPSIS
 
@@ -305,7 +308,7 @@ an Apache server and ActiveWorks broker.  The module demonstrates
 an Aw::Client used under mod_perl.  The bin/ttt_adapter.pl must
 be running and attached to the same broker used by this module.
 The Apache::Toe module assumes the default broker configured
-in the local Aw:: module (and may be reset on either lines 11 or 37).
+in the local Aw:: module (and may be reset on either lines 14 or 40).
 
 This modules is a bit crufty, but still works as advertised.
 

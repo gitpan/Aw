@@ -63,7 +63,7 @@ __END__
 
 =head1 NAME
 
-HelloWorld - A dummy class for Aw:: demonstrations.
+HelloWorld - A Dummy Class for Aw:: Demonstrations.
 
 =head1 SYNOPSIS
 
