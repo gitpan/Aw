@@ -49,7 +49,6 @@ main: {
 						foreach ( keys %$platform ) {
 							print "      $_ => $platform->{$_}\n";
 						}
-						
 					}
 					elsif ( /^ip_address/ ) {
 							# sprintf ("%d.%d.%d.%d", unpack ('C4', pack ('l4', $_[0]) ) );

@@ -82,7 +82,7 @@ package main;
 
 main: {
 
-	my %properties = (
+	my %properties 		=(
 	        clientId 	=> "Perl Demo Adapter",
 	        broker		=> 'test_broker@localhost:6449',
 	        adapterId	=> 0,

@@ -192,7 +192,6 @@ my $e = shift;
 my $i = 0;
 
 	my %hash = $e->toHash;
-	# my @board = @{ $hash{Board} };
 	my @board;
 	if ( exists($hash{Board}) ) {
 		#
@@ -264,15 +263,13 @@ my ($self, $requestEvent, $eventDef) = @_;
 	if ( $eventTypeName eq $tttEventRequest ) {
 		$self->deliverAckReplyEvent;
 		resetStaticBoard;
-  		# print "Waiting for O's move...\n";
 	}
 	elsif ( $eventTypeName eq $tttEvent ) {
 		setBoard ( $requestEvent );
-		# yourMove ( $requestEvent );
 		$move->setIntegerField ( 'Coordinate', myMove );
 		$self->deliverReplyEvent ( $move );
-  		# print "Waiting for O's move...\n";
 	}
+ 	print "Waiting for O's move...\n";
 	
 	$true;
 }
@@ -284,7 +281,7 @@ main: {
 
 	my %properties = (
 	        clientId	=> "TicTacToe Adapter",
-	        # broker		=> 'test_broker@localhost:6449',
+	        # broker	=> 'test_broker@localhost:6449',
 	        broker		=> $ARGV[0],
 	        adapterId	=> 0,
 	        debug		=> 0,

@@ -49,7 +49,7 @@ print $tt->toString, "\n";
 #
 #  insert into our event type def and associate with field "xMyStruct":
 #
-$t->setFieldDef ( "wMyStruct",   $tt    );
+$t->setFieldDef ( "wMyStruct", $tt );
 
 print $t->toString, "\n";
 
@@ -57,14 +57,14 @@ print $t->toString, "\n";
 #
 #  the same but using a hash instead of type def object
 #
-my %hash =(
+my %hash 		=(
 	 strAlpha	=> FIELD_TYPE_STRING,
 	 bBeta		=> FIELD_TYPE_BOOLEAN,
 	 iGamma		=> FIELD_TYPE_INT,
 	 dDelta		=> FIELD_TYPE_DATE
 );
 
-$t->setFieldDef ( "xMyStruct",   \%hash    );
+$t->setFieldDef ( "xMyStruct", \%hash );
 
 print $t->toString, "\n";
 
@@ -84,23 +84,23 @@ print $t->toString, "\n";
 #
 #  define an array field:
 #
-$t->setFieldType ( "yArray[]", FIELD_TYPE_FLOAT );
+$t->setFieldType ( "yArray[]", FIELD_TYPE_FLOAT  );
 #
 #  reset
 #
 $t->setFieldType ( "yArray[]", FIELD_TYPE_STRUCT );
-$t->setFieldDef  ( "yArray[]",   \%hash    );
+$t->setFieldDef  ( "yArray[]", \%hash            );
 
 
 #
 #  finally, an array of structures:
 #
-$t->setFieldType ( "zMyStruct[]",          FIELD_TYPE_STRUCT  );
-$t->setFieldType ( "zMyStruct[].strAlpha", FIELD_TYPE_STRING  );
-$t->setFieldType ( "zMyStruct[].bBeta",    FIELD_TYPE_BOOLEAN );
-$t->setFieldType ( "zMyStruct[].iGamma",   FIELD_TYPE_INT     );
-$t->setFieldType ( "zMyStruct[].dDelta",   FIELD_TYPE_DATE    );
-$t->setFieldDef  ( "zMyStruct[].xMyStruct", $tt );
+$t->setFieldType ( "zMyStruct[]",           FIELD_TYPE_STRUCT       );
+$t->setFieldType ( "zMyStruct[].strAlpha",  FIELD_TYPE_STRING       );
+$t->setFieldType ( "zMyStruct[].bBeta",     FIELD_TYPE_BOOLEAN      );
+$t->setFieldType ( "zMyStruct[].iGamma",    FIELD_TYPE_INT          );
+$t->setFieldType ( "zMyStruct[].dDelta",    FIELD_TYPE_DATE         );
+$t->setFieldDef  ( "zMyStruct[].xMyStruct", $tt                     );
 $t->setFieldType ( "zMyStruct[].ucArray[]", FIELD_TYPE_UNICODE_CHAR );
 
 print $t->toString, "\n";

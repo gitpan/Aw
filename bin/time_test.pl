@@ -5,7 +5,6 @@ require Aw::Client;
 require Aw::Event;
 
 
-
 print "Creating client...\n";
 my $client = new Aw::Client ( "devkitClient" );
 

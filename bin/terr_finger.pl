@@ -61,7 +61,7 @@ main: {
 
 	$c = undef;
 	$c = new Aw::Admin::Client ( $broker->{broker_host}, $broker->{broker_name}, "", $client_group, "Client Finger" )
-	     || die "Error connecting to broker.\n";  # specific error message should have been echoed
+	  || die "Error connecting to broker.\n";  # specific error message should have been echoed
 
 	my %stats = $c->getBrokerStats->toHash;
 	delete ( $stats{_name} );
@@ -97,7 +97,6 @@ main: {
 						foreach ( keys %$platform ) {
 							print "      $_ => $platform->{$_}\n";
 						}
-						
 					}
 					elsif ( /^ip_address/ ) {
 							# sprintf ("%d.%d.%d.%d", unpack ('C4', pack ('l4', $_[0]) ) );
@@ -146,7 +145,6 @@ main: {
 		print "  Subscribed To:\n";
 		foreach ( @subs ) {
 		 	print "    ", $_->getEventTypeName, "\n";
-			# $_->DESTROY;
 		}
 	}
 

@@ -7,7 +7,7 @@ require Aw::Client;
 require Aw::Event;
 
 
-my %board = ();
+my %board           = ();
 my $eventTime       = new Aw::Date;
 my $tttEvent        = "PerlDevKit::TicTacToe";
 my $tttEventRequest = "PerlDevKit::TicTacToeRequest";
@@ -99,9 +99,9 @@ sub updateBoard
 		#
 		#  Remote Move
 		#
-		my %hash  = $_[0]->toHash;
-		my $x     = ($hash{Coordinate}/3 + 1)%4;
-		my $y     = $hash{Coordinate}%3 + 1;
+		my %hash   = $_[0]->toHash;
+		my $x      = ($hash{Coordinate}/3 + 1)%4;
+		my $y      = $hash{Coordinate}%3 + 1;
 		print "x,y = $x,$y\n";
 		$board { "$x,$y" } = 'O';
 	}
@@ -172,10 +172,9 @@ main:
 	while ( my $r = $c->getEvent( AW_INFINITE ) ) {
 
 		my $eventTypeName = $r->getTypeName;
-		if (
-			($eventTypeName eq $tttEventRequest)
-		||  ($eventTypeName eq "Adapter::ack")
-			) {
+		if ( ($eventTypeName eq $tttEventRequest)
+		      || ($eventTypeName eq "Adapter::ack")
+		   ) {
 			print "You Go First!\n";
 			nextCoord ($c, $e);
   			print "Waiting for O's move...\n";

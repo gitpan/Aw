@@ -62,7 +62,7 @@ my $c = shift;
 
 main:
 {
-my %Config = (
+my %Config 		=(
 	# Adapter configuration structure.
 	brokerName	=> 'test_broker',	#  Name of the broker.
 	brokerHost 	=> 'localhost:6449',	#  FQDN of the broker host.
@@ -75,7 +75,7 @@ my %Config = (
 my @arrayData = ( 'A', 'B', 'C' );
 my %hashData  = ( structInt => 11, structString => "Hello From Struct B" );
 
-my %FieldData = (
+my %FieldData 		=(
     booleanDemo		=>	$false,
     charDemo		=>	'Z',
     # dateDemo		=>	'2000-1-10',
@@ -103,7 +103,7 @@ my %FieldData = (
 				}
 );
 
-%MoreData = (
+%MoreData 	=(
 	intA	=> 11,
 	structA	=> {
 		intB	=> 22,
@@ -115,7 +115,7 @@ my %FieldData = (
 );
 
 
-my $eventName = "PerlDevKit::PerlDemo";
+	my $eventName = "PerlDevKit::PerlDemo";
 
 	my $world = new HelloWorld;
 	$world->store(5);

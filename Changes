@@ -1,5 +1,14 @@
 Revision history for Perl extension Aw.
 
+0.16.2 Fri Jan 31 22:14:44 EST 2003
+
+	- format cleanup for demo scripts.
+
+0.16.1 Wed Jan 29 10:04:02 EST 2003
+
+	- xs/Aw/Admin.xs fixed double frees of BrokerDates in both sessions
+	  and Aw::Dates.  Fixed with awCopyDate for Aw::Dates.
+
 0.16.0 Thu Jan 23 10:04:02 EST 2003
 
 	- c/Makefile.PL  updated for Perl >= 5.8.

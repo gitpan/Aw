@@ -21,15 +21,15 @@ my $eventTypeName;
 my ($c,$te,$ter);
 my $message = "ChildInit Error!";
 
-my @board = ();
+my @board           = ();
 my $tttEvent        = "PerlDevKit::TicTacToe";
 my $tttEventRequest = "PerlDevKit::TicTacToeRequest";
 
-my %Images = (
+my %Images 	=(
 	'e'	=> "src=\"/images/TicTacToe/empty.gif\" alt=\"[ ]\"",
 	'O'	=> "src=\"/images/TicTacToe/not.gif\" alt=\"[O]\"",
 	'X'	=> "src=\"/images/TicTacToe/cross.gif\" alt=\"[X]\""
-   );
+);
 
 
 
@@ -77,7 +77,7 @@ my $OK    = 0;
 
 sub checkWin
 {
-my @check_win = (
+my @check_win =(
 	0, 1, 2,  # row 1
 	3, 4, 5,  # row 2
 	6, 7, 8,  # row 3

@@ -59,7 +59,7 @@ $doom->{st_array}  = [ \%structA, \%structB, \%structC ];
 
 my $client = new Aw::Client ( "PerlDemoClient" );
 
-my $event = new Aw::Event ( $client, $doom );
+my $event  = new Aw::Event ( $client, $doom );
 
 %basic = ();
 
