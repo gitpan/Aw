@@ -4,6 +4,8 @@ MANIFEST
 CLASSES
 README
 Makefile.PL
+bin/client_finger.pl
+bin/terr_finger.pl
 bin/eod.pl
 bin/eod.data
 bin/PerlDemo.data
@@ -47,6 +49,7 @@ include/exttypes.h
 include/EventToHash.h
 include/HashToEvent.h
 include/Util.h
+include/porbit-perl.h
 lib/Aw.pm
 lib/Aw/Adapter.pm
 lib/Aw/Client.pm

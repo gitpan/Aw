@@ -53,12 +53,8 @@ require AutoLoader;
 	AW_TRACE_OTHER
 );
 
-$VERSION = '0.13.5';
+$VERSION = '0.13.7';
 $VERSION_NAME = 'Tadpole Ninja';
-# $DefaultBrokerName = 'test_broker';
-# $DefaultBrokerHost = 'active';
-# $DefaultBrokerName = 'Broker #1';
-# $DefaultBrokerHost = 'localhost:6449';
 $SPAM = 0;
 
 
@@ -86,8 +82,8 @@ my $pkg = shift;
 		$SPAM = 0 if ( $_[$i] =~ /^nospam$/i );
 	}
 
- 	# setDefaultBroker ( @_ ) if ( @_ );
-	Aw->export_to_level (1, $pkg, @EXPORT);  # this works too...
+ 	setDefaultBroker ( @_ ) if ( @_ );
+	Aw::Admin->export_to_level (1, $pkg, @EXPORT);  # this works too...
 	#
 	# Don't do this!  Resetting Exporter::ExportLevel _can_ hose other
 	# packages using Exporter (such as POSIX, Data::Dumper).
@@ -98,15 +94,13 @@ my $pkg = shift;
 
 
 
-# sub setDefaultBroker {
-# my ( $name, $host ) = ($#_) ? ($_[0], $_[1]) : split ( "@", $_[0] );
+sub setDefaultBroker {
 
+	require Aw;
+	Aw::setDefaultBroker (@_);
 
-# 	$DefaultBrokerName = $name if ($name);
-# 	$DefaultBrokerHost = $host if ($host);
-
-# 1;
-# }
+1;
+}
 
 
 

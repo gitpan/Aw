@@ -77,11 +77,6 @@ BrokerBoolean BrokerCallbackFunc ( BrokerClient cbClient, BrokerEvent cbEvent, v
 BrokerError gErr = NULL;
 char * gErrMsg   = NULL;
 int gErrCode     = 0;
-
-
-/*
- *
- */
 awaBool gWarn    = awaFalse;
 
 
@@ -2575,9 +2570,13 @@ MODULE = Aw			PACKAGE = Aw::BaseClass
 #      ::err   			ala Mysql::
 #      ::errmsg			ala Mysql::
 #      ::error
+#      ::getErrCode
+#      ::setErrMsg
 #      ::getWarn
 #      ::setWarn
 #      ::hello
+#      ::catch
+#      ::throw
 #      ::toString
 #===============================================================================
 
@@ -2967,7 +2966,6 @@ setErrMsg ( self, newErrMsg )
 	char * newErrMsg
 
 	ALIAS:
-
 		Aw::setErrMsg                       =  0
 		Aw::Adapter::setErrMsg              =  1
 		Aw::EventType::setErrMsg            =  2
@@ -3054,7 +3052,6 @@ throw ( self, newErrCode )
 	int newErrCode
 
 	ALIAS:
-
 		Aw::throw                       =  0
 		Aw::Adapter::throw              =  1
 		Aw::EventType::throw            =  2
@@ -3069,7 +3066,6 @@ throw ( self, newErrCode )
 		Aw::TypeDefCache::throw         = 11
 
 	PREINIT:
-
 		char * strErrCode;
 
 	CODE:
@@ -3077,7 +3073,7 @@ throw ( self, newErrCode )
 		strErrCode = (char *)safemalloc ( 8 * sizeof (char) );
 		sprintf ( strErrCode, "%i", gErrCode );
 		sv_setpv ( perl_get_sv("@",0), strErrCode );
-		safefree ( strErrCode );
+		Safefree ( strErrCode );
 
 
 
@@ -3085,7 +3081,6 @@ int
 catch ( ... )
 
 	ALIAS:
-
 		Aw::catch                       =  0
 		Aw::Adapter::catch              =  1
 		Aw::EventType::catch            =  2
@@ -3929,6 +3924,23 @@ _deliverErrorEvent ( self, category, msgId, strings )
 				break;
 		  }
 
+
+awaBool
+exit ( self )
+	Aw::Adapter self
+
+	CODE:
+		AWXS_CLEARERROR
+
+		if ( self->adapter->brokerClient )
+			gErr = self->err = awDestroyClient ( self->adapter->brokerClient );
+
+		AWXS_CHECKSETERROR
+
+		RETVAL = ( self->err == AW_NO_ERROR ) ? awaFalse : awaTrue;
+
+	OUTPUT:
+	RETVAL
 
 
 Aw::Event
@@ -5212,32 +5224,31 @@ getSubscriptionsRef ( self )
 
 	PREINIT:
 		int n;
-		BrokerSubscription ** subs;
+		BrokerSubscription * subs;
 
 	CODE:
 		AWXS_CLEARERROR
 		
-		gErr = self->err = awGetSubscriptions ( self->client, &n, subs );
+		gErr = self->err = awGetSubscriptions ( self->client, &n, &subs );
 
 		AWXS_CHECKSETERROR_RETURN
 
 		{		/* now convert subs into an AV */
 		SV *sv;
 		int i;
-		xsBrokerEvent * ev;
+		BrokerSubscription * sub;
 
 			RETVAL = newAV();
 			for ( i = 0; i<n; i++ ) {
 				sv = sv_newmortal();
-				sv_setref_pv( sv, "Aw::Subscription", (void*)subs[i] );
+				sub = (BrokerSubscription *) safemalloc ( sizeof(BrokerSubscription) );
+				sub->sub_id = subs[i].sub_id;
+				sub->event_type_name = strdup ( subs[i].event_type_name );
+				sub->filter = strdup ( subs[i].filter );
+				sv_setref_pv( sv, "Aw::Subscription", sub );
 				SvREFCNT_inc(sv);
 				av_push( RETVAL, sv );
-				Safefree ( subs[i] );
 			}
-			/* haven't used this so I don't know which form of
-			 * free is appropriate.
-			 *  Safefree ( subs );
-			 */
 		}
 
 	OUTPUT:
@@ -5412,7 +5423,7 @@ getEventTypeDefsRef ( self, event_type_names )
 	CODE:
 		AWXS_CLEARERROR
 		
-		n = av_len ( (AV*)SvRV( ST(1) ) );
+		n = av_len ( (AV*)SvRV( ST(1) ) ) + 1;
 		gErr = self->err = awGetEventTypeDefs ( self->client, n, event_type_names, &typeDefs );
 
 		AWXS_CHECKSETERROR_RETURN
@@ -6881,7 +6892,7 @@ new ( CLASS )
 			XSRETURN_UNDEF;
 		}
 
-		RETVAL->err    = (ix) ? gErr : NULL;
+		RETVAL->err    = (ix) ? awCopyError ( gErr ) : NULL;
 		RETVAL->errMsg = NULL;
 		RETVAL->Warn   = gWarn;
 
@@ -6939,17 +6950,14 @@ setCurrent ( self, ... )
 	Aw::Error self
 
 	CODE:
-		/* this is here for completeness, I'm not sure what this means
-		   in an object context?? */
-
-		if ( items == 2 )
-		       self->err = AWXS_BROKERERROR(1)->err;
+		if ( items == 2 ) {
+			awDeleteError ( self->err );
+			self->err = awCopyError ( AWXS_BROKERERROR(1)->err );
+		}
 
 		if ( self->err == NULL )
 			return;
 
-		/* we have to delete the error returned by awCopyError */
-		awDeleteError ( awCopyError ( self->err) );
 		awSetCurrentError ( self->err );
 		gErr = self->err;
 

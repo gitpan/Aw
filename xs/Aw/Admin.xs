@@ -71,16 +71,13 @@ extern "C" {
 #include "Util.h"
 
 
-BrokerError gErr;
-char * gErrMsg;
-int gErrCode;
+BrokerError gErr = NULL;
+char * gErrMsg   = NULL;
+int gErrCode     = 0;
+awaBool gWarn    = awaFalse;
 
-/*
- *
- */
-awaBool gWarn;
 
-SV * getBrokerClientSessions (  BrokerClientSession * sessions, int num_sessions );
+SV * getBrokerClientSessions ( BrokerClientSession * sessions, int num_sessions );
 void BrokerServerConnectionCallbackFunc ( BrokerServerClient cbClient, int connect_status, void * vcb );
 
 
@@ -349,7 +346,12 @@ int i;
 
 		hv_store ( hv, "session_id",        10, newSViv ( (int)sessions[i].session_id ), 0 );
 		hv_store ( hv, "connection_id",     13, newSViv ( (int)sessions[i].connection_id ), 0 );
-		hv_store ( hv, "ip_address",        10, newSViv ( (int)sessions[i].ip_address ), 0 );
+
+		// why the hell did this start SIGBUSing?
+		// sv_setuv_mg ( sv, (UV)sessions[i].ip_address );
+		// hv_store ( hv, "ip_address",        10, sv, 0 );
+
+		hv_store ( hv, "ip_address",        10, newSViv( (unsigned int)sessions[i].ip_address ), 0 );
 		hv_store ( hv, "port",               4, newSViv ( (int)sessions[i].port ), 0 );
 		hv_store ( hv, "encrypt_level",     13, newSViv ( (int)sessions[i].encrypt_level ), 0 );
 		hv_store ( hv, "num_platform_info", 17, newSViv ( (int)sessions[i].num_platform_info ), 0 );
@@ -365,7 +367,8 @@ int i;
 			hv_store ( hv, "auth_version",     12, newSVpv ( (char *)sessions[i].auth_version, 0 ), 0 );
 
 
-		if ( &sessions[i].ssl_certificate != NULL ) {
+		/* if ( sessions[i].ssl_certificate.serial_number != NULL ) { segfaults */
+		if ( sessions[i].ssl_certificate.begin_date.year ) {
 			sv = sv_newmortal();
 			SvREFCNT_inc(sv);
 			sv_setref_pv( sv, "Aw::SSLCertificate", (void*)&sessions[i].ssl_certificate );
@@ -469,6 +472,758 @@ constant(name,arg)
 
 
 
+
+#===============================================================================
+
+MODULE = Aw::Admin		PACKAGE = Aw::Admin::BaseClass
+
+#===============================================================================
+
+#===============================================================================
+#  Aw::BaseClass
+#      ::DESTROY
+#      ::err   			ala Mysql::
+#      ::errmsg			ala Mysql::
+#      ::error
+#      ::getErrCode
+#      ::setErrMsg
+#      ::getWarn
+#      ::setWarn
+#      ::hello
+#      ::catch
+#      ::throw
+#      ::toString
+#===============================================================================
+
+
+
+void
+DESTROY ( self )
+
+	ALIAS:
+		Aw::Admin::AccessControlList::DESTROY =  1
+		Aw::Admin::LogConfig::DESTROY         =  2
+		Aw::Admin::ServerClient::DESTROY      =  3
+		Aw::Admin::TypeDef::DESTROY           =  4
+
+	CODE:
+		switch ( ix ) 
+		  {
+			case  1: /* AccessControlList */
+#ifdef    AWXS_DEBUG
+				warn ( "Freeing Aw::Admin::AccessControlList!" );
+#endif /* AWXS_DEBUG */
+				Safefree ( AWXS_ACCESSCONTROLLIST(0) );
+				break;
+
+			case  2: /* LogConfig */
+#ifdef    AWXS_DEBUG
+				warn ( "Freeing Aw::Admin::LongConfig!" );
+#endif /* AWXS_DEBUG */
+				Safefree ( AWXS_BROKERLOGCONFIG(0) );
+				break;
+
+			case  3: /* ServerClient */
+				{
+				xsServerClient * self = AWXS_SERVERCLIENT(0);
+#ifdef    AWXS_DEBUG
+				warn ( "Freeing Aw::Admin::ServerClient!" );
+#endif /* AWXS_DEBUG */
+				awDestroyServerClient ( self->server_client );
+				Safefree ( self );
+				}
+				break;
+
+			case  4: /* TypeDef */
+#ifdef    AWXS_DEBUG
+				warn ( "Freeing Aw::Admin::TypeDef!\n" );
+#endif /* AWXS_DEBUG */
+				Safefree ( AWXS_ADMINTYPEDEF(0) );
+				break;
+
+			default:
+#ifdef    AWXS_WARNS
+				if ( gWarn )
+					warn ( "You need an Alias here: %i", ix );
+#endif /* AWXS_WARNS */
+				break;
+		  }
+
+
+
+awaBool
+err ( ... )
+
+	ALIAS:
+		Aw::Admin::err                    =  0
+		Aw::Admin::AccessControlList::err =  1
+		Aw::Admin::LogConfig::err         =  2
+		Aw::Admin::ServerClient::err      =  3
+		Aw::Admin::TypeDef::err           =  4
+
+	CODE:
+		BrokerError err = NULL;
+
+
+		switch ( ix ) 
+		  {
+			case 0:
+				err = gErr;
+				break;
+
+			case 1:
+				err = AWXS_ACCESSCONTROLLIST(0)->err;
+				break;
+
+			case 2:
+				err = AWXS_BROKERLOGCONFIG(0)->err;
+				break;
+
+			case 3:
+				err = AWXS_SERVERCLIENT(0)->err;
+				break;
+
+			case 4:
+				err = AWXS_BROKERADMINTYPEDEF(0)->err;
+				break;
+
+			default:
+#ifdef AWXS_WARNS
+				if ( gWarn )
+					warn ( "You need an Alias here: %i", ix );
+#endif /* AWXS_WARNS */
+				break;
+		  }
+
+		RETVAL = ( err != AW_NO_ERROR || gErrMsg ) ? awaTrue : awaFalse;
+
+	OUTPUT:
+	RETVAL
+
+
+
+char *
+errmsg ( ... )
+
+	ALIAS:
+		Aw::Admin::errmsg                       =  0
+		Aw::Admin::AccessControlList::errmsg    =  1
+		Aw::Admin::LogConfig::errmsg            =  2
+		Aw::Admin::ServerClient::errmsg         =  3
+		Aw::Admin::TypeDef::errmsg              =  4
+
+		Aw::Admin::getErrMsg                    =  100
+		Aw::Admin::AccessControlList::getErrMsg =  101
+		Aw::Admin::LogConfig::getErrMsg         =  102
+		Aw::Admin::ServerClient::getErrMsg      =  103
+		Aw::Admin::TypeDef::getErrMsg           =  104
+
+	CODE:
+		BrokerError err = NULL;
+		char * errMsg   = NULL;
+
+
+		switch ( ix ) 
+		  {
+			case 0:
+			case 100:
+				err    = gErr;
+				errMsg = gErrMsg;
+				break;
+
+			case 1:
+			case 101:
+				err    = AWXS_ACCESSCONTROLLIST(0)->err;
+				errMsg = AWXS_ACCESSCONTROLLIST(0)->errMsg;
+				break;
+
+			case 2:
+			case 102:
+				err    = AWXS_BROKERLOGCONFIG(0)->err;
+				errMsg = AWXS_BROKERLOGCONFIG(0)->errMsg;
+				break;
+
+			case 3:
+			case 103:
+				err    = AWXS_SERVERCLIENT(0)->err;
+				errMsg = AWXS_SERVERCLIENT(0)->errMsg;
+				break;
+
+			case 4:
+			case 104:
+				err    = AWXS_BROKERADMINTYPEDEF(0)->err;
+				errMsg = AWXS_BROKERADMINTYPEDEF(0)->errMsg;
+				break;
+
+			default:
+#ifdef AWXS_WARNS
+				if ( gWarn )
+					warn ( "You need an Alias here: %i", ix );
+#endif /* AWXS_WARNS */
+				break;
+		  }
+
+
+		/* if ( err == AW_NO_ERROR && errMsg ) */
+		if ( errMsg )
+			RETVAL = errMsg;
+		else
+			RETVAL = awErrorToCompleteString ( err );  /* hopefully NULL if AW_NO_ERROR */
+
+	OUTPUT:
+	RETVAL
+
+
+
+void
+setErrMsg ( self, newErrMsg )
+	char * newErrMsg
+
+	ALIAS:
+		Aw::Admin::setErrMsg                    =  0
+		Aw::Admin::AccessControlList::setErrMsg =  1
+		Aw::Admin::LogConfig::setErrMsg         =  2
+		Aw::Admin::ServerClient::setErrMsg      =  3
+		Aw::Admin::TypeDef::setErrMsg           =  4
+
+	CODE:
+		char ** errMsg;
+
+		switch ( ix ) 
+		  {
+			case 0:
+				errMsg =& gErrMsg;
+				break;
+
+			case 1:
+				errMsg =& AWXS_ACCESSCONTROLLIST(0)->errMsg;
+				break;
+
+			case 2:
+				errMsg =& AWXS_BROKERLOGCONFIG(0)->errMsg;
+				break;
+
+			case 3:
+				errMsg =& AWXS_SERVERCLIENT(0)->errMsg;
+				break;
+
+			case 4:
+				errMsg =& AWXS_BROKERADMINTYPEDEF(0)->errMsg;
+				break;
+
+			default:
+#ifdef AWXS_WARNS
+				if ( gWarn )
+					warn ( "You need an Alias here: %i", ix );
+#endif /* AWXS_WARNS */
+				break;
+		  }
+
+		if ( *errMsg )
+			Safefree ( *errMsg );
+
+		gErrMsg = *errMsg = strdup ( newErrMsg );
+
+
+
+void
+throw ( self, newErrCode )
+	int newErrCode
+
+	ALIAS:
+		Aw::Admin::throw                    =  0
+		Aw::Admin::AccessControlList::throw =  1
+		Aw::Admin::LogConfig::throw         =  2
+		Aw::Admin::ServerClient::throw      =  3
+		Aw::Admin::TypeDef::throw           =  4
+
+	PREINIT:
+		char * strErrCode;
+
+	CODE:
+		gErrCode = newErrCode;
+		strErrCode = (char *)safemalloc ( 8 * sizeof (char) );
+		sprintf ( strErrCode, "%i", gErrCode );
+		sv_setpv ( perl_get_sv("@",0), strErrCode );
+		Safefree ( strErrCode );
+
+
+
+int
+catch ( ... )
+
+	ALIAS:
+		Aw::Admin::catch                    =  0
+		Aw::Admin::AccessControlList::catch =  1
+		Aw::Admin::LogConfig::catch         =  2
+		Aw::Admin::ServerClient::catch      =  3
+		Aw::Admin::TypeDef::catch           =  4
+
+	CODE:
+		if ( items == 1 || (items == 2 && !SvOK(ST(1)) ) ) {
+			if ( gErrCode == (int)AW_NO_ERROR )
+				XSRETURN_UNDEF;
+
+			RETVAL = gErrCode;
+			/*
+			   insert here a switch to do awGetErrorCode ( self->err )
+			   or make a $self->getErrorCode method that works on self->err
+			*/
+		}
+		else if ( SvTYPE(ST(1)) == SVt_PV ) {
+			char *	exception = (char *)SvPV(ST(1),PL_na);
+			RETVAL = ( strstr (gErrMsg, exception) ) ? awaTrue : awaFalse;
+		}
+		else {
+			int exception = (int)SvIV(ST(1));
+			RETVAL = ( exception == gErrCode ) ? awaTrue : awaFalse;
+		}
+
+
+	OUTPUT:
+	RETVAL
+
+
+
+int
+getErrCode ( ... )
+
+	ALIAS:
+		Aw::Admin::getErrCode                    =  0
+		Aw::Admin::AccessControlList::getErrCode =  1
+		Aw::Admin::LogConfig::getErrCode         =  2
+		Aw::Admin::ServerClient::getErrCode      =  3
+		Aw::Admin::TypeDef::getErrCode           =  4
+
+	CODE:
+		switch ( ix ) 
+		  {
+			case 0:
+				RETVAL = awGetErrorCode ( gErr );
+				break;
+
+			case 1:
+				RETVAL = awGetErrorCode ( AWXS_ACCESSCONTROLLIST(0)->err );
+				break;
+
+			case 2:
+				RETVAL = awGetErrorCode ( AWXS_BROKERLOGCONFIG(0)->err );
+				break;
+
+			case 3:
+				RETVAL = awGetErrorCode ( AWXS_SERVERCLIENT(0)->err );
+				break;
+
+			case 4:
+				RETVAL = awGetErrorCode ( AWXS_BROKERADMINTYPEDEF(0)->err );
+				break;
+
+			case 5:
+				RETVAL = awGetErrorCode ( AWXS_BROKERCONNECTIONDESC(0)->err );
+				break;
+
+			case 6:
+				RETVAL = awGetErrorCode ( AWXS_BROKEREVENT(0)->err );
+				break;
+
+			case 7:
+				RETVAL = awGetErrorCode ( AWXS_BROKERFILTER(0)->err );
+				break;
+
+			case 8:
+				RETVAL = awGetErrorCode ( AWXS_BROKERFORMAT(0)->err );
+				break;
+
+			case 9:
+				RETVAL = awGetErrorCode ( AWXS_BROKERTYPEDEF(0)->err );
+				break;
+
+			case 10:
+				RETVAL = awGetErrorCode ( AWXS_BROKERTYPEDEFCACHE(0)->err );
+				break;
+
+			default:
+#ifdef AWXS_WARNS
+				if ( gWarn )
+					warn ( "You need an Alias here: %i", ix );
+#endif /* AWXS_WARNS */
+				break;
+		  }
+
+
+	OUTPUT:
+	RETVAL
+
+
+
+Aw::Error
+error ( ... )
+
+	ALIAS:
+		Aw::Admin::error                    =  0
+		Aw::Admin::AccessControlList::error =  1
+		Aw::Admin::LogConfig::error         =  2
+		Aw::Admin::ServerClient::error      =  3
+		Aw::Admin::TypeDef::error           =  4
+
+	PREINIT:
+		char CLASS[] = "Aw::Error";
+
+	CODE:
+		RETVAL = (xsBrokerError *)safemalloc ( sizeof(xsBrokerError) );
+		if ( RETVAL == NULL ) {
+#ifdef AWXS_WARNS
+			if ( gWarn )
+				warn ( "unable to malloc new error" );
+#endif /* AWXS_WARNS */
+			XSRETURN_UNDEF;
+		}
+
+
+		switch ( ix ) 
+		  {
+			case 0:
+				RETVAL->err = gErr;
+				break;
+
+			case 1:
+				RETVAL->err = AWXS_ACCESSCONTROLLIST(0)->err;
+				break;
+
+			case 2:
+				RETVAL->err = AWXS_BROKERLOGCONFIG(0)->err;
+				break;
+
+			case 3:
+				RETVAL->err = AWXS_SERVERCLIENT(0)->err;
+				break;
+
+			case 4:
+				RETVAL->err = AWXS_BROKERADMINTYPEDEF(0)->err;
+				break;
+
+			case 5:
+				RETVAL->err = AWXS_BROKERCONNECTIONDESC(0)->err;
+				break;
+
+			case 6:
+				RETVAL->err = AWXS_BROKEREVENT(0)->err;
+				break;
+
+			case 7:
+				RETVAL->err = AWXS_BROKERFILTER(0)->err;
+				break;
+
+			case 8:
+				RETVAL->err = AWXS_BROKERFORMAT(0)->err;
+				break;
+
+			case 9:
+				RETVAL->err = AWXS_BROKERTYPEDEF(0)->err;
+				break;
+
+			case 10:
+				RETVAL->err = AWXS_BROKERTYPEDEFCACHE(0)->err;
+				break;
+
+			default:
+#ifdef AWXS_WARNS
+				if ( gWarn )
+					warn ( "You need an Alias here: %i", ix );
+#endif /* AWXS_WARNS */
+				break;
+		  }
+
+	OUTPUT:
+	RETVAL
+
+
+
+int
+getWarn ( self )
+
+	ALIAS:
+		Aw::Admin::getWarn                    =  0
+		Aw::Admin::AccessControlList::getWarn =  1
+		Aw::Admin::LogConfig::getWarn         =  2
+		Aw::Admin::ServerClient::getWarn      =  3
+		Aw::Admin::TypeDef::getWarn           =  4
+
+	CODE:
+		switch ( ix ) 
+		  {
+			case 0:
+				RETVAL = (int)gWarn;
+				break;
+
+			case 1:
+				RETVAL = (int)AWXS_ACCESSCONTROLLIST(0)->Warn;
+				break;
+
+			case 2:
+				RETVAL = (int)AWXS_BROKERLOGCONFIG(0)->Warn;
+				break;
+
+			case 3:
+				RETVAL = (int)AWXS_SERVERCLIENT(0)->Warn;
+				break;
+
+			case 4:
+				RETVAL = (int)AWXS_BROKERADMINTYPEDEF(0)->Warn;
+				break;
+
+			case 5:
+				RETVAL = (int)AWXS_BROKERCONNECTIONDESC(0)->Warn;
+				break;
+
+			case 6:
+				RETVAL = (int)AWXS_BROKEREVENT(0)->Warn;
+				break;
+
+			case 7:
+				RETVAL = (int)AWXS_BROKERERROR(0)->Warn;
+				break;
+
+			case 8:
+				RETVAL = (int)AWXS_BROKERFILTER(0)->Warn;
+				break;
+
+			case 9:
+				RETVAL = (int)AWXS_BROKERFORMAT(0)->Warn;
+				break;
+
+			case 10:
+				RETVAL = (int)AWXS_BROKERTYPEDEF(0)->Warn;
+				break;
+
+			case 11:
+				RETVAL = (int)AWXS_BROKERTYPEDEFCACHE(0)->Warn;
+				break;
+
+			default:
+#ifdef AWXS_WARNS
+				if ( gWarn )
+					warn ( "You need an Alias here: %i", ix );
+#endif /* AWXS_WARNS */
+				break;
+		  }
+
+	OUTPUT:
+	RETVAL
+
+
+
+void
+setWarn ( self, level )
+	int level
+
+	ALIAS:
+		Aw::Admin::setWarn                    =  0
+		Aw::Admin::AccessControlList::setWarn =  1
+		Aw::Admin::LogConfig::setWarn         =  2
+		Aw::Admin::ServerClient::setWarn      =  3
+		Aw::Admin::TypeDef::setWarn           =  4
+
+	CODE:
+		switch ( ix ) 
+		  {
+			case 0:
+				gWarn = level;
+				break;
+
+			case 1:
+				AWXS_ACCESSCONTROLLIST(0)->Warn = level;
+				break;
+
+			case 2:
+				AWXS_BROKERLOGCONFIG(0)->Warn = level;
+				break;
+
+			case 3:
+				AWXS_SERVERCLIENT(0)->Warn = level;
+				break;
+
+			case 4:
+				AWXS_BROKERADMINTYPEDEF(0)->Warn = level;
+				break;
+
+			case 5:
+				AWXS_BROKERCONNECTIONDESC(0)->Warn = level;
+				break;
+
+			case 6:
+				AWXS_BROKEREVENT(0)->Warn = level;
+				break;
+
+			case 7:
+				AWXS_BROKERERROR(0)->Warn = level;
+				break;
+
+			case 8:
+				AWXS_BROKERFILTER(0)->Warn = level;
+				break;
+
+			case 9:
+				AWXS_BROKERFORMAT(0)->Warn = level;
+				break;
+
+			case 10:
+				AWXS_BROKERTYPEDEF(0)->Warn = level;
+				break;
+
+			case 11:
+				AWXS_BROKERTYPEDEFCACHE(0)->Warn = level;
+				break;
+
+			default:
+#ifdef AWXS_WARNS
+				if ( gWarn )
+					warn ( "You need an Alias here: %i", ix );
+#endif /* AWXS_WARNS */
+				break;
+		  }
+
+
+
+void
+warn ( self, ... )
+
+	ALIAS:
+		Aw::Admin::warn                    =  0
+		Aw::Admin::AccessControlList::warn =  1
+		Aw::Admin::LogConfig::warn         =  2
+		Aw::Admin::ServerClient::warn      =  3
+		Aw::Admin::TypeDef::warn           =  4
+
+
+	CODE:
+		BrokerError err = NULL;
+		char * errMsg   = NULL;
+		char Warn;
+
+
+		switch ( ix ) 
+		  {
+			case 0:
+				err    = gErr;
+				errMsg = gErrMsg;
+				Warn   = gWarn;
+				break;
+
+			case 1:
+				err    = AWXS_ACCESSCONTROLLIST(0)->err;
+				errMsg = AWXS_ACCESSCONTROLLIST(0)->errMsg;
+				Warn   = AWXS_ACCESSCONTROLLIST(0)->Warn;
+				break;
+
+			case 2:
+				err    = AWXS_BROKERLOGCONFIG(0)->err;
+				errMsg = AWXS_BROKERLOGCONFIG(0)->errMsg;
+				Warn   = AWXS_BROKERLOGCONFIG(0)->Warn;
+				break;
+
+			case 3:
+				err    = AWXS_SERVERCLIENT(0)->err;
+				errMsg = AWXS_SERVERCLIENT(0)->errMsg;
+				Warn   = AWXS_SERVERCLIENT(0)->Warn;
+				break;
+
+			case 4:
+				err    = AWXS_BROKERADMINTYPEDEF(0)->err;
+				errMsg = AWXS_BROKERADMINTYPEDEF(0)->errMsg;
+				Warn   = AWXS_BROKERADMINTYPEDEF(0)->Warn;
+				break;
+
+			case 5:
+				err    = AWXS_BROKERCONNECTIONDESC(0)->err;
+				errMsg = AWXS_BROKERCONNECTIONDESC(0)->errMsg;
+				Warn   = AWXS_BROKERCONNECTIONDESC(0)->Warn;
+				break;
+
+			case 6:
+				err    = AWXS_BROKEREVENT(0)->err;
+				errMsg = AWXS_BROKEREVENT(0)->errMsg;
+				Warn   = AWXS_BROKEREVENT(0)->Warn;
+				break;
+
+			case 7:
+				err    = AWXS_BROKERERROR(0)->err;
+				errMsg = AWXS_BROKERERROR(0)->errMsg;
+				Warn   = AWXS_BROKERERROR(0)->Warn;
+				break;
+
+			case 8:
+				err    = AWXS_BROKERFILTER(0)->err;
+				errMsg = AWXS_BROKERFILTER(0)->errMsg;
+				Warn   = AWXS_BROKERFILTER(0)->Warn;
+				break;
+
+			case 9:
+				err    = AWXS_BROKERFORMAT(0)->err;
+				errMsg = AWXS_BROKERFORMAT(0)->errMsg;
+				Warn   = AWXS_BROKERFORMAT(0)->Warn;
+				break;
+
+			case 10:
+				err    = AWXS_BROKERTYPEDEF(0)->err;
+				errMsg = AWXS_BROKERTYPEDEF(0)->errMsg;
+				Warn   = AWXS_BROKERTYPEDEF(0)->Warn;
+				break;
+
+			case 11:
+				err    = AWXS_BROKERTYPEDEFCACHE(0)->err;
+				errMsg = AWXS_BROKERTYPEDEFCACHE(0)->errMsg;
+				Warn   = AWXS_BROKERTYPEDEFCACHE(0)->Warn;
+				break;
+
+			default:
+#ifdef AWXS_WARNS
+				if ( gWarn )
+					warn ( "You need an Alias here: %i", ix );
+#endif /* AWXS_WARNS */
+				break;
+		  }
+
+
+		/* if we are passed a warn, it over rides the pre-set value */
+		if ( ix == 0 && items == 1 )
+			Warn = (int)SvIV( ST(0) );
+		else if ( items == 2 )
+			Warn = (int)SvIV( ST(1) );
+
+
+		if ( Warn ) {
+			/* our own internal err message over rides Aw error messages */
+			if ( errMsg )
+				warn ( errMsg );
+			else if (Warn == 1 && err != AW_NO_ERROR )
+				errMsg = awErrorToString ( err );          /* hopefully NULL if AW_NO_ERROR */
+			else if (Warn == 2 && err != AW_NO_ERROR )
+				errMsg = awErrorToCompleteString ( err );  /* hopefully NULL if AW_NO_ERROR */
+
+			if ( errMsg )
+				warn ( errMsg ); 
+		}
+
+
+
+char *
+hello ( self )
+
+	ALIAS:
+		Aw::Admin::AccessControlList::hello =  1
+		Aw::Admin::LogConfig::hello         =  2
+		Aw::Admin::ServerClient::hello      =  3
+		Aw::Admin::TypeDef::hello           =  4
+
+	CODE:
+		RETVAL = strdup ( "  hello" );
+
+	OUTPUT:
+	RETVAL
+
+
+
 #===============================================================================
 
 MODULE = Aw::Admin		PACKAGE = Aw::Admin::AccessControlList
@@ -480,7 +1235,6 @@ new ( CLASS )
 	char * CLASS
 
 	CODE:
-
 		RETVAL = (xsAccessControlList *)safemalloc ( sizeof(xsAccessControlList) );
 		if ( RETVAL == NULL ) {
 			setErrMsg ( &gErrMsg, 1, "unable to malloc new client" );
@@ -502,12 +1256,14 @@ new ( CLASS )
 	RETVAL
 
 
+
 void
 delete ( self )
 	Aw::Admin::AccessControlList self
 
 	CODE:
 		awDeleteAccessControlList ( self->acl );
+
 
 
 Aw::Admin::AccessControlList
@@ -551,7 +1307,6 @@ getAuthNamesRef ( self )
 		int n;
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err 
@@ -566,6 +1321,7 @@ getAuthNamesRef ( self )
 	RETVAL
 
 
+
 awaBool
 getAuthNameState ( self, name )
 	Aw::Admin::AccessControlList self
@@ -578,7 +1334,6 @@ getAuthNameState ( self, name )
 		BrokerBoolean bRV;
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err 
@@ -596,6 +1351,7 @@ getAuthNameState ( self, name )
 	RETVAL
 
 
+
 awaBool
 setAuthNames ( self, names )
 	Aw::Admin::AccessControlList self
@@ -608,7 +1364,6 @@ setAuthNames ( self, names )
 		int n;
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		n = av_len ( (AV*)SvRV( ST(1) ) ) + 1;
@@ -641,7 +1396,6 @@ setAuthNameStates ( self, names, is_allowed )
 		Aw::Admin::AccessControlList::setUserNameStates = 1
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		n = av_len ( (AV*)SvRV( ST(1) ) ) + 1;
@@ -675,7 +1429,6 @@ new ( CLASS, type_name, type )
 	short type
 
 	CODE:
-
 		RETVAL = (xsBrokerAdminTypeDef *)safemalloc ( sizeof(xsBrokerAdminTypeDef) );
 		if ( RETVAL == NULL ) {
 			setErrMsg ( &gErrMsg, 1, "unable to malloc new client" );
@@ -947,7 +1700,6 @@ orderFields ( self, field_name, field_names )
 
 
 
-
 awaBool
 setFieldType ( self, field_name, field_type, type_name )
 	Aw::Admin::TypeDef self
@@ -966,6 +1718,7 @@ setFieldType ( self, field_name, field_type, type_name )
 
 	OUTPUT:
 	RETVAL
+
 
 
 awaBool
@@ -988,6 +1741,7 @@ insertFieldDef ( self, field_name, index, field_def )
 	RETVAL
 
 
+
 awaBool
 setFieldDef ( self, field_name, field_def )
 	Aw::Admin::TypeDef self
@@ -1005,7 +1759,6 @@ setFieldDef ( self, field_name, field_def )
 
 	OUTPUT:
 	RETVAL
-
 
 
 
@@ -1048,6 +1801,7 @@ hasBeenModified ( self )
 	RETVAL
 
 
+
 awaBool
 clearFields ( self )
 	Aw::Admin::TypeDef self
@@ -1077,7 +1831,6 @@ new ( CLASS )
 	char * CLASS
 
 	CODE:
-
 		RETVAL = (xsBrokerLogConfig *)safemalloc ( sizeof(xsBrokerLogConfig) );
 		if ( RETVAL == NULL ) {
 			setErrMsg ( &gErrMsg, 1, "unable to malloc new client" );
@@ -1098,12 +1851,14 @@ new ( CLASS )
 	RETVAL
 
 
+
 void
 delete ( self )
 	Aw::Admin::LogConfig self
 
 	CODE:
 		awDeleteLogConfig ( self->log_config );
+
 
 
 Aw::Admin::LogConfig
@@ -1135,7 +1890,6 @@ copy ( self )
 
 
 
-
 HV *
 getLogOutput ( self, code )
 	Aw::Admin::LogConfig self
@@ -1149,7 +1903,6 @@ getLogOutput ( self, code )
 		char * value;
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err 
@@ -1187,7 +1940,6 @@ setLogOutput ( self, data )
 		SV ** sv;
 	
 	CODE:
-
 		sv      = hv_fetch ( data, "code", 4, 0 );
 		code    = (char *)SvPV(*sv, PL_na);
 
@@ -1228,7 +1980,6 @@ setLogOutputs ( self, av )
 		SV ** sv;
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		n = av_len ( (AV*)SvRV( ST(1) ) ) + 1;
@@ -1265,7 +2016,6 @@ setLogOutputs ( self, av )
 
 
 
-
 AV *
 getLogOutputsRef ( self, av )
 	Aw::Admin::LogConfig self
@@ -1281,7 +2031,6 @@ getLogOutputsRef ( self, av )
 		SV * sv;
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err 
@@ -1311,6 +2060,7 @@ getLogOutputsRef ( self, av )
 	RETVAL
 
 
+
 awaBool
 clearOutput ( self, ... )
 	Aw::Admin::LogConfig self
@@ -1321,7 +2071,6 @@ clearOutput ( self, ... )
 		Aw::Admin::LogConfig::clearLogTopics  = 3
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err 
@@ -1343,10 +2092,9 @@ clearOutput ( self, ... )
 
 char *
 toString ( self )
-	Aw::Admin::LogConfig self
+Aw::Admin::LogConfig self
 
 	CODE:
-
 		RETVAL = awLogConfigToString ( self->log_config );
 
 	OUTPUT:
@@ -1361,13 +2109,15 @@ MODULE = Aw::Admin		PACKAGE = Aw::Admin::ServerClient
 #===============================================================================
 
 Aw::Admin::ServerClient
-new ( CLASS, broker_host, desc )
+new ( CLASS, broker_host, ... )
 	char * CLASS
 	char * broker_host
-	Aw::ConnectionDescriptor desc
+
+
+	PREINIT:
+		BrokerConnectionDescriptor myDesc = NULL;
 
 	CODE:
-
 		RETVAL = (xsServerClient *)safemalloc ( sizeof(xsServerClient) );
 		if ( RETVAL == NULL ) {
 			setErrMsg ( &gErrMsg, 1, "unable to malloc new client" );
@@ -1382,7 +2132,10 @@ new ( CLASS, broker_host, desc )
 		RETVAL->errMsg = NULL;
 		RETVAL->Warn   = gWarn;
 
-		gErr = RETVAL->err = awNewBrokerServerClient ( broker_host, desc->desc, &RETVAL->server_client );
+		if ( items == 3 && ( sv_isobject(ST(2)) && (SvTYPE(SvRV(ST(2))) == SVt_PVMG) ) )
+			myDesc = AWXS_BROKERCONNECTIONDESC(2)->desc;
+
+		gErr = RETVAL->err = awNewBrokerServerClient ( broker_host, myDesc, &RETVAL->server_client );
 
 		if ( RETVAL->err != AW_NO_ERROR ) {
 			setErrMsg ( &gErrMsg, 2, "unable to instantiate new Aw::Admin::ServerClient %s", awErrorToCompleteString ( RETVAL->err ) );
@@ -1399,14 +2152,6 @@ new ( CLASS, broker_host, desc )
 	RETVAL
 
 
-void
-DESTROY ( self )
-	Aw::Admin::ServerClient self
-
-	CODE:
-		awDestroyServerClient ( self->server_client );
-
-
 
 Aw::Admin::AccessControlList
 getAdminACL ( self )
@@ -1416,7 +2161,6 @@ getAdminACL ( self )
 		char CLASS[] = "Aw::Admin::AccessControlList";
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		RETVAL = (xsAccessControlList *)safemalloc ( sizeof(xsAccessControlList) );
@@ -1448,7 +2192,6 @@ setAdminACL ( self, acl )
 	Aw::Admin::AccessControlList acl
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err = awSetServerAdminACL ( self->server_client, acl->acl );
@@ -1468,7 +2211,6 @@ setACL ( self, acl )
 	Aw::Admin::AccessControlList acl
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err = awSetServerAdminACL ( self->server_client, acl->acl );
@@ -1479,6 +2221,7 @@ setACL ( self, acl )
 
 	OUTPUT:
 	RETVAL
+
 
 
 char **
@@ -1494,7 +2237,6 @@ getDNsFromCertFileRef ( self, certificate_file, password )
 		int n;
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err
@@ -1507,7 +2249,6 @@ getDNsFromCertFileRef ( self, certificate_file, password )
 
 	OUTPUT:
 	RETVAL
-
 
 
 
@@ -1528,7 +2269,6 @@ getActiveSSLConfig ( self )
 		int level;
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err
@@ -1582,7 +2322,6 @@ setSSLConfig ( self, new_config )
 		SV  ** sv;
 	
 	CODE:
-
 		sv                 = hv_fetch ( new_config, "certificate_file", 16, 0 );
 		certificate_file   = (char *)SvPV(*sv, PL_na);
 
@@ -1603,16 +2342,14 @@ setSSLConfig ( self, new_config )
 
 
 
-
 Aw::Admin::LogConfig
-getServerLogConfig ( self )
+getLogConfig ( self )
 	Aw::Admin::ServerClient self
 
 	PREINIT:
 		char CLASS[] = "Aw::Admin::LogConfig";
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		RETVAL = (xsBrokerLogConfig *)safemalloc ( sizeof(xsBrokerLogConfig) );
@@ -1639,12 +2376,11 @@ getServerLogConfig ( self )
 
 
 awaBool
-setServerLogConfig ( self, log_config )
+setLogConfig ( self, log_config )
 	Aw::Admin::ServerClient self
 	Aw::Admin::LogConfig log_config
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err = awSetServerLogConfig ( self->server_client, log_config->log_config );
@@ -1666,7 +2402,6 @@ getServerLogStatus ( self )
 		BrokerServerLogInfo info;
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err = awGetServerLogStatus ( self->server_client, &info );
@@ -1697,7 +2432,6 @@ getServerLogStatus ( self )
 
 
 
-
 AV *
 getServerLogEntriesRef ( self, first_entry, locale )
 	Aw::Admin::ServerClient self
@@ -1709,7 +2443,6 @@ getServerLogEntriesRef ( self, first_entry, locale )
 		BrokerServerLogEntry * entries;
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err = awGetServerLogEntries ( self->server_client, *first_entry, locale, &n, &entries );
@@ -1753,7 +2486,6 @@ pruneServerLog ( self, older_than )
 	Aw::Date older_than
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err = awPruneServerLog ( self->server_client, *older_than );
@@ -1768,7 +2500,7 @@ pruneServerLog ( self, older_than )
 
 
 int
-getActivePort ( self, ... )
+getActivePort ( self )
 	Aw::Admin::ServerClient self
 
 	ALIAS:
@@ -1776,7 +2508,6 @@ getActivePort ( self, ... )
 		Aw::Admin::ServerClient::getServerProcessRunStatus = 2
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err
@@ -1787,20 +2518,21 @@ getActivePort ( self, ... )
 		    : awGetServerActivePort    ( self->server_client, &RETVAL )
 		;
 
+		AWXS_CHECKSETERROR
+
 	OUTPUT:
 	RETVAL
 
 
 
 awaBool
-startProcess ( self, ... )
+startServerProcess ( self, ... )
 	Aw::Admin::ServerClient self
 
 	ALIAS:
 		Aw::Admin::ServerClient::stopProcess = 1
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err
@@ -1818,7 +2550,6 @@ startProcess ( self, ... )
 
 
 
-
 awaBool
 createBroker ( self, broker_name, description, is_default )
 	Aw::Admin::ServerClient self
@@ -1828,7 +2559,6 @@ createBroker ( self, broker_name, description, is_default )
 
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err = awCreateBroker ( self->server_client, broker_name, description, (BrokerBoolean) is_default );
@@ -1842,9 +2572,8 @@ createBroker ( self, broker_name, description, is_default )
 
 
 
-
 AV *
-getServerBrokersRef ( self )
+getBrokersRef ( self )
 	Aw::Admin::ServerClient self
 
 	PREINIT:
@@ -1852,7 +2581,6 @@ getServerBrokersRef ( self )
 		BrokerInfo * broker_infos;
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err = awGetServerBrokers ( self->server_client, &n, &broker_infos );
@@ -1916,11 +2644,11 @@ registerCallbackForSubId ( self, method, client_data )
 
 
 Aw::Event
-getServerStats ( self )
+getStats ( self )
 	Aw::Admin::ServerClient self
 
 	ALIAS:
-		Aw::Admin::ServerClient::getServerUsageStats = 1
+		Aw::Admin::ServerClient::getUsageStats = 1
 	
 	PREINIT:
 		char CLASS[] = "Aw::Event";
@@ -1967,7 +2695,7 @@ getServerStats ( self )
 
 
 char *
-getClientHostName ( self )
+getHostName ( self )
 	Aw::Admin::ServerClient self
 
 	ALIAS:
@@ -1977,7 +2705,6 @@ getClientHostName ( self )
 		Aw::Admin::ServerClient::getVersion           = 4
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err 
@@ -2007,7 +2734,6 @@ setDefaultBrokerName ( self, string )
 		Aw::Admin::ServerClient::setLicense     = 2
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err 
@@ -2048,7 +2774,6 @@ createClient ( self, client_id, client_group, app_name, user_name, authenticator
 		BrokerConnectionDescriptor myDesc = NULL;
 
 	CODE:
-
 		if ( user_name[0] == '\0' )
 			user_name = NULL;
 		if ( authenticator_name[0] == '\0' )
@@ -2069,7 +2794,7 @@ createClient ( self, client_id, client_group, app_name, user_name, authenticator
 
 
 awaBool
-DESTROY ( self )
+destroyBroker ( self )
 	Aw::Admin::Client self
 
 	CODE:
@@ -2103,6 +2828,7 @@ changeLock ( self )
 	RETVAL
 
 
+
 awaBool
 createClientGroup ( self, client_group_name, life_cycle, storage_type )
 	Aw::Admin::Client self
@@ -2121,6 +2847,7 @@ createClientGroup ( self, client_group_name, life_cycle, storage_type )
 
 	OUTPUT:
 	RETVAL
+
 
 
 awaBool
@@ -2149,6 +2876,7 @@ destroyClientGroup ( self, name, force_destroy )
 	RETVAL
 
 
+
 char **
 getClientGroupNamesRef ( self )
 	Aw::Admin::Client self
@@ -2165,7 +2893,6 @@ getClientGroupNamesRef ( self )
 
 	OUTPUT:
 	RETVAL
-
 
 
 
@@ -2188,10 +2915,10 @@ getClientGroupCanPublishListRef ( self, string )
 		AWXS_CLEARERROR
 
 		gErr = self->err
-		= (ix<2)
+		= (ix>3)
 		  ? (ix==5)
-		    ? awGetClientIdsByClientGroup      ( self->client, string, &n, &RETVAL )
-		    : awGetClientIdsWhichAreSubscribed ( self->client, string, &n, &RETVAL )
+		    ? awGetClientIdsWhichAreSubscribed ( self->client, string, &n, &RETVAL )
+		    : awGetClientIdsByClientGroup      ( self->client, string, &n, &RETVAL )
 		  : (ix>1)
 		    ? (ix==3)
 		      ? awGetClientGroupsWhichCanSubscribe ( self->client, string, &n, &RETVAL )
@@ -2205,6 +2932,7 @@ getClientGroupCanPublishListRef ( self, string )
 
 	OUTPUT:
 	RETVAL
+
 
 
 char **
@@ -2223,8 +2951,6 @@ getClientIdsRef ( self )
 
 	OUTPUT:
 	RETVAL
-
-
 
 
 
@@ -2280,7 +3006,6 @@ setClientGroupDescription ( self, client_group_name, description )
 
 
 
-
 awaBool
 setClientGroupCanPublishList ( self, client_group_name, event_type_names )
 	Aw::Admin::Client self
@@ -2313,9 +3038,6 @@ setClientGroupCanPublishList ( self, client_group_name, event_type_names )
 
 
 
-
-
-
 awaBool
 destroyClientById ( self, string )
 	Aw::Admin::Client self
@@ -2342,7 +3064,6 @@ destroyClientById ( self, string )
 
 	OUTPUT:
 	RETVAL
-
 
 
 
@@ -2377,7 +3098,6 @@ doesSubscriptionExistById ( self, client_id, event_type_name, filter )
 		BrokerBoolean bRV;
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err = awDoesSubscriptionExistById ( self->client, client_id, event_type_name, filter, &bRV );
@@ -2460,38 +3180,42 @@ createSubscriptionsById ( self, client_id, av_subs )
 
 
 AV *
-getSubscriptionsByIdRef ( self, client_id )
+getClientSubscriptionsByIdRef ( self, client_id )
 	Aw::Admin::Client self
 	char * client_id
 
 	PREINIT:
 		int n;
-		BrokerSubscription ** subs;
+		BrokerSubscription * subs;
 
 	CODE:
 		AWXS_CLEARERROR
 		
-		gErr = self->err = awGetClientSubscriptionsById ( self->client, client_id, &n, subs );
+		gErr = self->err = awGetClientSubscriptionsById ( self->client, client_id, &n, &subs );
 
 		AWXS_CHECKSETERROR_RETURN
 
 		{		/* now convert subs into an AV */
 		SV *sv;
 		int i;
+		BrokerSubscription * sub;
 
 			RETVAL = newAV();
 			for ( i = 0; i<n; i++ ) {
 				sv = sv_newmortal();
-				sv_setref_pv( sv, "Aw::Subscription", (void*)subs[i] );
+				sub = (BrokerSubscription *) safemalloc ( sizeof(BrokerSubscription) );
+				sub->sub_id = subs[i].sub_id;
+				sub->event_type_name = strdup ( subs[i].event_type_name );
+				sub->filter = strdup ( subs[i].filter );
+				sv_setref_pv( sv, "Aw::Subscription", sub );
 				SvREFCNT_inc(sv);
 				av_push( RETVAL, sv );
-				Safefree ( subs[i] );
 			}
+			free (subs);
 		}
 
 	OUTPUT:
 	RETVAL
-
 
 
 
@@ -2501,10 +3225,10 @@ getClientGroupStats ( self, string )
 	char * string
 
 	ALIAS:
-		Aw::Admin::Client::awGetClientInfosetById     = 1
-		Aw::Admin::Client::awGetClientStatsById       = 2
-		Aw::Admin::Client::awGetEventTypeStats        = 3
-		Aw::Admin::Client::awGetTerritoryGatewayStats = 4
+		Aw::Admin::Client::getClientInfosetById     = 1
+		Aw::Admin::Client::getClientStatsById       = 2
+		Aw::Admin::Client::getEventTypeStats        = 3
+		Aw::Admin::Client::getTerritoryGatewayStats = 4
 
 	PREINIT:
 		char CLASS[] = "Aw::Event";
@@ -2569,7 +3293,7 @@ setEventTypeInfosets ( self, event_type_name, av )
 	CODE:
 		AWXS_CLEARERROR
 
-		n  = av_len ( av ) + 1;
+		n = av_len ( av ) + 1;
 
 		infosets = (BrokerEvent *) safemalloc ( sizeof(BrokerEvent)*n );
 
@@ -2639,7 +3363,6 @@ destroyEventTypes ( self, event_type_names, force_destroy )
 
 
 
-
 Aw::Admin::TypeDef
 getEventAdminTypeDef ( self, event_type_name )
 	Aw::Admin::Client self
@@ -2691,7 +3414,6 @@ getEventAdminTypeDefsRef ( self, event_type_names )
 		gErr = self->err = awGetEventAdminTypeDefs ( self->client, &n, event_type_names, &type_defs );
 
 		AWXS_CHECKSETERROR_RETURN
-
 		
 		{
 		SV *sv;
@@ -2743,7 +3465,6 @@ getEventAdminTypeDefsByScopeRef ( self, scope_name )
 
 	CODE:
 		AWXS_CLEARERROR
-
 
 		gErr = self->err = awGetEventAdminTypeDefsByScope ( self->client, scope_name, &n, &type_defs );
 		
@@ -2818,7 +3539,6 @@ setEventAdminTypeDefs ( self, territory_name, av )
 		BrokerAdminTypeDef * type_defs;
 	
 	CODE:
-
 		AWXS_CLEARERROR
 
 		n = av_len ( (AV*)SvRV( ST(2) ) ) + 1;
@@ -2968,9 +3688,8 @@ getBrokerStats ( self )
 
 
 
-
 awaBool
-leaveTerritroy ( self, number, ... )
+leaveTerritory ( self, number, ... )
 	Aw::Admin::Client self
 	int number
 
@@ -3064,7 +3783,7 @@ setClientGroupACL ( self, string, acl )
 	Aw::Admin::AccessControlList acl
 
 	ALIAS:
-		Aw::Admin::Client::setTerritroyGatewayACL = 1
+		Aw::Admin::Client::setTerritoryGatewayACL = 1
 
 	CODE:
 		AWXS_CLEARERROR
@@ -3090,8 +3809,8 @@ clearClientQueueById ( self, string )
 	char * string
 
 	ALIAS:
-		Aw::Admin::Client::destroyTerritroyGateway = 1
-		Aw::Admin::Client::createTerritroy         = 2
+		Aw::Admin::Client::destroyTerritoryGateway = 1
+		Aw::Admin::Client::createTerritory         = 2
 
 	CODE:
 		AWXS_CLEARERROR
@@ -3144,7 +3863,7 @@ setCreateTerritoryGateway ( self, string1, string2, ... )
 
 
 AV *
-getBrokersInTerritroyRef ( self )
+getBrokersInTerritoryRef ( self )
 	Aw::Admin::Client self
 
 	PREINIT:
@@ -3152,7 +3871,6 @@ getBrokersInTerritroyRef ( self )
 		BrokerInfo * broker_infos;
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err = awGetBrokersInTerritory ( self->client, &n, &broker_infos );
@@ -3198,7 +3916,6 @@ getAllTerritoryGatewaysRef ( self )
 		BrokerTerritoryGatewayInfo * infos;
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err
@@ -3262,7 +3979,6 @@ setTerritoryGatewaySharedEventTypes ( self, territory_name, av )
 		BrokerSharedEventTypeInfo * infos;
 	
 	CODE:
-
 		AWXS_CLEARERROR
 
 		n     = av_len ( (AV*)SvRV( ST(2) ) ) + 1;
@@ -3308,7 +4024,6 @@ getTerrioryGatewaySharedEventTypesRef ( self, territory_name )
 		BrokerSharedEventTypeInfo * infos;
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err = awGetTerritoryGatewaySharedEventTypes ( self->client, territory_name, &n, &infos );
@@ -3355,7 +4070,6 @@ getClientInfoById ( self, client_id )
 		SV * sv;
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err = awGetClientInfoById ( self->client, client_id, &info );
@@ -3391,7 +4105,8 @@ getClientInfoById ( self, client_id )
 		hv_store ( RETVAL, "high_pub_seqn", 13, 
 			   ll_from_longlong ( longlong_from_string ( awBrokerLongToString( info->high_pub_seqn, blString ) ) ), 0 );
 
-		hv_store ( RETVAL, "sessions",    8, getBrokerClientSessions ( info->sessions, info->num_sessions ), 0 );
+		if ( info->num_sessions )
+			hv_store ( RETVAL, "sessions",    8, getBrokerClientSessions ( info->sessions, info->num_sessions ), 0 );
 			
 		newRV_noinc((SV*) RETVAL);
 		
@@ -3411,7 +4126,6 @@ getClientInfosByIdRef ( self, client_ids, ... )
 		BrokerClientInfo ** infos;
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		if ( items == 3 )
@@ -3468,7 +4182,6 @@ getClientGroupInfo ( self, client_group_name )
 		BrokerClientGroupInfo * info;
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err = awGetClientGroupInfo  ( self->client, client_group_name, &info );
@@ -3496,7 +4209,6 @@ getClientGroupInfo ( self, client_group_name )
 
 
 
-
 HV *
 getTerritoryInfo ( self )
 	Aw::Admin::Client self
@@ -3505,7 +4217,6 @@ getTerritoryInfo ( self )
 		BrokerTerritoryInfo * info;
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err = awGetTerritoryInfo ( self->client, &info );
@@ -3527,7 +4238,7 @@ getTerritoryInfo ( self )
 
 
 AV *
-getTerritroyGatewaySharedEventTypesRef ( self, client_group_names )
+getTerritoryGatewaySharedEventTypesRef ( self, client_group_names )
 	Aw::Admin::Client self
 	char ** client_group_names
 
@@ -3536,7 +4247,6 @@ getTerritroyGatewaySharedEventTypesRef ( self, client_group_names )
 		BrokerClientGroupInfo ** infos;
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err = awGetClientGroupInfos ( self->client, &n, client_group_names, &infos );
@@ -3575,9 +4285,6 @@ getTerritroyGatewaySharedEventTypesRef ( self, client_group_names )
 
 
 
-
-
-
 HV *
 acquireBrokerChangeLock ( self )
 	Aw::Admin::Client self
@@ -3587,7 +4294,6 @@ acquireBrokerChangeLock ( self )
 		BrokerChangeLockInfo * info;
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err = awAcquireBrokerChangeLock ( self->client, &info );
@@ -3614,7 +4320,6 @@ acquireBrokerChangeLock ( self )
 
 
 
-
 HV *
 getActivityTraces ( self, seqn, msecs )
 	Aw::Admin::Client self
@@ -3627,7 +4332,6 @@ getActivityTraces ( self, seqn, msecs )
 		char blString[24];
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err = awGetActivityTraces ( self->client, seqn, msecs, &n, &traces );
@@ -3676,7 +4380,6 @@ joinTerritory ( self, broker_host, broker_name )
 		SV * sv;
 
 	CODE:
-
 		AWXS_CLEARERROR
 
 		gErr = self->err = awJoinTerritory ( self->client, broker_host, broker_name, &failure_info );

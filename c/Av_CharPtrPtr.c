@@ -131,7 +131,7 @@ char **s;
 {
 	char **c;
 	for( c = s; *c != NULL; ++c )
-		safefree( *c );
-	safefree( s );
+		Safefree( *c );
+	Safefree( s );
 }
 

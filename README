@@ -1,10 +1,9 @@
 SPECIAL NOTICE
 ==============
-Releases 0.13.4,5 are an "in case my hard disk eats death or I get hit by
-a truck release".  The main feature of this release are the ActiveWorks
-broker administrative APIs are supported.  They have not been thoroughly
-tested, they may not even work in a number of cases.  Following release
-up to 0.14 will be clean up releases.
+The main feature of this release are the ActiveWorks broker administrative
+APIs are enhanced.  They have not been thoroughly tested, they may not even
+work in a number of cases.  Following releases up to 0.14 will be clean up
+releases.
 
 This release should work fine and is 95% compliant with ActiveWorks 4.0
 libraries.  The 0.14 release will (hopefully) have an interface for all of
@@ -103,7 +102,7 @@ release is to follow the Java API which has the conveniences
 of:
 
   1) Is presumably a well thought out object interface.
-  2) Having a design 
+  2) Having a design.
   3) It's already documented ;-)
   4) Will look familiar to Java converts.
 

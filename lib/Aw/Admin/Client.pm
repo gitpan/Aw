@@ -12,10 +12,18 @@ require Aw::Client;
 
 
 
-sub getSubscriptionsById
+sub getBrokersInTerritory
 {
-	my $result = Aw::Admin::Client::getSubscriptionsByIdRef ( @_ );
+	my $result = Aw::Admin::Client::getBrokersInTerritoryRef ( @_ );
 	( wantarray ) ? @{ $result } : $result ;
+}
+
+
+
+sub getClientSubscriptionsById
+{
+	my $result = Aw::Admin::Client::getClientSubscriptionsByIdRef ( @_ );
+	( wantarray ) ? ( $result ) ? @{ $result } : ()  : $result ;
 }
 
 

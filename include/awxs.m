@@ -21,7 +21,7 @@
 #define AWXS_BROKERSUBSCRIPTION(x)   ((BrokerSubscription *)SvIV((SV*)SvRV( ST(x) )))
 
 
-#define AWXS_CLEARERROR { self->err = AW_NO_ERROR; if (self->errMsg == gErrMsg) gErrMsg = NULL; safefree (self->errMsg); self->errMsg = NULL; gErrCode = 0x0;  sv_setpv ( perl_get_sv("@",0), "" ); }
+#define AWXS_CLEARERROR { gErr = self->err = AW_NO_ERROR; if (gErrMsg != NULL) Safefree(gErrMsg); gErrMsg = self->errMsg = NULL; gErrCode = 0x0;  sv_setpv ( perl_get_sv("@",0), "" ); }
 
 #define AWXS_HANDLE_CLEARERROR(x) {\
 	if ( ix && ix != x ) {\

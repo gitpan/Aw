@@ -1,5 +1,14 @@
 Revision history for Perl extension Aw.
 
+0.13.7 Tue Feb 26 16:40:50 EST 2002
+
+	- fixed numerous small Aw::Admin problems in methods not used previously 
+	- Aw::Admin base class methods added, one day maybe integrate with Aw:: base class.
+	- bin/client_finger.pl and bin/terr_finger.pl added (not fun work in C or Java).
+	- added Aw::Adapter::exit to delete client component.
+	- decided to package include/porbit-perl.h. 
+	- decided the v0.14 criteria will be getting doc/Aw/Admin_*.html complete.
+
 0.13.6 Fri May  4 16:25:30 EDT 2001
 
 	- typemap path is set.
@@ -14,7 +23,6 @@ Revision history for Perl extension Aw.
 	- wantarray checking for char ** return types.
 	- "Please specify prototyping behavior" error is gone.
 
-
 0.13.4 Thu Apr  5 17:45:39 EDT 2001
 
 	- Introduction of Aw::Admin classes.
@@ -22,7 +30,6 @@ Revision history for Perl extension Aw.
 	- Changed back to setting $@ instead of $! which turned out to be
 	  unreliable.
 	  
-
 0.13.3 Wed Feb  7 16:02:19 EST 2001
 
 	- Aw::Adapter::createTypeEvent accepts an initialization hash as a last
