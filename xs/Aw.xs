@@ -5087,7 +5087,7 @@ getCanPublishNamesRef ( self, ... )
 		Aw::Client::getScopeNamesRef            = 8
 
 	PREINIT:
-		int n;
+		int count_charPtrPtr;
 		char * field_name = NULL;
 
 	CODE:
@@ -5099,29 +5099,29 @@ getCanPublishNamesRef ( self, ... )
 		gErr = self->err 
 		= (ix==4)
 #ifdef AW_COMPATIBLE
-		  ? awGetFamilyEventTypeNames ( self->client, field_name, &n, &RETVAL )
+		  ? awGetFamilyEventTypeNames ( self->client, field_name, &count_charPtrPtr, &RETVAL )
 #else
 		  ? (BrokerError)AW_ERROR_INCOMPATIBLE_VERSION 
 #endif /* AW_COMPATIBLE */
 		  : (ix>4)
 		    ? (ix>6)
 		      ? (ix==8)
-		        ? awGetScopeNames ( self->client, &n, &RETVAL )
-		        : awGetScopeEventTypeNames ( self->client, field_name, &n, &RETVAL )
+		        ? awGetScopeNames ( self->client, &count_charPtrPtr, &RETVAL )
+		        : awGetScopeEventTypeNames ( self->client, field_name, &count_charPtrPtr, &RETVAL )
 		      : (ix==6)
-		        ? awGetPlatformInfoKeys ( &n, &RETVAL )
+		        ? awGetPlatformInfoKeys ( &count_charPtrPtr, &RETVAL )
 #ifdef AW_COMPATIBLE
-		        : awGetFamilyNames ( self->client, &n, &RETVAL )
+		        : awGetFamilyNames ( self->client, &count_charPtrPtr, &RETVAL )
 #else
 		        : (BrokerError)AW_ERROR_INCOMPATIBLE_VERSION 
 #endif /* AW_COMPATIBLE */
 		    : (ix>2)
 		      ? (ix==3)
-		        ? awGetEventTypeNames ( self->client, &n, &RETVAL )
-		        : awGetEventTypeInfosetNames ( self->client, field_name, &n, &RETVAL )
+		        ? awGetEventTypeNames ( self->client, &count_charPtrPtr, &RETVAL )
+		        : awGetEventTypeInfosetNames ( self->client, field_name, &count_charPtrPtr, &RETVAL )
 		      : (ix)
-		        ? awGetCanSubscribeNames ( self->client, &n, &RETVAL )
-		        : awGetCanPublishNames ( self->client, &n, &RETVAL )
+		        ? awGetCanSubscribeNames ( self->client, &count_charPtrPtr, &RETVAL )
+		        : awGetCanPublishNames ( self->client, &count_charPtrPtr, &RETVAL )
 		;
 	
 		AWXS_CHECKSETERROR_RETURN
@@ -7460,7 +7460,7 @@ getFieldNamesRef ( self, ... )
 		Aw::TypeDef::getFieldNamesRef = 1
 
 	PREINIT:
-		int n;
+		int count_charPtrPtr;
 		char *  field_name = NULL;
 
 	CODE:
@@ -7473,13 +7473,13 @@ getFieldNamesRef ( self, ... )
 			AWXS_CLEARERROR
 			gErr
 			= self->err
-			= awGetTypeDefFieldNames ( self->type_def, field_name, &n, &RETVAL );
+			= awGetTypeDefFieldNames ( self->type_def, field_name, &count_charPtrPtr, &RETVAL );
 		} else {
 			xsBrokerEvent * self = AWXS_BROKEREVENT(0);
 			AWXS_CLEARERROR
 			gErr
 			= self->err
-			= awGetFieldNames ( self->event, field_name, &n, &RETVAL );
+			= awGetFieldNames ( self->event, field_name, &count_charPtrPtr, &RETVAL );
 		}
 
 	
@@ -9293,6 +9293,9 @@ char **
 getFlagsRef ( self )
 	Aw::License self
 
+	PREINIT:
+		int count_charPtrPtr = 0;  /* we don't know License Flags length */
+
 	CODE:
 		RETVAL = awGetLicenseFlags ( self->license_string );
 
@@ -11075,7 +11078,7 @@ getStringSeqInfoRef ( self, field_name )
 
 	PREINIT:
 		awaBool test;
-		int n;
+		int count_charPtrPtr;
 
 	CODE:
 		if (ix < 6) {
@@ -11094,18 +11097,18 @@ getStringSeqInfoRef ( self, field_name )
 		test
 		= (ix > 6)
 		  ? (ix==8)
-		    ? awAdapterETInfoGetUCStringSeqAsUTF8 ( AWXS_ADAPTEREVENTTYPE(0)->adapterET, field_name, &n, &RETVAL )
+		    ? awAdapterETInfoGetUCStringSeqAsUTF8 ( AWXS_ADAPTEREVENTTYPE(0)->adapterET, field_name, &count_charPtrPtr, &RETVAL )
 		    : (ix-6)
-		      ? awAdapterETInfoGetUCStringSeqAsA ( AWXS_ADAPTEREVENTTYPE(0)->adapterET, field_name, &n, &RETVAL )
-		      : awAdapterETInfoGetStringSeq ( AWXS_ADAPTEREVENTTYPE(0)->adapterET, field_name, &n, &RETVAL )
+		      ? awAdapterETInfoGetUCStringSeqAsA ( AWXS_ADAPTEREVENTTYPE(0)->adapterET, field_name, &count_charPtrPtr, &RETVAL )
+		      : awAdapterETInfoGetStringSeq ( AWXS_ADAPTEREVENTTYPE(0)->adapterET, field_name, &count_charPtrPtr, &RETVAL )
 
 
 		  : (ix > 1)
 		    ? (ix > 3)
-		      ? awAdapterETInfoGetUCStringSeqAsUTF8Req ( gHandle, field_name, &n, &RETVAL )
-		      : awAdapterETInfoGetUCStringSeqAsAReq ( gHandle, field_name, &n, &RETVAL )
+		      ? awAdapterETInfoGetUCStringSeqAsUTF8Req ( gHandle, field_name, &count_charPtrPtr, &RETVAL )
+		      : awAdapterETInfoGetUCStringSeqAsAReq ( gHandle, field_name, &count_charPtrPtr, &RETVAL )
 
-		    : awAdapterETInfoGetStringSeqReq ( gHandle, field_name, &n, &RETVAL )
+		    : awAdapterETInfoGetStringSeqReq ( gHandle, field_name, &count_charPtrPtr, &RETVAL )
 		;
 
 		if ( test == awaFalse )

@@ -193,3 +193,30 @@ main:
 	}
 
 }
+
+__END__
+
+=head1 NAME
+
+ttt_client.pl - A TicTacToe Client for ActiveWorks Brokers.
+
+=head1 SYNOPSIS
+
+./ttt_client.pl
+
+=head1 DESCRIPTION
+
+The script will connect to the broker configured on line 5 of the script.
+The client can play against other clients (the intended use).  If the
+ttt_adapter.pl is connected to the same broker, the client will play against
+the adapter.
+
+=head1 AUTHOR
+
+Daniel Yacob Mekonnen,  L<Yacob@wMUsers.Com|mailto:Yacob@wMUsers.Com>
+
+=head1 SEE ALSO
+
+S<perl(1). ActiveWorks Supplied Documentation>
+
+=cut

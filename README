@@ -1,7 +1,13 @@
 SPECIAL NOTICE
 ==============
+0.15.2 is a test upload for 0.16.0 and will be deleted in 2 days.
+
+0.16.0 offers compatibility with Perl 5.6 - 5.8.  The package builds and
+the bin/ scripts pass with Perl 5.8 but it is not optimized for 5.8.  Mostly
+this impacts better Unicode support in Perl 5.6 and later.  This enhanced
+support is not yet taken advantage of in the Aw package.
+
 0.15 introduces the setting and getting event type definitions as hashes.
-0.15.1 includes documentation updates.
 
 See bin/typedef-test1.pl and bin/typedef-test2.pl for examples of hash
 and typedef usage.  bin/eod-autotest.pl has become a "tour de force" of

@@ -24,7 +24,8 @@ WriteMakefile(
 	'NAME'		=> 'Aw::Admin',
 	'VERSION_FROM'	=> '../../lib/Aw/Admin.pm', # finds $VERSION
 	'DEFINE'	=>
-		($] < 5.0045 ? '-DPERL5004_COMPAT -DAWXS_WARNS' : '-DAWXS_WARNS'),
+		( $] < 5.0045 ? '-DPERL5004_COMPAT -DAWXS_WARNS'
+		: ( $] >= 5.006 ? '-DAWXS_WARNS -DPERL56_COMPAT' : '-DAWXS_WARNS') ),
 	# 'PREREQ_PM' 	=> { 'CORBA::LongLong' => 0 },
 	#
 	# Uncomment for 3.0

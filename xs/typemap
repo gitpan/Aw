@@ -29,7 +29,7 @@ CORBA::LongLong		T_LONGLONG
 
 Aw::Info		O_HvRV
 
-#  uncomment below for HV and AV ref error handling that warns instead of croaks.
+# uncomment below for HV and AV ref error handling that warns instead of croaks.
 #
 # HV *			T_HvRV
 # AV *			T_AvRV

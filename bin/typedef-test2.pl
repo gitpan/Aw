@@ -112,3 +112,29 @@ print $t->toString, "\n";
 #  $c->setEventAdminTypeDef ( $t );
 #
 #  GUIs?  We don't need no stink'n GUIs!!
+
+__END__
+
+=head1 NAME
+
+typedef-test2.pl
+
+=head1 SYNOPSIS
+
+./typedef-test2.pl
+
+=head1 DESCRIPTION
+
+Demonstrates creating an Aw::Admin::TypeDef and defining it for the EventOfDoom
+all in a single step.
+
+
+=head1 AUTHOR
+
+Daniel Yacob Mekonnen,  L<Yacob@wMUsers.Com|mailto:Yacob@wMUsers.Com>
+
+=head1 SEE ALSO
+
+S<perl(1). ActiveWorks Supplied Documentation>
+
+=cut

@@ -16,6 +16,7 @@ WriteMakefile(
 	'NAME'		=> 'libawperl',
 	'VERSION_FROM'	=> '../lib/Aw.pm', # finds $VERSION
 	'LINKTYPE'	=> 'static',
+	'DEFINE'	=> ($] >= 5.006 ? '-DPERL56_COMPAT' : ''),
 	#
 	# Uncomment for 3.0
 	#

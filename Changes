@@ -1,5 +1,12 @@
 Revision history for Perl extension Aw.
 
+0.16.0 Thu Jan 23 10:04:02 EST 2003
+
+	- c/Makefile.PL  updated for Perl >= 5.6.
+	- Av_CharPtrPtr.[ch] updated for extra arg for Perl >= 5.6.
+          The arg is ignored.
+	- xs/Aw.xs, xs/Aw/Admin.xs count_charPtrPtr added for Perl >= 5.6.
+
 0.15.1 Mon Jan 20 14:17:24 EST 2003
 
 	- documentation tweaks only.

@@ -1425,15 +1425,15 @@ getAuthNamesRef ( self )
 		Aw::Admin::AccessControlList::getUserNamesRef = 1
 
 	PREINIT:
-		int n;
+		int count_charPtrPtr;
 
 	CODE:
 		AWXS_CLEARERROR
 
 		gErr = self->err 
 		= (ix)
-		  ? awGetACLUserNames  ( self->acl, &n, &RETVAL )
-		  : awGetACLAuthNames  ( self->acl, &n, &RETVAL )
+		  ? awGetACLUserNames  ( self->acl, &count_charPtrPtr, &RETVAL )
+		  : awGetACLAuthNames  ( self->acl, &count_charPtrPtr, &RETVAL )
 		;
 
 		AWXS_CHECKSETERROR_RETURN
@@ -1860,12 +1860,12 @@ getFieldNamesRef ( self, field_name )
 	char * field_name
 	
 	PREINIT:
-		int n;
+		int count_charPtrPtr;
 
 	CODE:
 		AWXS_CLEARERROR
 
-		gErr = self->err = awGetAdminTypeDefFieldNames ( self->type_def, field_name, &n, &RETVAL );
+		gErr = self->err = awGetAdminTypeDefFieldNames ( self->type_def, field_name, &count_charPtrPtr, &RETVAL );
 
 		AWXS_CHECKSETERROR_RETURN
 
@@ -2408,15 +2408,15 @@ getDNsFromCertFileRef ( self, certificate_file, password )
 		Aw::Admin::ServerClient::getRootDNsFromCertFile = 1
 		
 	PREINIT:
-		int n;
+		int count_charPtrPtr;
 
 	CODE:
 		AWXS_CLEARERROR
 
 		gErr = self->err
 		= (ix)
-		  ? awGetServerDNsFromCertFile     ( self->server_client, certificate_file, password, &n, &RETVAL )
-		  : awGetServerRootDNsFromCertFile ( self->server_client, certificate_file, password, &n, &RETVAL )
+		  ? awGetServerDNsFromCertFile     ( self->server_client, certificate_file, password, &count_charPtrPtr, &RETVAL )
+		  : awGetServerRootDNsFromCertFile ( self->server_client, certificate_file, password, &count_charPtrPtr, &RETVAL )
 		;
 
 		AWXS_CHECKSETERROR_RETURN
@@ -3080,12 +3080,12 @@ getClientGroupNamesRef ( self )
 	Aw::Admin::Client self
 
 	PREINIT:
-		int n;
+		int count_charPtrPtr;
 
 	CODE:
 		AWXS_CLEARERROR
 
-		gErr = self->err = awGetClientGroupNames ( self->client, &n, &RETVAL );
+		gErr = self->err = awGetClientGroupNames ( self->client, &count_charPtrPtr, &RETVAL );
 
 		AWXS_CHECKSETERROR_RETURN
 
@@ -3107,7 +3107,7 @@ getClientGroupCanPublishListRef ( self, string )
 		Aw::Admin::Client::getClientIdsWhichAreSubscribedRef   = 5
 
 	PREINIT:
-		int n;
+		int count_charPtrPtr;
 
 	CODE:
 		AWXS_CLEARERROR
@@ -3115,15 +3115,15 @@ getClientGroupCanPublishListRef ( self, string )
 		gErr = self->err
 		= (ix>3)
 		  ? (ix==5)
-		    ? awGetClientIdsWhichAreSubscribed     ( self->client, string, &n, &RETVAL )
-		    : awGetClientIdsByClientGroup          ( self->client, string, &n, &RETVAL )
+		    ? awGetClientIdsWhichAreSubscribed     ( self->client, string, &count_charPtrPtr, &RETVAL )
+		    : awGetClientIdsByClientGroup          ( self->client, string, &count_charPtrPtr, &RETVAL )
 		  : (ix>1)
 		    ? (ix==3)
-		      ? awGetClientGroupsWhichCanSubscribe ( self->client, string, &n, &RETVAL )
-		      : awGetClientGroupsWhichCanPublish   ( self->client, string, &n, &RETVAL )
+		      ? awGetClientGroupsWhichCanSubscribe ( self->client, string, &count_charPtrPtr, &RETVAL )
+		      : awGetClientGroupsWhichCanPublish   ( self->client, string, &count_charPtrPtr, &RETVAL )
 		    : (ix)
-		      ? awGetClientGroupCanSubscribeList   ( self->client, string, &n, &RETVAL )
-		      : awGetClientGroupCanPublishList     ( self->client, string, &n, &RETVAL )
+		      ? awGetClientGroupCanSubscribeList   ( self->client, string, &count_charPtrPtr, &RETVAL )
+		      : awGetClientGroupCanPublishList     ( self->client, string, &count_charPtrPtr, &RETVAL )
 		;
 
 		AWXS_CHECKSETERROR_RETURN
@@ -3138,12 +3138,12 @@ getClientIdsRef ( self )
 	Aw::Admin::Client self
 
 	PREINIT:
-		int n;
+		int count_charPtrPtr;
 
 	CODE:
 		AWXS_CLEARERROR
 
-		gErr = self->err = awGetClientIds ( self->client, &n, &RETVAL );
+		gErr = self->err = awGetClientIds ( self->client, &count_charPtrPtr, &RETVAL );
 
 		AWXS_CHECKSETERROR_RETURN
 
@@ -4177,7 +4177,7 @@ getAllTerritoryGatewaysRef ( self )
 			hv_store ( hv, "num_accessible_territories", 26, newSViv ( (int)infos[i].num_accessible_territories ), 0 );
 
 			sv = sv_newmortal();
-			XS_pack_charPtrPtr ( sv, infos[i].accessible_territories );
+			XS_pack_charPtrPtr ( sv, infos[i].accessible_territories, infos[i].num_accessible_territories );
 			hv_store ( hv, "accessible_territories", 22, sv, 0 );
 			
 			av_push( RETVAL, sv_bless( newRV_noinc((SV*)hv), gv_stashpv("Aw::Info",1) ) );
@@ -4720,11 +4720,11 @@ joinTerritory ( self, broker_host, broker_name )
 		RETVAL = newHV();
 
 		sv = sv_newmortal();
-		XS_pack_charPtrPtr ( sv, failure_info->event_type_names );
+		XS_pack_charPtrPtr ( sv, failure_info->event_type_names, failure_info->num_event_type_names );
 		hv_store ( RETVAL, "event_type_names",       16, sv, 0 );
 
 		sv = sv_newmortal();
-		XS_pack_charPtrPtr ( sv, failure_info->client_group_names );
+		XS_pack_charPtrPtr ( sv, failure_info->client_group_names, failure_info->num_client_group_names );
 		hv_store ( RETVAL, "client_group_names",     18, sv, 0 );
 
 		hv_store ( RETVAL, "num_client_group_names", 22, newSViv ( (int)failure_info->num_client_group_names ), 0 );

@@ -53,8 +53,8 @@ require AutoLoader;
 	AW_TRACE_OTHER
 );
 
-$VERSION = '0.15.1';
-$VERSION_NAME = 'Tadpole Samurai';
+$VERSION = '0.15.2';
+$VERSION_NAME = 'Dromedary Samurai';
 $SPAM = 0;
 
 

@@ -30,4 +30,4 @@ SV *ld_from_longdouble (long double val);
 long double longdouble_from_string (const char *str);
 char *longdouble_to_string (long double val);
 
-#endif __PORBIT_EXTTYPES_H__
+#endif /* __PORBIT_EXTTYPES_H__ */

@@ -284,9 +284,8 @@ main: {
 
 	my %properties = (
 	        clientId	=> "TicTacToe Adapter",
-	        # "TicTacToe Adapter",
-	        # "Broker #1\@localhost",
-	        broker		=> 'test_broker@localhost:6449',
+	        # broker		=> 'test_broker@localhost:6449',
+	        broker		=> $ARGV[0],
 	        adapterId	=> 0,
 	        debug		=> 1,
 	        clientGroup	=> "PerlDemoAdapter",
@@ -326,9 +325,6 @@ main: {
 
 
 __END__
-
-This tictactoe adapter is loosely based on the the java version by
-Arthur van Hoff.
 
 /*
  * @(#)TicTacToe.java	1.4 98/06/29
@@ -376,3 +372,29 @@ Arthur van Hoff.
  * @modified 04/23/96 Jim Hagen : winning sounds
  * @modified 02/10/98 Mike McCloskey : added destroy()
  */
+
+
+=head1 NAME
+
+ttt_adapter.pl - A TicTacToe Adapter for ActiveWorks Brokers.
+
+=head1 SYNOPSIS
+
+./ttt_adapter.pl MyBroker@MyHost:1234
+
+=head1 DESCRIPTION
+
+The TicTacToe adapter is based loosely on the Java applet by
+Arthur van Hoff.  The adapter will play against the mod_perl
+client found in bin/apache/site_perl/Apache/Toe.pm.  The adapter
+can also play against the ttt_client.pl client script. 
+
+=head1 AUTHOR
+
+Daniel Yacob Mekonnen,  L<Yacob@wMUsers.Com|mailto:Yacob@wMUsers.Com>
+
+=head1 SEE ALSO
+
+S<perl(1). ActiveWorks Supplied Documentation>
+
+=cut

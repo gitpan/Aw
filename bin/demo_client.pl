@@ -178,22 +178,22 @@ __END__
 
 =head1 NAME
 
-  demo_client.pl
+demo_client.pl
 
 =head1 SYNOPSIS
 
-  ./demo_client.pl
+./demo_client.pl
 
 =head1 DESCRIPTION
 
-  Client to submit the PerlDevKit::PerlDemo event, goes with
-  the demo_adapter.pl script.  The adapter simply prints the event it
-  receives as a string.  The script demonstrates client and event
-  creation for a modestly complex event.  The script will also create
-  dump and embed a HelloWorld object that the adapter will revive.
+Client to submit the PerlDevKit::PerlDemo event, goes with
+the demo_adapter.pl script.  The adapter simply prints the event it
+receives as a string.  The script demonstrates client and event
+creation for a modestly complex event.  The script will also create,
+dump (serialize) and embed a HelloWorld object that the adapter will revive.
 
-  The HelloWorld.pm must be installed where both the demo_client.pl
-  and demo_adapter.pl scripts are executed from.
+The HelloWorld.pm must be installed where both the demo_client.pl
+and demo_adapter.pl scripts are executed from.
 
 =head1 AUTHOR
 

@@ -106,17 +106,17 @@ __END__
 
 =head1 NAME
 
-  client_finger.pl
+client_finger.pl - Finger Broker Clients.
 
 =head1 SYNOPSIS
 
-  client_finger.pl MyBroker@MyHost:1234
+./client_finger.pl MyBroker@MyHost:1234
 
 =head1 DESCRIPTION
 
-  Get all info available from every client connected to given
-  broker.  Localhost is used when no host is provided after "@".
-  The default broker is used when no broker is specified.
+Get all info available from every client connected to given
+broker.  Localhost is used when no host is provided after "@".
+The default broker is used when no broker is specified.
 
 =head1 AUTHOR
 

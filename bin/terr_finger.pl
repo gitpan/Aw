@@ -160,20 +160,20 @@ __END__
 
 =head1 NAME
 
-  terr_finger.pl
+terr_finger.pl - Finger Territory Clients.
 
 =head1 SYNOPSIS
 
-  terr_finger.pl MyBroker@MyHost:1234
+./terr_finger.pl MyBroker@MyHost:1234
 
 =head1 DESCRIPTION
 
-  Get all possibly info available on a territory and every connected
-  element on every broker in the territory.  Except for gateways
-  since I've never had one to work with.
+Get all possibly info available on a territory and every connected
+element on every broker in the territory.  Except for gateways
+since I've never had one to work with.
 
-  The localhost is used when no host is provided after "@".
-  The default broker is used when no broker is specified.
+The localhost is used when no host is provided after "@".
+The default broker is used when no broker is specified.
 
 =head1 AUTHOR
 
