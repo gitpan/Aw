@@ -224,11 +224,11 @@ sub getPlatformInfoKeys
 sub publishEventsWithAck
 {
 	unless ( ref($_[1]) eq "ARRAY" ) {
-		warn ( "arg 0 is not an array reference." );
+		CORE::warn ( "arg 0 is not an array reference." );
 		return undef;
 	}
 	unless ( ref($_[3]) eq "ARRAY") {
-		warn ( "arg 2 is not an array reference." );
+		CORE::warn ( "arg 2 is not an array reference." );
 		return undef;
 	}
 
@@ -240,11 +240,11 @@ sub publishEventsWithAck
 sub deliverEventsWithAck
 {
 	unless ( ref($_[2]) eq "ARRAY") {
-		warn ( "arg 0 is not an array reference." );
+		CORE::warn ( "arg 0 is not an array reference." );
 		return undef;
 	}
 	unless ( ref($_[4]) eq "ARRAY") {
-		warn ( "arg 2 is not an array reference." );
+		CORE::warn ( "arg 2 is not an array reference." );
 		return undef;
 	}
 

@@ -21,7 +21,7 @@
 #define AWXS_BROKERSUBSCRIPTION(x) ((BrokerSubscription *)SvIV((SV*)SvRV( ST(x) )))
 
 
-#define AWXS_CLEARERROR { self->err = AW_NO_ERROR; if (self->errMsg == gErrMsg) gErrMsg = NULL; safefree (self->errMsg); self->errMsg = NULL; }
+#define AWXS_CLEARERROR { self->err = AW_NO_ERROR; if (self->errMsg == gErrMsg) gErrMsg = NULL; safefree (self->errMsg); self->errMsg = NULL; gErrCode = 0x0; }
 
 #define AWXS_HANDLE_CLEARERROR(x) {\
 	if ( ix && ix != x ) {\

@@ -75,6 +75,7 @@ BrokerBoolean BrokerCallbackFunc ( BrokerClient cbClient, BrokerEvent cbEvent, v
  */
 static BrokerError gErr = NULL;
 static char * gErrMsg   = NULL;
+static int gErrCode     = 0;
 
 
 /*
@@ -1586,8 +1587,9 @@ char * strings[5];
 			break;
 	}
 
+	sv_setpv ( perl_get_sv("!",0), gErrMsg );
 
-return ( gErrMsg );
+	return ( gErrMsg );
 
 }
 #endif /* AWXS_WARNS */
@@ -1936,10 +1938,14 @@ xsBrokerEvent * requestEvent;
 	eventDef->adapterET = NULL;
 	requestEvent->event = NULL;
 
+/*
+ * seems to be a bad idea with Perl 5.005, check again with 5.004 
+ * 
 	if ( SvREFCNT ( resv ) )
 		SvREFCNT_dec ( resv );
 	if ( SvREFCNT ( edsv ) )
 		SvREFCNT_dec ( edsv );
+*/
 
 	return ( POPi );
 
@@ -2556,9 +2562,10 @@ MODULE = Aw			PACKAGE = Aw
 
 BOOT:
 
-	printf ( "\nAw %s [%s] (c) RCN <yacob@rcn.com>\n\n" ,
-		 (char *)SvPV(perl_get_sv("Aw::VERSION", FALSE), PL_na),
-		 (char *)SvPV(perl_get_sv("Aw::VERSION_NAME", FALSE), PL_na)  );
+	if ( (int)SvIV(perl_get_sv("Aw::SPAM", FALSE)) )
+		printf ( "\nAw %s [%s] (c) RCN <yacob@rcn.com>\n\n" ,
+			 (char *)SvPV(perl_get_sv("Aw::VERSION", FALSE), PL_na),
+			 (char *)SvPV(perl_get_sv("Aw::VERSION_NAME", FALSE), PL_na)  );
 
 
 double
@@ -2890,6 +2897,20 @@ errmsg ( ... )
 		Aw::TypeDef::errmsg              = 10
 		Aw::TypeDefCache::errmsg         = 11
 
+		Aw::getErrMsg                       = 100
+		Aw::Adapter::getErrMsg              = 101
+		Aw::EventType::getErrMsg            = 102
+		Aw::Util::getErrMsg                 = 103
+		Aw::Client::getErrMsg               = 104
+		Aw::ConnectionDescriptor::getErrMsg = 105
+		Aw::Event::getErrMsg                = 106
+		Aw::Error::getErrMsg                = 107
+		Aw::Filter::getErrMsg               = 108
+		Aw::Format::getErrMsg               = 109
+		Aw::TypeDef::getErrMsg              = 110
+		Aw::TypeDefCache::getErrMsg         = 111
+
+
 	CODE:
 		BrokerError err = NULL;
 		char * errMsg   = NULL;
@@ -2898,61 +2919,73 @@ errmsg ( ... )
 		switch ( ix ) 
 		  {
 			case 0:
+			case 100:
 				err    = gErr;
 				errMsg = gErrMsg;
 				break;
 
 			case 1:
+			case 101:
 				err    = AWXS_ADAPTER(0)->err;
 				errMsg = AWXS_ADAPTER(0)->errMsg;
 				break;
 
 			case 2:
+			case 102:
 				err    = AWXS_ADAPTEREVENTTYPE(0)->err;
 				errMsg = AWXS_ADAPTEREVENTTYPE(0)->errMsg;
 				break;
 
 			case 3:
+			case 103:
 				err    = AWXS_ADAPTERUTIL(0)->err;
 				errMsg = AWXS_ADAPTERUTIL(0)->errMsg;
 				break;
 
 			case 4:
+			case 104:
 				err    = AWXS_BROKERCLIENT(0)->err;
 				errMsg = AWXS_BROKERCLIENT(0)->errMsg;
 				break;
 
 			case 5:
+			case 105:
 				err    = AWXS_BROKERCONNECTIONDESC(0)->err;
 				errMsg = AWXS_BROKERCONNECTIONDESC(0)->errMsg;
 				break;
 
 			case 6:
+			case 106:
 				err    = AWXS_BROKEREVENT(0)->err;
 				errMsg = AWXS_BROKEREVENT(0)->errMsg;
 				break;
 
 			case 7:
+			case 107:
 				err    = AWXS_BROKERERROR(0)->err;
 				errMsg = AWXS_BROKERERROR(0)->errMsg;
 				break;
 
 			case 8:
+			case 108:
 				err    = AWXS_BROKERFILTER(0)->err;
 				errMsg = AWXS_BROKERFILTER(0)->errMsg;
 				break;
 
 			case 9:
+			case 109:
 				err    = AWXS_BROKERFORMAT(0)->err;
 				errMsg = AWXS_BROKERFORMAT(0)->errMsg;
 				break;
 
 			case 10:
+			case 110:
 				err    = AWXS_BROKERTYPEDEF(0)->err;
 				errMsg = AWXS_BROKERTYPEDEF(0)->errMsg;
 				break;
 
 			case 11:
+			case 111:
 				err    = AWXS_BROKERTYPEDEFCACHE(0)->err;
 				errMsg = AWXS_BROKERTYPEDEFCACHE(0)->errMsg;
 				break;
@@ -2971,6 +3004,249 @@ errmsg ( ... )
 			RETVAL = errMsg;
 		else
 			RETVAL = awErrorToCompleteString ( err );  /* hopefully NULL if AW_NO_ERROR */
+
+	OUTPUT:
+	RETVAL
+
+
+
+void
+setErrMsg ( self, newErrMsg )
+	char * newErrMsg
+
+	ALIAS:
+
+		Aw::setErrMsg                       =  0
+		Aw::Adapter::setErrMsg              =  1
+		Aw::EventType::setErrMsg            =  2
+		Aw::Util::setErrMsg                 =  3
+		Aw::Client::setErrMsg               =  4
+		Aw::ConnectionDescriptor::setErrMsg =  5
+		Aw::Event::setErrMsg                =  6
+		Aw::Error::setErrMsg                =  7
+		Aw::Filter::setErrMsg               =  8
+		Aw::Format::setErrMsg               =  9
+		Aw::TypeDef::setErrMsg              = 10
+		Aw::TypeDefCache::setErrMsg         = 11
+
+	CODE:
+		char ** errMsg;
+
+		switch ( ix ) 
+		  {
+			case 0:
+				errMsg =& gErrMsg;
+				break;
+
+			case 1:
+				errMsg =& AWXS_ADAPTER(0)->errMsg;
+				break;
+
+			case 2:
+				errMsg =& AWXS_ADAPTEREVENTTYPE(0)->errMsg;
+				break;
+
+			case 3:
+				errMsg =& AWXS_ADAPTERUTIL(0)->errMsg;
+				break;
+
+			case 4:
+				errMsg =& AWXS_BROKERCLIENT(0)->errMsg;
+				break;
+
+			case 5:
+				errMsg =& AWXS_BROKERCONNECTIONDESC(0)->errMsg;
+				break;
+
+			case 6:
+				errMsg =& AWXS_BROKEREVENT(0)->errMsg;
+				break;
+
+			case 7:
+				errMsg =& AWXS_BROKERERROR(0)->errMsg;
+				break;
+
+			case 8:
+				errMsg =& AWXS_BROKERFILTER(0)->errMsg;
+				break;
+
+			case 9:
+				errMsg =& AWXS_BROKERFORMAT(0)->errMsg;
+				break;
+
+			case 10:
+				errMsg =& AWXS_BROKERTYPEDEF(0)->errMsg;
+				break;
+
+			case 11:
+				errMsg =& AWXS_BROKERTYPEDEFCACHE(0)->errMsg;
+				break;
+
+			default:
+#ifdef AWXS_WARNS
+				if ( gWarn )
+					warn ( "You need an Alias here: %i", ix );
+#endif /* AWXS_WARNS */
+				break;
+		  }
+
+		if ( *errMsg )
+			Safefree ( *errMsg );
+
+		gErrMsg = *errMsg = strdup ( newErrMsg );
+
+
+
+void
+throw ( self, newErrCode )
+	int newErrCode
+
+	ALIAS:
+
+		Aw::throw                       =  0
+		Aw::Adapter::throw              =  1
+		Aw::EventType::throw            =  2
+		Aw::Util::throw                 =  3
+		Aw::Client::throw               =  4
+		Aw::ConnectionDescriptor::throw =  5
+		Aw::Event::throw                =  6
+		Aw::Error::throw                =  7
+		Aw::Filter::throw               =  8
+		Aw::Format::throw               =  9
+		Aw::TypeDef::throw              = 10
+		Aw::TypeDefCache::throw         = 11
+
+	PREINIT:
+
+		char * strErrCode;
+
+	CODE:
+		gErrCode = newErrCode;
+		strErrCode = (char *)safemalloc ( 8 * sizeof (char) );
+		sprintf ( strErrCode, "%i", gErrCode );
+		sv_setpv ( perl_get_sv("!",0), strErrCode );
+		safefree ( strErrCode );
+
+
+
+int
+catch ( ... )
+
+	ALIAS:
+
+		Aw::catch                       =  0
+		Aw::Adapter::catch              =  1
+		Aw::EventType::catch            =  2
+		Aw::Util::catch                 =  3
+		Aw::Client::catch               =  4
+		Aw::ConnectionDescriptor::catch =  5
+		Aw::Event::catch                =  6
+		Aw::Error::catch                =  7
+		Aw::Filter::catch               =  8
+		Aw::Format::catch               =  9
+		Aw::TypeDef::catch              = 10
+		Aw::TypeDefCache::catch         = 11
+
+	CODE:
+		if ( items == 1 || (items == 2 && !SvOK(ST(1)) ) ) {
+			if ( gErrCode == (int)AW_NO_ERROR )
+				XSRETURN_UNDEF;
+
+			RETVAL = gErrCode;
+			/*
+			   insert here a switch to do awGetErrorCode ( self->err )
+			   or make a $self->getErrorCode method that works on self->err
+			*/
+		}
+		else if ( SvTYPE(ST(1)) == SVt_PV ) {
+			char *	exception = (char *)SvPV(ST(1),PL_na);
+			RETVAL = ( strstr (gErrMsg, exception) ) ? awaTrue : awaFalse;
+		}
+		else {
+			int exception = (int)SvIV(ST(1));
+			RETVAL = ( exception == gErrCode ) ? awaTrue : awaFalse;
+		}
+
+
+	OUTPUT:
+	RETVAL
+
+
+
+int
+getErrCode ( ... )
+
+	ALIAS:
+		Aw::getErrCode                       =  0
+		Aw::Adapter::getErrCode              =  1
+		Aw::EventType::getErrCode            =  2
+		Aw::Util::getErrCode                 =  3
+		Aw::Client::getErrCode               =  4
+		Aw::ConnectionDescriptor::getErrCode =  5
+		Aw::Event::getErrCode                =  6
+		Aw::Filter::getErrCode               =  7
+		Aw::Format::getErrCode               =  8
+		Aw::TypeDef::getErrCode              =  9
+		Aw::TypeDefCache::getErrCode         = 10
+
+
+	CODE:
+
+
+		switch ( ix ) 
+		  {
+			case 0:
+				RETVAL = awGetErrorCode ( gErr );
+				break;
+
+			case 1:
+				RETVAL = awGetErrorCode ( AWXS_ADAPTER(0)->err );
+				break;
+
+			case 2:
+				RETVAL = awGetErrorCode ( AWXS_ADAPTEREVENTTYPE(0)->err );
+				break;
+
+			case 3:
+				RETVAL = awGetErrorCode ( AWXS_ADAPTERUTIL(0)->err );
+				break;
+
+			case 4:
+				RETVAL = awGetErrorCode ( AWXS_BROKERCLIENT(0)->err );
+				break;
+
+			case 5:
+				RETVAL = awGetErrorCode ( AWXS_BROKERCONNECTIONDESC(0)->err );
+				break;
+
+			case 6:
+				RETVAL = awGetErrorCode ( AWXS_BROKEREVENT(0)->err );
+				break;
+
+			case 7:
+				RETVAL = awGetErrorCode ( AWXS_BROKERFILTER(0)->err );
+				break;
+
+			case 8:
+				RETVAL = awGetErrorCode ( AWXS_BROKERFORMAT(0)->err );
+				break;
+
+			case 9:
+				RETVAL = awGetErrorCode ( AWXS_BROKERTYPEDEF(0)->err );
+				break;
+
+			case 10:
+				RETVAL = awGetErrorCode ( AWXS_BROKERTYPEDEFCACHE(0)->err );
+				break;
+
+			default:
+#ifdef AWXS_WARNS
+				if ( gWarn )
+					warn ( "You need an Alias here: %i", ix );
+#endif /* AWXS_WARNS */
+				break;
+		  }
+
 
 	OUTPUT:
 	RETVAL
@@ -4274,8 +4550,10 @@ _beginTransaction ( self, transaction_id, required_level, participants )
 		
 		gErr = self->err = awBeginTransaction ( self->client, transaction_id, required_level, (items-3), participants, &RETVAL );
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 
 	OUTPUT:
@@ -4414,8 +4692,10 @@ canPublish ( self, event_type_name )
 		  : awCanPublish   ( self->client, event_type_name, &RETVAL )
 		;
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 		
 	OUTPUT:
 	RETVAL
@@ -4666,8 +4946,10 @@ endTransaction ( self, transaction_id, mode )
 		
 		gErr = self->err = awEndTransaction ( self->client, transaction_id, mode, &RETVAL );
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 	OUTPUT:
 	RETVAL
@@ -4715,8 +4997,10 @@ getBrokerSSLCertificate ( self )
 		
 		gErr = self->err = awGetBrokerSSLCertificate ( self->client, &RETVAL );
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 	OUTPUT:
 	RETVAL
@@ -4733,8 +5017,10 @@ getBrokerVersionNumber ( self )
 
 		gErr = self->err = awGetBrokerVersionNumber ( self->client, &RETVAL );
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 #else
 		warn ( "'getBrokerVersionNumber' available in AW v3.1+.  Recompile Aw.xs if you have reached this warning in error.");
 		XSRETURN_UNDEF;
@@ -4797,8 +5083,10 @@ getCanPublishNamesRef ( self, ... )
 		        : awGetCanPublishNames ( self->client, &n, &RETVAL )
 		;
 	
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 		
 	OUTPUT:
 	RETVAL
@@ -4825,8 +5113,10 @@ getCanPublishTypeDefsRef ( self )
 		  : awGetCanPublishTypeDefs   ( self->client, &n, type_defs )
 		;
 	
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 		/* convert to an AV of xsBrokerTypeDefs */
 		{
@@ -4877,8 +5167,10 @@ getClientLastPublishSequenceNumber ( self )
 
 		gErr = self->err = awGetClientLastPublishSequenceNumber ( self->client, &blValue );
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 		RETVAL = longlong_from_string ( awBrokerLongToString( blValue, blString ) );
 
@@ -4913,8 +5205,10 @@ getConnectionDescriptor ( self )
 
 		self->err = awGetClientConnectionDescriptor ( self->client, &RETVAL->desc );
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 	OUTPUT:
 	RETVAL
@@ -4961,8 +5255,10 @@ getSubscriptionsRef ( self )
 		
 		gErr = self->err = awGetSubscriptions ( self->client, &n, subs );
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 		{		/* now convert subs into an AV */
 		SV *sv;
@@ -5064,8 +5360,10 @@ getEventsRef ( self, max_events, msecs, ... )
 		  : awGetEvents ( self->client, max_events, msecs, &n, &events )
 		;
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 
 		/* convert to an AV of xsBrokerEvents */
@@ -5163,8 +5461,10 @@ getEventTypeDefsRef ( self, event_type_names )
 		n = av_len ( (AV*)SvRV( ST(1) ) );
 		gErr = self->err = awGetEventTypeDefs ( self->client, n, event_type_names, &typeDefs );
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 
 		/* convert to an AV of xsBrokerTypeDefs */
@@ -5216,8 +5516,10 @@ getFds ( self )
 
 		gErr = self->err = awGetFds( &n, &ints );
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 		
 
 		{
@@ -5254,8 +5556,10 @@ isClientPending ( self )
 		  : awIsClientPending ( self->client, &bRV )
 		;
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 		RETVAL = (awaBool)bRV;
 
@@ -5322,8 +5626,10 @@ makeTransactionId ( self, ... )
 		        : awMakeTransactionId ( self->client, &RETVAL )            // 0
 		;
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 	OUTPUT:
 	RETVAL
@@ -5358,8 +5664,10 @@ makeUniqueSubId ( self )
 		       : awMakeUniqueSubId     ( self->client, &RETVAL )        // 0
 		 ;
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 	OUTPUT:
 	RETVAL
@@ -6057,8 +6365,10 @@ getAccessLabelHint ( self )
 		AWXS_CLEARERROR
 
 		gErr = self->err = awGetDescriptorAccessLabelHint ( self->desc, &RETVAL );
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 	OUTPUT:
 	RETVAL
@@ -6078,8 +6388,10 @@ getSSLCertificateRef ( self )
 
 		gErr = self->err = awGetDescriptorSSLCertificate (  self->desc, &certificate_file, &distinguished_name );
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 		{
 		SV *sv;
@@ -6109,8 +6421,10 @@ getSSLCertificateFile ( self )
 
 		gErr = self->err = awGetDescriptorSSLCertificate (  self->desc, &RETVAL, &distinguished_name );
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 	OUTPUT:
 	RETVAL
@@ -6129,8 +6443,10 @@ getSSLDistinguishedName ( self )
 
 		gErr = self->err = awGetDescriptorSSLCertificate ( self->desc, &certificate_file, &RETVAL );
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 	OUTPUT:
 	RETVAL
@@ -6174,8 +6490,10 @@ getSSLCertificateDnsRef ( self, certificate_file, password )
 		;
 
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 		{
 		SV *sv;
@@ -6302,8 +6620,10 @@ getSharedEventOrdering ( self )
 
 		gErr = self->err = awGetDescriptorSharedEventOrdering ( self->desc, &RETVAL );
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 #else
 		warn ( "'getBrokerVersionNumber' available in AW v3.1+.  Recompile Aw.xs if you have reached this warning in error.");
 		XSRETURN_UNDEF;
@@ -6840,8 +7160,10 @@ getBooleanField ( self, field_name )
 		
 		gErr = self->err = awGetBooleanField ( self->event, field_name, &bRV );
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 		RETVAL = (awaBool)bRV;
 
@@ -6867,8 +7189,10 @@ getByteField ( self, field_name )
 		  : awGetByteField ( self->event, field_name, &RETVAL )
 		;
 		
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 	OUTPUT:
 	RETVAL
@@ -6954,8 +7278,10 @@ getDoubleField ( self, field_name )
 		
 		gErr = self->err = awGetDoubleField ( self->event, field_name, &RETVAL );
 		
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 	OUTPUT:
 	RETVAL
@@ -7022,8 +7348,10 @@ getFloatField ( self, field_name )
 		
 		gErr = self->err = awGetFloatField ( self->event, field_name, &RETVAL );
 		
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 	OUTPUT:
 	RETVAL
@@ -7079,8 +7407,10 @@ getIntegerField ( self, field_name )
 		
 		gErr = self->err = awGetIntegerField ( self->event, field_name, &RETVAL );
 		
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 	OUTPUT:
 	RETVAL
@@ -7103,8 +7433,10 @@ getLongField ( self, field_name )
 
 		RETVAL = longlong_from_string ( awBrokerLongToString( blValue, blString ) );
 		
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 	OUTPUT:
 	RETVAL
@@ -7138,8 +7470,10 @@ getSequenceFieldSize ( self, field_name )
 	CODE:
 		gErr = self->err = awGetSequenceFieldSize ( self->event, field_name, &RETVAL );
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 	OUTPUT:
 	RETVAL
@@ -7199,8 +7533,10 @@ getShortField ( self, field_name )
 		
 		gErr = self->err = awGetShortField ( self->event, field_name, &RETVAL );
 		
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 	OUTPUT:
 	RETVAL
@@ -7271,8 +7607,10 @@ getStringField ( self, field_name )
 			AWXS_CLEARERROR
 		
 			gErr = self->err = awGetStringField ( self->event, field_name, &RETVAL );
-			if ( self->err != AW_NO_ERROR )
+			if ( self->err != AW_NO_ERROR ) {
+				sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 				XSRETURN_UNDEF;
+			}
 
 		OUTPUT:
 		RETVAL
@@ -7306,8 +7644,10 @@ getStructFieldAsEvent ( self, field_name )
 
 		gErr = self->err = awGetStructFieldAsEvent ( self->event, field_name, &RETVAL->event );
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 	OUTPUT:
 	RETVAL
@@ -7333,8 +7673,10 @@ getStructSeqFieldAsEventsRef ( self, field_name, offset, ... )
 
 		gErr = self->err = awGetStructSeqFieldAsEvents ( self->event, field_name, offset, max_n, &n, &events );
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 		/* now convert reply_events into an AV */
 		{
@@ -7384,8 +7726,10 @@ getSubscriptionIdsRef ( self )
 
 		awGetSubscriptionIds ( self->event, &n );
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 		
 
 		{
@@ -7411,8 +7755,10 @@ getTag ( self )
 		AWXS_CLEARERROR
 		
 		gErr = self->err = awGetEventTag ( self->event, &RETVAL );
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 	OUTPUT:
 	RETVAL
@@ -7533,8 +7879,10 @@ getUCCharField ( self, field_name )
 		
 		gErr = self->err = awGetUCCharField ( self->event, field_name, &uc[0] );
 		
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 		RETVAL = awUCtoUTF8 ( uc );
 
@@ -7556,8 +7904,10 @@ isFieldSet ( self, field_name )
 		
 		gErr = self->err = awIsEventFieldSet ( self->event, field_name, &is_set );
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 		RETVAL = ( is_set ) ? awaTrue : awaFalse ;
 
@@ -8002,8 +8352,10 @@ toHashRef ( self )
 
 		hv_store ( RETVAL, "_name", 5, newSVpv ( awGetEventTypeName(self->event), 0), 0 );
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 	OUTPUT:
 	RETVAL
@@ -9449,8 +9801,10 @@ getBrokerHost ( self )
 		    : awGetTypeDefBrokerHost ( self->type_def,  &RETVAL )
 		;
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 	OUTPUT:
 	RETVAL
@@ -9476,8 +9830,10 @@ getBrokerPort ( self )
 		       : awGetTypeDefBrokerPort ( self->type_def, &RETVAL )
 		     ;
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 	OUTPUT:
 	RETVAL
@@ -9511,8 +9867,10 @@ getFieldDef ( self, field_name )
 
 		gErr = self->err = awGetTypeDefFieldDef ( self->type_def, field_name, &RETVAL->type_def );
 
-		if ( self->err != AW_NO_ERROR )
+		if ( self->err != AW_NO_ERROR ) {
+			sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 			XSRETURN_UNDEF;
+		}
 
 	OUTPUT:
 	RETVAL
@@ -9534,8 +9892,10 @@ getFieldType ( self, field_name )
 			AWXS_CLEARERROR
 
 			gErr = self->err = awGetEventFieldType ( self->event, field_name, &RETVAL );
-			if ( self->err != AW_NO_ERROR )
+			if ( self->err != AW_NO_ERROR ) {
+				sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 				XSRETURN_UNDEF;
+			}
 
 		OUTPUT:
 		RETVAL
@@ -9549,8 +9909,10 @@ getFieldType ( self, field_name )
 			AWXS_CLEARERROR
 
 			gErr = self->err = awGetTypeDefFieldType ( self->type_def, field_name, &RETVAL );
-			if ( self->err != AW_NO_ERROR )
+			if ( self->err != AW_NO_ERROR ) {
+				sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) );
 				XSRETURN_UNDEF;
+			}
 
 		OUTPUT:
 		RETVAL
@@ -10400,7 +10762,7 @@ getBooleanInfoReq ( self, field_name, ... )
 	CODE:
 		// AWXS_CLEARERROR
 		
-		/*
+		/*     get back to testing this.
 		test
 		= (ix)
 		  ? awAdapterETInfoGetBooleanReq ( AWXS_ADAPTERUTIL(0)->handle, field_name, &RETVAL )

@@ -1,14 +1,9 @@
 SPECIAL NOTICE
 ==============
-This release of the Aw module is a development release somewhere along the
-way from the 0.12 to 0.13 series.  It is released at the this time before
-someone has second thoughts about it and to secure the higly coveted Aw::
-namespace.
-
 This release should work fine and is 95% compliant with ActiveWorks 4.0
-libraries.  The 0.13 release will have an interface for all of the 4.0
-functions.  Some of the demo scrips under bin/ may be broken, if so they
-will be repaired in 0.13.
+libraries.  The 0.14 release will (hopefully) have an interface for all of
+the 4.0 functions.  Some of the demo scripts under bin/ may be broken, if
+so they will be repaired in the near future.
 
 
 INTRODUCTION
@@ -60,8 +55,8 @@ The provided classes and their methods are sufficient to run simple
 adapters.  See the "time_adapter.pl" and "time_test.pl" scripts for
 examples.
 
-At RCN we use Perl (5.004_04) based adapters in our production environment
-that readily handle over 12,000 requests in a day.
+At RCN we use Perl (5.004_04 and 5.005_03) based adapters in our production
+environment that readily handle over 12,000 requests in a day.
 
 Embeds readily in Apache with mod_perl.  See the apache directory for
 examples.
@@ -132,7 +127,8 @@ Like C, Perl does not support the concept of thrown exceptions.
 Every Aw Perl method will record broker errors by pointing to
 ( obj->err ) BrokerErrors returned by the underlying C APIs.
 These BrokerError data types are not the default return types
-into Perl space.
+into Perl space.  $! will be set to the value of
+awErrorToCompleString starting from the v0.13 release.
 
 Many of the Java methods were "void" in return type while leaving
 errors to be detected in the thrown exception.  In such instances
@@ -149,7 +145,7 @@ Aw::Error methods as functions (e.g. $ec = Aw::Error::getCode(); )
 or by instantiating a new error object using "last" (vs "new")
 $err = last Aw::Error;   In both cases an internal global error
 pointer is applied that always points to the last error created
-in the XS layer.
+in the XS layer.  Or just check $! as of v0.13.
 
 Classes derived from the Aw::Basic class will have these error
 methods available:

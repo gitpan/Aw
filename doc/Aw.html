@@ -48,14 +48,14 @@
 
   <tr valign="top"><td><a href="Aw_Adapter.html#getAdapterEventName">getAdapterEventName</a></td><td>getAdapterEventName</td><td>awGetEventTypeName(<code>&lt;adapter&gt;-&gt;adapterInfo</code>)</td></tr>
   <tr valign="top"><td><a href="Aw_Adapter.html#getAdapterInfo">getAdapterInfo</a></td><td>getAdapterInfo</td><td>awAdapterGetAdapterInfo</td></tr>
-  <tr valign="top"><td><a href="Aw_Adapter.html#getAdapterType">getAdapterType</a></td><td>getAdapterType<br><code>&lt;adapter&gt;-&gt;</code>adapterType</td><td>&nbsp;</td></tr>
+  <tr valign="top"><td><a href="Aw_Adapter.html#getAdapterType">getAdapterType</a></td><td>getAdapterType<br>&lt;adapter&gt;.adapterType</td><td><code>&lt;adapter&gt;-&gt;</code>adapterType</td></tr>
   <tr valign="top"><td><a href="Aw_Adapter.html#getAdapterVersion">getAdapterVersion</a></td><td>&lt;adapter&gt;.adapterVersion</td><td><code>&lt;adapter&gt;-&gt;</code>adapterVersion</td></tr>
   <tr valign="top"><td><a href="Aw_Adapter.html#getAdminClient">getAdminClient</a></td><td>getAdminClient</td><td><code>&lt;adapter&gt;-&gt;</code>adminClient</td></tr>
   <tr valign="top"><td><a href="Aw_Adapter.html#getBroker">getBroker</a></td><td>getBroker<br>&lt;adapter&gt;.broker</td><td><code>&lt;adapter&gt;-&gt;</code>broker</td></tr>
   <tr valign="top"><td><a href="Aw_Adapter.html#getBrokerClient">getBrokerClient</a></td><td>getBrokerClient<br>&lt;adapter&gt;.brokerClient</td><td><code>&lt;adapter&gt;-&gt;</code>brokerClient</td></tr>
   <tr valign="top"><td><a href="Aw_Adapter.html#getBrokerHost">getBrokerHost</a></td><td>getBrokerHost<br>&lt;adapter&gt;.brokerHost</td><td><code>&lt;adapter&gt;-&gt;</code>brokerHost</td></tr>
   <tr valign="top"><td><a href="Aw_Adapter.html#getBrokerName">getBrokerName</a></td><td>getBrokerName<br>&lt;adapter&gt;.brokerName</td><td><code>&lt;adapter&gt;-&gt;</code>brokerName</td></tr>
-  <tr valign="top"><td><a href="Aw_Adapter.html#getClient">getClient</a></td><td>getClient<br>&lt;adapter&gt;.clientGroup</td><td><code>&lt;adapter&gt;-&gt;</code>brokerClient</td></tr>
+  <tr valign="top"><td><a href="Aw_Adapter.html#getClient">getClient</a></td><td>getClient<br>&lt;adapter&gt;.brokerClient</td><td><code>&lt;adapter&gt;-&gt;</code>brokerClient</td></tr>
   <tr valign="top"><td><a href="Aw_Adapter.html#getClientGroup">getClientGroup</a></td><td>getClientGroup<br>&lt;adapter&gt;.clientGroup</td><td><code>&lt;adapter&gt;-&gt;</code>clientGroup</td></tr>
   <tr valign="top"><td><a href="Aw_Adapter.html#getClientId">getClientId</a></td><td>getClientId</td><td><code>&lt;adapter&gt;-&gt;</code>clientId</td></tr>
   <tr valign="top"><td><a href="Aw_Adapter.html#getClientName">getClientName</a></td><td>&lt;adapter&gt;.clientName</td><td><code>&lt;adapter&gt;-&gt;</code>clientName</td></tr>
@@ -73,7 +73,7 @@
 
   <tr valign="top"><td><a href="Aw_Adapter.html#loadProperties">loadProperties</a></td><td>loadProperties</td><td>awAdapterLoadProperties<hr noshade width="80%" align="left">awAdapterInitLogging</td></tr>
   <tr valign="top"><td><a href="Aw_Adapter.html#processPublication">processPublication</a></td><td>processPublication</td><td><code>&lt;adapter&gt;-&gt;</code>processPublicationFunction</td></tr>
-  <tr valign="top"><td><a href="Aw_Adapter.html#processRequest">processRequest</a></td><td>processRequest</td><td><code>&lt;adapter&gt;-&gt;</code>processRequestunction</td></tr>
+  <tr valign="top"><td><a href="Aw_Adapter.html#processRequest">processRequest</a></td><td>processRequest</td><td><code>&lt;adapter&gt;-&gt;</code>processRequestFunction</td></tr>
   <tr valign="top"><td><a href="Aw_Adapter.html#publishStatus">publishStatus</a></td><td>publishStatus</td><td>awAdapterPublishStatus</td></tr>
   <tr valign="top"><td><a href="Aw_Adapter.html#removeEvent">removeEvent</a></td><td>removeEvent</td><td>awAdapterRemoveEvent</td></tr>
 
@@ -109,7 +109,6 @@
   <tr><td colspan=3 bgcolor="#bfbfbf"><strong><big><a href="Aw_Client.html">Aw::Client</a></big></strong></td></tr>
   <tr><th>Perl</th><th>Java</th><th>C</th></tr>
   <tr valign="top"><td><a href="Aw_Client.html#new">new</a></td><td>new</td><td>awNewBrokerClient</td></tr>
-  <tr valign="top"><td><a href="Aw_Client.html#newOrReconnect">newOrReconnect</a></td><td>newOrReconnect</td><td>awNewOrReconnectBrokerClient</td></tr>
   <tr valign="top"><td><a href="Aw_Client.html#DESTROY">DESTROY</a></td><td>&nbsp;</td><td>awDestroyClient</td></tr>
   <tr valign="top"><td><a href="Aw_Client.html#err">err</a></td><td>&nbsp;</td><td>&nbsp;</td></tr>
   <tr valign="top"><td><a href="Aw_Client.html#errmsg">errmsg</a></td><td>&nbsp;</td><td>awErrorToCompleteString</td></tr>
@@ -131,6 +130,7 @@
   <tr valign="top"><td><a href="Aw_Client.html#canPublish">canPublish</a></td><td>canPublish</td><td>awCanPublish</td></tr>
   <tr valign="top"><td><a href="Aw_Client.html#canSubscribe">canSubscribe</a></td><td>canSubscribe</td><td>awCanSubscribe</td></tr>
   <tr valign="top"><td><a href="Aw_Client.html#clearQue">clearQue</a></td><td>clearQue</td><td>awClearClientQueue</td></tr>
+  <tr valign="top"><td><a href="Aw_Client.html#connect">connect</a></td><td>&nbsp;</td><td><hr width="80%" align="left" noshade>awNewBrokerClient<br>&nbsp;<b>|</b> awReconnectBrokerClient</td></tr>
 
   <tr valign="top"><td><a href="Aw_Client.html#deliver">deliver</a></td><td>deliver</td><td>awDeliverEvent<br>&nbsp;<b>|</b> awDeliverEvents</td></tr>
 
@@ -203,6 +203,9 @@
   <tr valign="top"><td><a href="Aw_Client.html#makeTag">makeTag</a></td><td>makeTag</td><td>awMakeTag</td></tr>
   <tr valign="top"><td><a href="Aw_Client.html#makeTransactionId">makeTransactionId</a></td><td>makeTransactionId</td><td>awMakeTransactionId</td></tr>
   <tr valign="top"><td><a href="Aw_Client.html#makeUniqueSubId">makeUniqueSubId</a></td><td>makeUniqueSubId</td><td>awMakeUniqueSubId</td></tr>
+  <tr valign="top"><td><a href="Aw_Client.html#newEZ">newEZ</a></td><td>&nbsp;</td><td><hr width="80%" align="left" noshade>awNewBrokerClient</td></tr>
+  <tr valign="top"><td><a href="Aw_Client.html#newOrReconnect">newOrReconnect</a></td><td>newOrReconnect</td><td>awNewOrReconnectBrokerClient</td></tr>
+  <tr valign="top"><td><a href="Aw_Client.html#newOrReconnectEZ">newOrReconnectEZ</a></td><td>&nbsp;</td><td><hr width="80%" align="left" noshade> awNewOrReconnectBrokerClient</td></tr>
   <tr valign="top"><td><a href="Aw_Client.html#newSubscription">newSubscription</a></td><td>newSubscription</td><td>awNewSubscription</td></tr>
 
 
@@ -211,6 +214,7 @@
   <tr valign="top"><td><a href="Aw_Client.html#publish">publish</a></td><td>publish</td><td>awPublishEvent</td></tr>
   <tr valign="top"><td><a href="Aw_Client.html#publishRequestAndWait">publishRequestAndWait</a></td><td>publishRequestAndWait</td><td>awPublishRequestAndWait</td></tr>
   <tr valign="top"><td><a href="Aw_Client.html#reconnect">reconnect</a></td><td>reconnect</td><td>awReconnectBrokerClient</td></tr>
+  <tr valign="top"><td><a href="Aw_Client.html#reconnectEZ">reconnectEZ</a></td><td>&nbsp;</td><td><hr width="80%" align="left" noshade>awReconnectBrokerClient</td></tr>
 
 
 <!-- 
@@ -518,6 +522,7 @@ here.</i></td><td>&nbsp;</td><td>awAdapterSetDateTimeFormat</td></tr>
 
 <!-- Aw::Field -->
 
+<!-- Replaced with Aw::Event::getFIELD
 
   <tr><td colspan=3 bgcolor="#bfbfbf"><strong><big><a href="Aw_Field.html">Aw::Field</a></big></strong></td></tr>
   <tr><th>Perl</th><th>Java</th><th>C</th></tr>
@@ -525,6 +530,8 @@ here.</i></td><td>&nbsp;</td><td>awAdapterSetDateTimeFormat</td></tr>
   <tr valign="top"><td><a href="Aw_Field.html#DESTROY">DESTROY</a></td><td>&nbsp;</td><td>&nbsp;</td></tr>
   <tr valign="top"><td><a href="Aw_Field.html#type">type</a></td><td>&lt;filter&gt;.type</td><td>&nbsp;</td></tr>
   <tr valign="top"><td><a href="Aw_Field.html#value">value</a></td><td>&lt;filter&gt;.value</td><td>&nbsp;</td></tr>
+
+-->
 
 
 <!-- Aw::Filter -->
@@ -646,7 +653,7 @@ here.</i></td><td>&nbsp;</td><td>awAdapterSetDateTimeFormat</td></tr>
 
 <!-- Aw::Properties -->
 
-
+<!--
   <tr><td colspan=3 bgcolor="#bfbfbf"><strong><big><a href="Aw_Properties.html">Aw::Properties</a></big></strong></td></tr>
   <tr><th>Perl</th><th>Java</th><th>C</th></tr>
   <tr valign="top"><td><a href="Aw_Properties.html#new">new</a></td><td>new</td><td>awNewAdapterProperties<br>awAdapterLoadProperties</td></tr>
@@ -666,7 +673,7 @@ here.</i></td><td>&nbsp;</td><td>awAdapterSetDateTimeFormat</td></tr>
   <tr valign="top"><td><a href="Aw_Properties.html#setProperty">setProperty</a></td><td>setProperty</td><td>awAdapterSetProperty</td></tr>
   <tr valign="top"><td><a href="Aw_Properties.html#setProperties">setProperties<br>loadProperties</a></td><td>setProperties</td><td>awAdapterLoadProperties</td></tr>
   <tr valign="top"><td>&nbsp;</td><td>setSystemProperties</td><td>&nbsp;</td></tr>
-
+-->
 
 <!-- Aw::Replies -->
 

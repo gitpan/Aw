@@ -4,7 +4,8 @@ $| =1;
 
 package TimeAdapter;
 
-use Aw;
+# use Aw;
+use Aw 'test@active:6449';
 use Aw::Event;
 require Aw::Adapter;
 

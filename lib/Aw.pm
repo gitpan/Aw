@@ -2,7 +2,7 @@ package Aw;
 
 use strict;
 use Carp;
-use vars qw($VERSION $VERSION_NAME @ISA @EXPORT @EXPORT_OK $AUTOLOAD $DefaultBrokerName $DefaultBrokerHost);
+use vars qw($VERSION $VERSION_NAME @ISA @EXPORT @EXPORT_OK $AUTOLOAD $DefaultBrokerName $DefaultBrokerHost $SPAM);
 
 $ENV{LD_LIBRARY_PATH} .= ':/opt/active40/lib:/opt/active40/samples/adapter_devkit/c_lib/'; # ':./blib/arch/auto/Aw';
 # $ENV{'LD_PRELOAD'} = '/usr/local/users/yacob/Aw-0.12/blib/arch/auto/Aw.so';
@@ -238,17 +238,21 @@ require AutoLoader;
 	PLACE_HOLDER2
 	PLACE_HOLDER1
 );
-$VERSION = '0.12';
+$VERSION = '0.13';
 $VERSION_NAME = 'Tadpole Ninja';
 $DefaultBrokerName = 'test_broker';
 # $DefaultBrokerHost = 'active';
 # $DefaultBrokerName = 'Broker #1';
 $DefaultBrokerHost = 'localhost:6449';
-
+$SPAM = 0;
 
 
 sub import {
 my $pkg = shift;
+
+	for ( my $i = 0; $i <= $#_; $i++ ) {
+		$SPAM = 0 if ( $_[$i] =~ /^nospam$/i );
+	}
 
  	setDefaultBroker ( @_ ) if ( @_ );
 	Aw->export_to_level (1, $pkg, @EXPORT);  # this works too...
@@ -270,6 +274,14 @@ my ( $name, $host ) = ($#_) ? ($_[0], $_[1]) : split ( "@", $_[0] );
 	$DefaultBrokerHost = $host if ($host);
 
 1;
+}
+
+
+
+sub setSpam {
+
+	$SPAM = $_[0];
+
 }
 
 

@@ -9,9 +9,10 @@ use ExtUtils::MakeMaker;
 # the contents of the Makefile that is written.
 WriteMakefile(
 	'NAME'		=> 'Aw',
-	'VERSION_FROM'	=> 'Aw.pm', # finds $VERSION
+	'VERSION_FROM'	=> 'lib/Aw.pm', # finds $VERSION
 	'DEFINE'	=>
 		($] < 5.0045 ? '-DPERL5004_COMPAT -DAWXS_WARNS' : '-DAWXS_WARNS'),
+	'PREREQ_PM' 	=> { 'CORBA::LongLong' => 0 },
 	#
 	# Uncomment for 3.0
 	#
@@ -23,5 +24,11 @@ WriteMakefile(
 	'LIBS'	=> ['-L/opt/active40/samples/adapter_devkit/c_lib -lcustcadk31 -L/opt/active40/lib -lawcadk31 -lawalog40 -lawl40 -lawc40 -lsocket -lnsl'],
 	'INC'		=> '-I./include -I/opt/active40/include -I/opt/active40/samples/adapter_devkit/c_lib',
 	'OBJECT'	=> '$(O_FILES)',
-	'dist'		=> { COMPRESS=>"gzip", SUFFIX=>"gz" }
+	dist		=>	{ 
+		COMPRESS	=>	"gzip -9f",
+		SUFFIX		=>	"gz",
+		POSTOP		=>	'mv $(DISTNAME)-$(VERSION).tar.gz ../'
+	},
+	AUTHOR		=> "Daniel Yacob <Yacob\@RCN.Com>",
+	ABSTRACT	=> "Interface to the ActiveWorks Libraries.",
 );
