@@ -1,0 +1,168 @@
+SPECIAL NOTICE
+==============
+This release of the Aw module is a development release somewhere along the
+way from the 0.12 to 0.13 series.  It is released at the this time before
+someone has second thoughts about it and to secure the higly coveted Aw::
+namespace.
+
+This release should work fine and is 95% compliant with ActiveWorks 4.0
+libraries.  The 0.13 release will have an interface for all of the 4.0
+functions.  Some of the demo scrips under bin/ may be broken, if so they
+will be repaired in 0.13.
+
+
+INTRODUCTION
+============
+The Aw.pm module provides a Perl interface to the ActiveWorks libraries.
+The Perl script writer may instantiate new Perl objects for ActiveWorks
+adapters, clients, events, adapter events, adapter utilities, and dates
+with a class hierarchy nearly identical to that of the Java API while
+maintaining the expected norms and conveniences of Perl.
+
+
+Changes
+=======
+See the "Changes" file provided with each release.
+
+
+INSTALLATION
+============
+See the "INSTALL" file.
+
+
+DOCUMENTATION
+=============
+POD is forthcoming, see the doc/Aw.html file for a class and method list.
+See also the Java and C CADK manuals of ActiveWorks.
+
+
+LICENSE
+=======
+GNU GPL vs 2.0 or later.
+
+
+DISCLAIMERS
+===========
+In addition to the disclaimers in the GPL: this interface to the ActiveWorks
+libraries is NOT in any way endorsed by ActiveSoft or RCN.
+
+
+FEATURES
+========
+"Events are Hashes, Hashes are Events"
+
+No need to fuss with adapter config files unless you really want to (I don't).
+
+
+What it Can Do..
+--------------
+The provided classes and their methods are sufficient to run simple
+adapters.  See the "time_adapter.pl" and "time_test.pl" scripts for
+examples.
+
+At RCN we use Perl (5.004_04) based adapters in our production environment
+that readily handle over 12,000 requests in a day.
+
+Embeds readily in Apache with mod_perl.  See the apache directory for
+examples.
+
+Works with either ActiveWorks 3.0 or 4.x libraries.  Comment/Uncomment the
+appropriate lines in the Makefile.PL.
+
+
+What it Can't Do..
+----------------
+Multiple adapters running simultaneously in a single script are not
+guaranteed to operate sanely.
+
+Broker administration.
+
+Not every API that has been mapped into Perl has actually be used.  There
+will likely be bugs waiting to snip at the first person to invoke said
+methods.
+
+Has not been tested against the ActiveWorks 3.1 libraries.
+
+
+TODO
+====
+
+ *  Admin methods...
+ *  Make sure that it is thread safe when multiple adapters live
+    in a single script.
+ *  Maybe split Aw.xs into component files for each package.
+
+
+AUTHOR'S COMMENTS
+=================
+As the Perl slogan goes: "There is more than one way to do it!".
+I have certainly found this to be true when working with Perl
+primitives for object design.  The initial approach in this
+release is to follow the Java API which has the conveniences
+of:
+
+  1) Is presumably a well thought out object interface.
+  2) Having a design 
+  3) It's already documented ;-)
+  4) Will look familiar to Java converts.
+
+However the Java API is not always going to be the most natural
+to Perl developers and some Perlisms may occasionally be in 
+order.  When a Perl shortcut is taken the rule followed is to
+provide the shortcut in addition to the Java analog.  This rule
+is broken when for how error handling is treated.  No BrokerError
+objects are provided.  Instead the Mysql package model is applied.
+
+Finally, the AdapterUtil class is still mysterious in purpose to
+me.  In C they seem to be a way to work with callback data
+("handles").  In Java there seems to be a bit more to it.  I have
+converted some of the routines that expect handles into adapters
+methods so the programmer isn't burdened with making implicit
+data explicit.  The AdapterUtil class with the same methods is
+however provided.
+
+
+Error Policy
+------------
+Superimposing the Java API on a Perl API using a C API bore
+at least one casualty.  Or enhancement depending on your point
+of view.
+
+Like C, Perl does not support the concept of thrown exceptions.
+Every Aw Perl method will record broker errors by pointing to
+( obj->err ) BrokerErrors returned by the underlying C APIs.
+These BrokerError data types are not the default return types
+into Perl space.
+
+Many of the Java methods were "void" in return type while leaving
+errors to be detected in the thrown exception.  In such instances
+the Perl method will return a boolean  (the "awaBool" type
+specifically mapped onto Perl's T_BOOL) to indicate the presence
+of errors.  This would be in keeping with other methods that in
+both the C and Java APIs do return booleans for success or failure.
+
+Other methods that might return strings or integers likewise set
+up error results in the objects error pointer.  In cases where a
+new object was the expected return type, an "undef" is returned
+on failure.  The cause of the failure may be analyzed by invoking
+Aw::Error methods as functions (e.g. $ec = Aw::Error::getCode(); )
+or by instantiating a new error object using "last" (vs "new")
+$err = last Aw::Error;   In both cases an internal global error
+pointer is applied that always points to the last error created
+in the XS layer.
+
+Classes derived from the Aw::Basic class will have these error
+methods available:
+
+	::err  		returns a boolean to indicate the presence of an error.
+
+	::errmsg	returns a string describing the error message equivalent
+			to "awErrorToCompleteString".
+
+	::error		returns a Aw::Error object from which addition
+			details about the error can be garnered.
+
+
+
+
+Comments and suggestions to:  yacob@rcn.com

@@ -1,0 +1,118 @@
+<html>
+<head>
+  <title>Aw::Client</title>
+</head>
+<body bgcolor="#f0f0f0" link="#cc0000" vlink="brown">
+
+<h1><u>Aw::Client</u></h1>
+
+<table width="90%" border=1 bgcolor="#cccc99">
+<tr bgcolor="#bfbfbf"><th>Method</th><th>Arguments</th><th>Return</th><th>Throws<br>Exception</th></tr>
+<tr align="center"><th align="left"><a name="new"></a>new</th><td>( broker_host, broker_name, client_id, client_group, app_name )</td><td>Aw::Client</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="reconnect"></a>reconnect</th><td>( broker_host, broker_name, client_id )</td><td>Aw::Client</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="DESTROY"></a>DESTROY</th><td>( )</td><td>void</td><td>NO</td></tr>
+<tr align="center"><th align="left"><a name="_cancelSubscriptions"></a>_cancelSubscriptions</th><td>( ... )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="acknowledge"></a>acknowledge</th><td>( seqn )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="acknowledgeThrough"></a>acknowledgeThrough</th><td>( seqn )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="beginTransaction"></a>beginTransaction</th><td>( transaction_id, required_level, ... )</td><td>Number</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="canPublish"></a>canPublish</th><td>( event_type_name )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="canSubscribe"></a>canSubscribe</th><td>( event_type_name )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="cancelCallbackForSubId"></a>cancelCallbackForSubId</th><td>( ... )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="cancelCallbackForTag"></a>cancelCallbackForTag</th><td>( ... )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="cancelSubscription"></a>cancelSubscription</th><td>( event_type_name, filter )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="cancellCallbacks"></a>cancellCallbacks</th><td>( ... )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="clearQue"></a>clearQue</th><td>( ... )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="deliver"></a>deliver</th><td>( dest_id, ... )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="deliverAckReplyEvent"></a>deliverAckReplyEvent</th><td>( request_event, publish_seqn )</td><td>Boolean</td><td>NO</td></tr>
+<tr align="center"><th align="left"><a name="deliverErrorReplyEvent"></a>deliverErrorReplyEvent</th><td>( request_event, reply_event )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="deliverNullReplyEvent"></a>deliverNullReplyEvent</th><td>( request_event, reply_event_type_name, publish_seqn )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="deliverPartialReplyEvents"></a>deliverPartialReplyEvents</th><td>( request_event, ... )</td><td>Number</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="deliverReplyEvent"></a>deliverReplyEvent</th><td>( request_event, reply_event )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="deliverReplyEvents"></a>deliverReplyEvents</th><td>( request_event, ... )</td><td>Number</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="deliverRequestAndWaitRef"></a>deliverRequestAndWaitRef</th><td>( dest_id, event, msecs )</td><td>@ of</td><td>NO</td></tr>
+<tr align="center"><th align="left"><a name="disconnect"></a>disconnect</th><td>( ... )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="dispatch"></a>dispatch</th><td>( ... )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="doesSubscriptionExist"></a>doesSubscriptionExist</th><td>( event_type_name, filter )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="endTransaction"></a>endTransaction</th><td>( transaction_id, mode )</td><td>Number</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="err"></a>err</th><td>( ... )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="errmsg"></a>errmsg</th><td>( ... )</td><td>String</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getAccessLabelRef"></a>getAccessLabelRef</th><td>( )</td><td>@ of</td><td>NO</td></tr>
+<tr align="center"><th align="left"><a name="getApplicationName"></a>getApplicationName</th><td>( ... )</td><td>String</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getBrokerHost"></a>getBrokerHost</th><td>( ... )</td><td>String</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getBrokerName"></a>getBrokerName</th><td>( ... )</td><td>String</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getBrokerPort"></a>getBrokerPort</th><td>( )</td><td>Number</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getCanPublishNamesRef"></a>getCanPublishNamesRef</th><td>( ... )</td><td>@ of</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getCanPublishTypeDefsRef"></a>getCanPublishTypeDefsRef</th><td>( )</td><td>@ of</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getCanSubscribeNamesRef"></a>getCanSubscribeNamesRef</th><td>( ... )</td><td>@ of</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getCanSubscribeTypeDefs"></a>getCanSubscribeTypeDefs</th><td>( )</td><td>@ of</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getClientGroup"></a>getClientGroup</th><td>( ... )</td><td>String</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getClientId"></a>getClientId</th><td>( ... )</td><td>String</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getDefaultBrokerPort"></a>getDefaultBrokerPort</th><td>( ... )</td><td>Number</td><td>NO</td></tr>
+<tr align="center"><th align="left"><a name="getDefaultClientTimeOut"></a>getDefaultClientTimeOut</th><td>( ... )</td><td>Number</td><td>NO</td></tr>
+<tr align="center"><th align="left"><a name="getEventTypeDefsRef"></a>getEventTypeDefsRef</th><td>( event_type_names )</td><td>@ of</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getEventTypeInfosetNamesRef"></a>getEventTypeInfosetNamesRef</th><td>( ... )</td><td>@ of</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getEventTypeNamesRef"></a>getEventTypeNamesRef</th><td>( ... )</td><td>@ of</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getEventsRef"></a>getEventsRef</th><td>( max_events, msecs, ... )</td><td>@ of</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getEventsWithAckRef"></a>getEventsWithAckRef</th><td>( max_events, msecs, ... )</td><td>@ of</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getFamilyEventTypeNamesRef"></a>getFamilyEventTypeNamesRef</th><td>( ... )</td><td>@ of</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getFamilyNamesRef"></a>getFamilyNamesRef</th><td>( ... )</td><td>@ of</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getFd"></a>getFd</th><td>( )</td><td>Number</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getFds"></a>getFds</th><td>( )</td><td>@ of</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getPlatformInfo"></a>getPlatformInfo</th><td>( ... )</td><td>String</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getPlatformInfoKeysRef"></a>getPlatformInfoKeysRef</th><td>( ... )</td><td>@ of</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getQueueLength"></a>getQueueLength</th><td>( )</td><td>Number</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getSSLBrokerDistinguishedName"></a>getSSLBrokerDistinguishedName</th><td>( ... )</td><td>String</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getSSLBrokerIssuerDistinguishedName"></a>getSSLBrokerIssuerDistinguishedName</th><td>( ... )</td><td>String</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getSSLEncryptionLevel"></a>getSSLEncryptionLevel</th><td>( )</td><td>Number</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getScopeEventTypeNamesRef"></a>getScopeEventTypeNamesRef</th><td>( ... )</td><td>@ of</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getScopeNamesRef"></a>getScopeNamesRef</th><td>( ... )</td><td>@ of</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getStateShareLimit"></a>getStateShareLimit</th><td>( )</td><td>Number</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getSubscriptionsRef"></a>getSubscriptionsRef</th><td>( )</td><td>@ of</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getTerritoryName"></a>getTerritoryName</th><td>( ... )</td><td>String</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getWarn"></a>getWarn</th><td>( )</td><td>Number</td><td>NO</td></tr>
+<tr align="center"><th align="left"><a name="hello"></a>hello</th><td>( )</td><td>String</td><td>NO</td></tr>
+<tr align="center"><th align="left"><a name="interruptDispatch"></a>interruptDispatch</th><td>( ... )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="interruptGetEvents"></a>interruptGetEvents</th><td>( ... )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="isClientPending"></a>isClientPending</th><td>( )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="isConnected"></a>isConnected</th><td>( )</td><td>Boolean</td><td>NO</td></tr>
+<tr align="center"><th align="left"><a name="isPending"></a>isPending</th><td>( )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="mainLoop"></a>mainLoop</th><td>( ... )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="makeSubId"></a>makeSubId</th><td>( ... )</td><td>Number</td><td>NO</td></tr>
+<tr align="center"><th align="left"><a name="makeTag"></a>makeTag</th><td>( ... )</td><td>Number</td><td>NO</td></tr>
+<tr align="center"><th align="left"><a name="makeTransactionId"></a>makeTransactionId</th><td>( ... )</td><td>String</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="makeUniqueSubId"></a>makeUniqueSubId</th><td>( )</td><td>Number</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="nameTest"></a>nameTest</th><td>( )</td><td>String</td><td>NO</td></tr>
+<tr align="center"><th align="left"><a name="newSubscription"></a>newSubscription</th><td>( event_type_name, filter, ... )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="newSubscriptionFromStruct"></a>newSubscriptionFromStruct</th><td>( ... )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="newSubscriptionFromStructs"></a>newSubscriptionFromStructs</th><td>( ... )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="newSubscriptionWithId"></a>newSubscriptionWithId</th><td>( sub_id, event_type_name, filter )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="prime"></a>prime</th><td>( ... )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="primeAllClients"></a>primeAllClients</th><td>( ... )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="publish"></a>publish</th><td>( ... )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="publishEvents"></a>publishEvents</th><td>( ... )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="publishRequestAndWaitRef"></a>publishRequestAndWaitRef</th><td>( event, msecs )</td><td>@ of</td><td>NO</td></tr>
+<tr align="center"><th align="left"><a name="registerCallback"></a>registerCallback</th><td>( method, ... )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="registerCallbackForSubId"></a>registerCallbackForSubId</th><td>( sub_id, method, client_data )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="registerCallbackForTag"></a>registerCallbackForTag</th><td>( tag, cancel_when_done, method, client_data )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="registerConnectionCallback"></a>registerConnectionCallback</th><td>( method, ... )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="setClientAutomaticControlLabel"></a>setClientAutomaticControlLabel</th><td>( enabled )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="setClientInfoset"></a>setClientInfoset</th><td>( ... )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="setPlatformInfo"></a>setPlatformInfo</th><td>( event_type_name, filter )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="setStateShareLimit"></a>setStateShareLimit</th><td>( limit )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="setWarn"></a>setWarn</th><td>( level )</td><td>void</td><td>NO</td></tr>
+<tr align="center"><th align="left"><a name="stopMainLoop"></a>stopMainLoop</th><td>( ... )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="threadedCallBacks"></a>threadedCallBacks</th><td>( ... )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="toString"></a>toString</th><td>( ... )</td><td>String</td><td>NO</td></tr>
+<tr align="center"><th align="left"><a name="warn"></a>warn</th><td>( ... )</td><td>void</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getConnectionDescriptor"></a>getConnectionDescriptor</th><td>( )</td><td>Aw::ConnectionDescriptor</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="error"></a>error</th><td>( ... )</td><td>Aw::Error</td><td>NO</td></tr>
+<tr align="center"><th align="left"><a name="getClientInfoset"></a>getClientInfoset</th><td>( ... )</td><td>Aw::Event</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getEvent"></a>getEvent</th><td>( ... )</td><td>Aw::Event</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getClientLastPublishSequenceNumber"></a>getClientLastPublishSequenceNumber</th><td>( )</td><td>CORBA::LongLong</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getBrokerSSLCertificate"></a>getBrokerSSLCertificate</th><td>( )</td><td>Aw::SSLCertificate</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getEventTypeDef"></a>getEventTypeDef</th><td>( event_type_name )</td><td>Aw::TypeDef</td><td>YES</td></tr>
+</table>
+<p><hr size=3 noshade>
+
+</body>
+</html>

@@ -1,0 +1,75 @@
+package Aw::Util;
+
+use strict;
+use vars qw($VERSION);
+
+$VERSION = '0.1';
+
+
+
+sub getStringSeqInfo
+{
+	my $result = Aw::Util::getStringInfoRef ( @_ );
+	( wantarray ) ? @{ $result } : $result ;
+}
+
+
+
+sub getStringSeqInfo
+{
+	my $result = Aw::Util::getStringSeqInfoRef ( @_ );
+	( wantarray ) ? @{ $result } : $result ;
+}
+
+
+
+sub getStructSeqInfo
+{
+	my $result = Aw::Util::getStructSeqInfoRef ( @_ );
+	( wantarray ) ? @{ $result } : $result ;
+}
+
+
+
+sub getStructSeqInfo
+{
+	my $result = Aw::Util::getStructSeqInfoRef ( @_ );
+	( wantarray ) ? @{ $result } : $result ;
+}
+
+
+
+#########################################################
+# Do not change this, Do not put anything below this.
+# File must return "true" value at termination
+1;
+##########################################################
+
+
+__END__
+
+=head1 NAME
+
+Aw::Util - ActiveWorks Connection Descriptor Module.
+
+=head1 SYNOPSIS
+
+require Aw::Util;
+
+my $cd = new Aw::Util;
+
+
+=head1 DESCRIPTION
+
+Enhanced interface for the Aw.xs Connection Descriptor methods.
+
+
+=head1 AUTHOR
+
+Daniel Yacob Mekonnen,  L<Yacob@RCN.Com|mailto:Yacob@RCN.Com>
+
+=head1 SEE ALSO
+
+S<perl(1).  Aw(3).>
+
+=cut

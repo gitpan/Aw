@@ -1,0 +1,41 @@
+Building
+========
+
+Assuming GNU tar:
+
+  %  tar zxvf Aw-XY.tar.gz
+  %  cd Aw-XY
+  %  perl Makefile.PL
+  %  make
+  %  make install  # if you have admin privaledges (untested)
+
+The Makefile.PL may or may not detect the library directories where you have 
+the ActiveWorks libraries installed.  If "perl Makefile.PL" gives warnings of
+the form:
+
+  Note (probably harmless): No library found for -lawalog30
+
+you will need to edit the "Makefile" (not "Makefile.PL") so that lib variables
+contain "EXTRALIBS" and "LDLOADLIBS" appear as follows:
+
+  EXTRALIBS = -lcustcadk30 -lawalog30 -lawl30 -lawc30 -lsocket -lnsl
+  LDLOADLIBS = -lcustcadk30 -lawalog30 -lawl30 -lawc30 -lsocket -lnsl
+
+ActiveWorks CADK header files are also provided with this release.
+
+
+Testing
+=======
+
+"make test" is not yet functional.  "time_adapter.pl" and "time_test.pl"
+are Perl rewrites of the provided AW time adapters ("time_adapter.c",
+"TimeAdapter.java", "time_test.c" and "TimeTest.java").
+
+In one window or two:
+
+  % ./time_adapter.pl 
+  % ./time_test.pl
+  
+
+The best test of your system will be the EventOfDoom script (eod.pl) which
+tries to create an event with one of each data type and deaply nested.

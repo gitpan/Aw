@@ -1,0 +1,75 @@
+TYPEMAP
+awaBool			T_BOOL
+Aw::Adapter 		O_OBJECT
+xsBrokerClient *	O_OBJECT
+Aw::Client 		O_OBJECT
+Aw::ConnectionDescriptor	O_OBJECT
+Aw::Date 		O_OBJECT
+Aw::Error 		O_OBJECT
+Aw::Event 		O_OBJECT
+Aw::EventType 		O_OBJECT
+Aw::Field 		O_OBJECT
+Aw::Filter 		O_OBJECT
+Aw::Format 		O_OBJECT
+Aw::License 		O_OBJECT
+Aw::Log 		O_OBJECT
+Aw::Properties 		O_OBJECT
+Aw::Replies 		O_OBJECT
+Aw::SSLCertificate	O_OBJECT
+Aw::Subscription	O_OBJECT
+Aw::TypeDef	 	O_OBJECT
+Aw::TypeDefCache 	O_OBJECT
+Aw::CBOSS::Selfcare 	O_OBJECT
+Aw::Util	 	O_OBJECT
+awVector *		T_OBJECT
+float			T_FLOAT
+CORBA::LongLong		T_LONGLONG
+
+HV *			T_HvRV
+
+######################################################################
+OUTPUT
+# The Perl object is blessed into 'CLASS', which should be a
+# char* having the name of the package for the blessing.
+
+O_OBJECT
+	sv_setref_pv( $arg, CLASS, (void*)$var );
+
+T_OBJECT
+    sv_setref_pv( $arg, Nullch, (void*)$var );
+
+T_LONGLONG
+        $arg = ll_from_longlong ($var);
+
+
+T_HvRV
+    $arg = newRV((SV*)$var);
+######################################################################
+INPUT
+
+O_OBJECT
+        if( sv_isobject($arg) && (SvTYPE(SvRV($arg)) == SVt_PVMG) )
+                $var = ($type)SvIV((SV*)SvRV( $arg ));
+        else{
+                warn( \"${Package}::$func_name() -- $var is not a blessed SV reference\" );
+                XSRETURN_UNDEF;
+        }
+
+T_OBJECT
+    if( SvROK($arg) )
+        $var = ($type)SvIV((SV*)SvRV( $arg ));
+    else{
+        warn( \"${Package}::$func_name() -- $var is not an SV reference\" );
+        XSRETURN_UNDEF;
+    }
+
+T_LONGLONG
+        $var = SvLLV ($arg)
+
+T_HvRV
+    if( SvROK($arg) && (SvTYPE(SvRV($arg)) == SVt_PVHV) )
+        $var = (HV*)SvRV( $arg );
+    else {
+        warn( \"${Package}::$func_name() -- $var is not an HV reference\" );
+        XSRETURN_UNDEF;
+    }
