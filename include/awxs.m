@@ -33,4 +33,8 @@
 	}\
 }
 
+#define AWXS_CHECKSETERROR { if ( gErr != AW_NO_ERROR ) sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) ); }
+#define AWXS_CHECKSETERROR_RETURN { if ( gErr != AW_NO_ERROR ) { sv_setpv ( perl_get_sv("!",0), awErrorToCompleteString ( gErr ) ); XSRETURN_UNDEF; } }
+
+
 #endif /* AWXS_M */
