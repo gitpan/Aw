@@ -37,7 +37,7 @@ extern "C" {
 
 #include "EventToHash.h"
 
-BrokerError gErr;
+BrokerError gErr = null;
 
 
 BrokerError
