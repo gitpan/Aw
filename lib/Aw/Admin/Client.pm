@@ -15,7 +15,7 @@ require Aw::Client;
 sub getBrokersInTerritory
 {
 	my $result = Aw::Admin::Client::getBrokersInTerritoryRef ( @_ );
-	( wantarray ) ? @{ $result } : $result ;
+	( wantarray ) ? ( $result ) ? @{ $result } : () : $result ;
 }
 
 
@@ -24,6 +24,16 @@ sub getClientSubscriptionsById
 {
 	my $result = Aw::Admin::Client::getClientSubscriptionsByIdRef ( @_ );
 	( wantarray ) ? ( $result ) ? @{ $result } : ()  : $result ;
+}
+
+
+
+sub getEventAdminTypeDef
+{
+	return Aw::Admin::Client::_getEventAdminTypeDef ( @_ ) unless ( ref($_[0]) eq "ARRAY" );
+
+	my $result = Aw::Admin::Client::getEventAdminTypeDefsRef ( @_ );
+	( wantarray ) ? @{ $result } : $result ;
 }
 
 
@@ -52,7 +62,29 @@ sub getTerrioryGatewaySharedEventTypes
 
 
 
-sub getClientInfosById
+sub getClientInfoById
+{
+	return Aw::Admin::Client::_getClientInfoById ( @_ )
+		unless ( ref($_[1]) eq "ARRAY" );
+
+	my $result = Aw::Admin::Client::getClientInfosByIdRef ( @_ );
+	( wantarray ) ? @{ $result } : $result ;
+}
+
+
+
+sub getClientGroupInfoById
+{
+	return Aw::Admin::Client::_getClientGroupInfoById ( @_ )
+		unless ( ref($_[1]) eq "ARRAY" );
+
+	my $result = Aw::Admin::Client::getClientGroupInfosByIdRef ( @_ );
+	( wantarray ) ? @{ $result } : $result ;
+}
+
+
+
+sub getClientGroupInfosById
 {
 	my $result = Aw::Admin::Client::getClientInfosByIdRef ( @_ );
 	( wantarray ) ? @{ $result } : $result ;

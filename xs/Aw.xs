@@ -1647,7 +1647,7 @@ HV * hv = newHV();
 	strValue = awGetProperty ( key );
 
 	sv = boolSV ( ((BrokerBoolean *)value)[i] );
-	sv = newSViv ( *(IV*)((int*)value+i)  );
+	sv = newSViv ( *(IV*)((int*)value+i) );
 	sv = newSVpv ( (char*)value, 0 );
 
 	hv_store ( hv, key, strlen ( key ), sv, 0 );
@@ -2503,6 +2503,7 @@ MODULE = Aw			PACKAGE = Aw
 
 #===============================================================================
 
+
 PROTOTYPES: DISABLE
 
 
@@ -2512,7 +2513,7 @@ BOOT:
 	if ( (int)SvIV(perl_get_sv("Aw::SPAM", FALSE)) )
 		printf ( "\nAw %s [%s] (c) RCN <yacob@rcn.com>\n\n" ,
 			 (char *)SvPV(perl_get_sv("Aw::VERSION", FALSE), PL_na),
-			 (char *)SvPV(perl_get_sv("Aw::VERSION_NAME", FALSE), PL_na)  );
+			 (char *)SvPV(perl_get_sv("Aw::VERSION_NAME", FALSE), PL_na) );
 
 
 double
@@ -2555,6 +2556,27 @@ showHash ( hash )
 
 	CODE:
 		hashWalk (hash);
+
+int
+refcnt ( sv )
+
+	CODE:
+		RETVAL = SvREFCNT ( ST(0) );
+
+	OUTPUT:
+	RETVAL
+
+void
+free ( sv )
+
+	CODE:
+		//
+		// decrement to 1 and not 0.  gc should kick in when we return
+		// to script space.
+		//
+		while ( SvREFCNT ( ST(0) ) > 1 ) {
+			SvREFCNT_dec ( ST(0) );
+		}	
 
 
 
@@ -2863,7 +2885,7 @@ errmsg ( ... )
 
 
 	CODE:
-		BrokerError err = NULL;
+		BrokerError err = AW_NO_ERROR;
 		char * errMsg   = NULL;
 
 
@@ -2953,8 +2975,12 @@ errmsg ( ... )
 		/* if ( err == AW_NO_ERROR && errMsg ) */
 		if ( errMsg )
 			RETVAL = errMsg;
-		else
-			RETVAL = awErrorToCompleteString ( err );  /* hopefully NULL if AW_NO_ERROR */
+		else if ( err != AW_NO_ERROR )
+			RETVAL = awErrorToCompleteString ( err );
+
+		if ( RETVAL == NULL )
+			XSRETURN_UNDEF;
+
 
 	OUTPUT:
 	RETVAL
@@ -3653,7 +3679,10 @@ toString ( ... )
 				break;
 
 			case 7:
-				RETVAL = awSSLCertificateToString ( AWXS_BROKERSSLCERTIFICATE(0) );
+				RETVAL = (items)
+				       ? awSSLCertificateToIndentedString ( AWXS_BROKERSSLCERTIFICATE(0), (int)SvIV (ST(1)) )
+				       : awSSLCertificateToString ( AWXS_BROKERSSLCERTIFICATE(0) )
+				       ;
 				break;
 
 			case 8:
@@ -3667,6 +3696,9 @@ toString ( ... )
 #endif /* AWXS_WARNS */
 				break;
 		  }
+
+		if ( RETVAL == NULL )
+			XSRETURN_UNDEF;
 
 	OUTPUT:
 	RETVAL
@@ -3924,16 +3956,22 @@ _deliverErrorEvent ( self, category, msgId, strings )
 				break;
 		  }
 
+	CLEANUP:
+		XS_release_charPtrPtr ( strings );
+
 
 awaBool
-exit ( self )
+destroyClient ( self )
 	Aw::Adapter self
 
 	CODE:
 		AWXS_CLEARERROR
 
-		if ( self->adapter->brokerClient )
-			gErr = self->err = awDestroyClient ( self->adapter->brokerClient );
+		if ( self->adapter->brokerClient ) {
+			gErr = self->err = awDisconnectClient ( self->adapter->brokerClient );
+			if ( self->err == AW_NO_ERROR );
+				gErr = self->err = awDestroyClient ( self->adapter->brokerClient );
+		}
 
 		AWXS_CHECKSETERROR
 
@@ -4142,7 +4180,10 @@ getEventDefsRef ( self )
 		}
 
 	OUTPUT:
-	RETVAL
+		RETVAL
+	
+	CLEANUP:
+		SvREFCNT_dec ( RETVAL );
 
 
 
@@ -4533,7 +4574,10 @@ _beginTransaction ( self, transaction_id, required_level, participants )
 		AWXS_CHECKSETERROR_RETURN
 
 	OUTPUT:
-	RETVAL
+		RETVAL
+
+	CLEANUP:
+		XS_release_charPtrPtr ( participants );
 
 
 
@@ -4924,9 +4968,12 @@ deliverRequestAndWaitRef ( self, dest_id, event, msecs )
 				av_push( RETVAL, sv );
 			}
 		}
-
+	
 	OUTPUT:
-	RETVAL
+		RETVAL
+	
+	CLEANUP:
+		SvREFCNT_dec ( RETVAL );
 
 
 
@@ -4954,12 +5001,12 @@ getAccessLabelRef ( self )
 
 	PREINIT:
 		int n;
-		short ** label;
+		short ** labels;
 
 	CODE:
 		AWXS_CLEARERROR
 		
-		gErr = self->err = awGetClientAccessLabel ( self->client, &n, label );
+		gErr = self->err = awGetClientAccessLabel ( self->client, &n, labels );
 
 		AWXS_CHECKSETERROR_RETURN
 
@@ -4969,13 +5016,18 @@ getAccessLabelRef ( self )
 		int i;
 			RETVAL = newAV();
 			for ( i = 0; i<n; i++ ) {
-				sv = newSViv( *label[i] );
+				sv = newSViv( *labels[i] );
 				av_push( RETVAL, sv );
 			}
 		}
 
 	OUTPUT:
-	RETVAL
+		RETVAL
+	
+	CLEANUP:
+		free ( labels ); // free policy is not detailed in the C Platform Vol. 1 p 15-58
+                                 // nor in awclient.h, assume it is a block
+		SvREFCNT_dec ( RETVAL );
 
 
 
@@ -5086,7 +5138,7 @@ getCanPublishTypeDefsRef ( self )
 		Aw::Client::getCanSubscribeTypeDefs = 1
 
 	PREINIT:
-		BrokerTypeDef ** type_defs;
+		BrokerTypeDef * typeDefs;
 		int n;
 
 	CODE:
@@ -5094,8 +5146,8 @@ getCanPublishTypeDefsRef ( self )
 		
 		gErr = self->err
 		= (ix)
-		  ? awGetCanSubscribeTypeDefs ( self->client, &n, type_defs )
-		  : awGetCanPublishTypeDefs   ( self->client, &n, type_defs )
+		  ? awGetCanSubscribeTypeDefs ( self->client, &n, &typeDefs )
+		  : awGetCanPublishTypeDefs   ( self->client, &n, &typeDefs )
 		;
 	
 		AWXS_CHECKSETERROR_RETURN
@@ -5121,7 +5173,7 @@ getCanPublishTypeDefsRef ( self )
 				typeDef->err    = AW_NO_ERROR;
 				typeDef->errMsg = NULL;
 				typeDef->Warn   = gWarn;
-				memcpy ( typeDef->type_def, type_defs[i], sizeof(BrokerTypeDef) );
+				memcpy ( typeDef->type_def, typeDefs[i], sizeof(BrokerTypeDef) );
 
 				sv = sv_newmortal();
 				sv_setref_pv( sv, "Aw::TypeDef", (void*)typeDef );
@@ -5130,9 +5182,12 @@ getCanPublishTypeDefsRef ( self )
 			}
 		}
 
-
 	OUTPUT:
-	RETVAL
+		RETVAL
+	
+	CLEANUP:
+		SvREFCNT_dec ( RETVAL );
+		free ( typeDefs );
 
 
 
@@ -5252,7 +5307,11 @@ getSubscriptionsRef ( self )
 		}
 
 	OUTPUT:
-	RETVAL
+		RETVAL
+	
+	CLEANUP:
+		SvREFCNT_dec ( RETVAL );
+		free ( subs );
 
 
 
@@ -5319,9 +5378,7 @@ getEventsRef ( self, max_events, msecs, ... )
 
 	CODE:
 		AWXS_CLEARERROR
-		
-        
-		
+
 		gErr = self->err
 		= (ix)
 		  ? awGetEventsWithAck ( self->client, max_events, awBrokerLongFromString ( longlong_to_string ( SvLLV (ST(3)) ) ), msecs, &n, &events )
@@ -5365,7 +5422,10 @@ getEventsRef ( self, max_events, msecs, ... )
 		}
 
 	OUTPUT:
-	RETVAL
+		RETVAL
+	
+	CLEANUP:
+		SvREFCNT_dec ( RETVAL );
 
 
 
@@ -5462,7 +5522,11 @@ getEventTypeDefsRef ( self, event_type_names )
 		}
 
 	OUTPUT:
-	RETVAL
+		RETVAL
+
+	CLEANUP:
+		XS_release_charPtrPtr ( event_type_names );
+		free ( typeDefs );
 
 
 
@@ -5492,7 +5556,11 @@ getFds ( self )
 		}
 
 	OUTPUT:
-	RETVAL
+		RETVAL
+	
+	CLEANUP:
+		SvREFCNT_dec ( RETVAL );
+		free ( ints );
 
 
 
@@ -5651,7 +5719,7 @@ _newSubscription ( self, event_type_name, filter, ... )
 
 	CODE:
 		if ( isdigit(filter[0]) )
-		  *filter = atoi ( filter );
+			*filter = atoi ( filter );
 
 		if ( ix ) {
 			if ( items > 3 ) {
@@ -5846,16 +5914,17 @@ publish ( self, event )
 			self->errMsg = setErrMsg ( &gErrMsg, 3, "Could not publish event %s : %s\n", event_type_name, awErrorToCompleteString ( self->err ) );
 			if ( self->Warn || gWarn )
 				warn ( gErrMsg );
-
+			free ( event_type_name );
 		}
-
-		if ( av )
-			Safefree ( events );
 
 		RETVAL = ( self->err == AW_NO_ERROR ) ? awaFalse : awaTrue;
 
 	OUTPUT:
-	RETVAL
+		RETVAL
+
+	CLEANUP:
+		if ( av )
+			Safefree ( events );
 
 
 
@@ -5926,50 +5995,6 @@ _publishEventsWithAck ( self, ... )
 
 	OUTPUT:
 	RETVAL
-		
-
-
-Aw::Event
-publishRequestAndWaitRefX ( self, event, msecs )
-	Aw::Client self
-	Aw::Event event
-	int msecs
-
-	PREINIT:
-		int n;
-		BrokerEvent * reply_events;
-		char CLASS[] = "Aw::Event";
-
-	CODE:
-		AWXS_CLEARERROR
-		
-		gErr = self->err = awPublishRequestAndWait ( self->client, event->event, msecs, &n, &reply_events );
-
-		if ( self->err != AW_NO_ERROR ) {
-			printf ("%s\n", awErrorToCompleteString ( gErr ) );
-			XSRETURN_UNDEF;
-		}
-
-		
-		RETVAL = (xsBrokerEvent *)safemalloc ( sizeof(xsBrokerEvent) );
-		if ( RETVAL == NULL ) {
-			self->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new event" );
-#ifdef AWXS_WARNS
-			if ( self->Warn )
-				warn ( self->errMsg );
-#endif /* AWXS_WARNS */
-			XSRETURN_UNDEF;
-		}
-		RETVAL->err      = NULL;
-		RETVAL->errMsg   = NULL;
-		RETVAL->Warn     = gWarn;
-		RETVAL->deleteOk = 0;
-
-		RETVAL->event = reply_events[0];
-
-
-	OUTPUT:
-	RETVAL
 
 
 
@@ -6024,12 +6049,13 @@ publishRequestAndWaitRef ( self, event, msecs )
 				av_push( RETVAL, sv );
 
 			}
-
 		}
 
-
 	OUTPUT:
-	RETVAL
+		RETVAL
+	
+	CLEANUP:
+		SvREFCNT_dec ( RETVAL );
 
 
 
@@ -6305,7 +6331,11 @@ getEventTypeInfosetsRef ( self, event_type_name, infoset_names )
 		}
 
 	OUTPUT:
-	RETVAL
+		RETVAL
+
+	CLEANUP:
+		XS_release_charPtrPtr ( infoset_names );
+		SvREFCNT_dec ( RETVAL );
 
 
 
@@ -6354,6 +6384,7 @@ new ( CLASS )
 
 	CODE:
 		RETVAL = (xsBrokerConnectionDescriptor *)safemalloc ( sizeof(xsBrokerConnectionDescriptor) );
+
 		if ( RETVAL == NULL ) {
 			setErrMsg ( &gErrMsg, 1, "unable to malloc new connection descriptor" );
 #ifdef AWXS_WARNS
@@ -6362,6 +6393,7 @@ new ( CLASS )
 #endif /* AWXS_WARNS */
 			XSRETURN_UNDEF;
 		}
+
 		/* initialize the error cleanly */
 		RETVAL->err    = AW_NO_ERROR;
 		RETVAL->errMsg = NULL;
@@ -6385,6 +6417,7 @@ copy ( self )
 		AWXS_CLEARERROR
 
 		RETVAL = (xsBrokerConnectionDescriptor *)safemalloc ( sizeof(xsBrokerConnectionDescriptor) );
+
 		if ( RETVAL == NULL ) {
 			self->errMsg = setErrMsg ( &gErrMsg, 1, "unable to malloc new connection descriptor copy" );
 #ifdef AWXS_WARNS
@@ -6393,6 +6426,7 @@ copy ( self )
 #endif /* AWXS_WARNS */
 			XSRETURN_UNDEF;
 		}
+
 		/* initialize the error cleanly */
 		RETVAL->err    = AW_NO_ERROR;
 		RETVAL->errMsg = NULL;
@@ -6421,6 +6455,9 @@ getAccessLabelHint ( self )
 
 
 
+# 
+#   hrm, maybe this should be an HV*?
+# 
 AV *
 getSSLCertificateRef ( self )
 	Aw::ConnectionDescriptor self
@@ -6432,7 +6469,7 @@ getSSLCertificateRef ( self )
 	CODE:
 		AWXS_CLEARERROR
 
-		gErr = self->err = awGetDescriptorSSLCertificate (  self->desc, &certificate_file, &distinguished_name );
+		gErr = self->err = awGetDescriptorSSLCertificate ( self->desc, &certificate_file, &distinguished_name );
 
 		AWXS_CHECKSETERROR_RETURN
 
@@ -6448,7 +6485,12 @@ getSSLCertificateRef ( self )
 		}
 
 	OUTPUT:
-	RETVAL
+		RETVAL
+	
+	CLEANUP:
+		SvREFCNT_dec ( RETVAL );
+		free ( certificate_file );
+		free ( distinguished_name );
 
 
 
@@ -6462,12 +6504,15 @@ getSSLCertificateFile ( self )
 	CODE:
 		AWXS_CLEARERROR
 
-		gErr = self->err = awGetDescriptorSSLCertificate (  self->desc, &RETVAL, &distinguished_name );
+		gErr = self->err = awGetDescriptorSSLCertificate ( self->desc, &RETVAL, &distinguished_name );
 
 		AWXS_CHECKSETERROR_RETURN
 
 	OUTPUT:
-	RETVAL
+		RETVAL
+
+	CLEANUP:
+		free ( distinguished_name );
 
 
 
@@ -6486,7 +6531,10 @@ getSSLDistinguishedName ( self )
 		AWXS_CHECKSETERROR_RETURN
 
 	OUTPUT:
-	RETVAL
+		RETVAL
+
+	CLEANUP:
+		free ( certificate_file );
 
 
 
@@ -6543,7 +6591,11 @@ getSSLCertificateDnsRef ( self, certificate_file, password )
 		}
 
 	OUTPUT:
-	RETVAL
+		RETVAL
+	
+	CLEANUP:
+		SvREFCNT_dec ( RETVAL );
+		free ( distinguished_names );
 
 
 
@@ -6883,6 +6935,7 @@ new ( CLASS )
 
 	CODE:
 		RETVAL = (xsBrokerError *)safemalloc ( sizeof(xsBrokerError) );
+
 		if ( RETVAL == NULL ) {
 			setErrMsg ( &gErrMsg, 1, "unable to malloc new error" );
 #ifdef AWXS_WARNS
@@ -6892,6 +6945,7 @@ new ( CLASS )
 			XSRETURN_UNDEF;
 		}
 
+		/* initialize the error cleanly */
 		RETVAL->err    = (ix) ? awCopyError ( gErr ) : NULL;
 		RETVAL->errMsg = NULL;
 		RETVAL->Warn   = gWarn;
@@ -7067,6 +7121,7 @@ _new ( CLASS, client, event_type_name, ... )
 
 	CODE:
 		RETVAL = (xsBrokerEvent *)safemalloc ( sizeof(xsBrokerEvent) );
+
 		if ( RETVAL == NULL ) {
 			setErrMsg ( &gErrMsg, 1, "unable to malloc new event" );
 #ifdef AWXS_WARNS
@@ -7075,12 +7130,15 @@ _new ( CLASS, client, event_type_name, ... )
 #endif /* AWXS_WARNS */
 			XSRETURN_UNDEF;
 		}
+
 		/* initialize the error cleanly */
 		RETVAL->err    = AW_NO_ERROR;
 		RETVAL->errMsg = NULL;
 		RETVAL->Warn   = gWarn;
 
 		gErr = RETVAL->err = awNewBrokerEvent ( client->client, event_type_name, &RETVAL->event );
+
+		AWXS_CHECKSETERROR_RETURN
 
 		if ( items == 4 )
 		  {
@@ -7094,7 +7152,6 @@ _new ( CLASS, client, event_type_name, ... )
 			    };
 
 			gErr = RETVAL->err = awxsSetEventFromHash ( RETVAL->event, hv );
-
 		  }
 
 		if ( RETVAL->err != AW_NO_ERROR ) {
@@ -7539,7 +7596,7 @@ getSequenceFieldRef ( self, field_name, ... )
 
 		RETVAL = getAVN ( self->event, field_name, offset, max_n );
 
-		if ( RETVAL == Nullsv  ) {
+		if ( RETVAL == Nullsv ) {
 			gErr = self->err = getEventToHashErr(); 
 			AWXS_CHECKSETERROR_RETURN
 		}
@@ -7724,7 +7781,10 @@ getStructSeqFieldAsEventsRef ( self, field_name, offset, ... )
 		}
 
 	OUTPUT:
-	RETVAL
+		RETVAL
+	
+	CLEANUP:
+		SvREFCNT_dec ( RETVAL );
 
 
 
@@ -7738,10 +7798,21 @@ getSubscriptionIdsRef ( self )
 	CODE:
 		AWXS_CLEARERROR
 
-		awGetSubscriptionIds ( self->event, &n );
+		ints = awGetSubscriptionIds ( self->event, &n );
 
-		AWXS_CHECKSETERROR_RETURN
-		
+		if ( ints == NULL ) {
+			self->errMsg
+			= ( n )
+			  ? setErrMsg ( &gErrMsg, 1, "Event was created locally." )
+			  : setErrMsg ( &gErrMsg, 1, "Event was delivered by broker.  Delivered events are not matched to subscriptions." )
+			;
+#ifdef AWXS_WARNS
+			if ( self->Warn )
+				warn ( self->errMsg );
+#endif /* AWXS_WARNS */
+
+			XSRETURN_UNDEF;
+		}
 
 		{
 		SV *sv;
@@ -7754,7 +7825,11 @@ getSubscriptionIdsRef ( self )
 		}
 
 	OUTPUT:
-	RETVAL
+		RETVAL
+	
+	CLEANUP:
+		SvREFCNT_dec ( RETVAL );
+		free ( ints );
 
 
 
@@ -7967,7 +8042,6 @@ _setField ( self, field_name, value )
 
 	PREINIT:
 		short field_type = ix ;
-		BrokerTypeDef type_def;
 
 	CODE:
 		AWXS_CLEARERROR
@@ -8184,7 +8258,7 @@ setStructSeqFieldFromEvents ( self, field_name, ... )
 
 
 awaBool
-init ( self, data  )
+init ( self, data )
 	Aw::Event self
 	HV * data
 
@@ -8388,7 +8462,10 @@ toHashRef ( self )
 		AWXS_CHECKSETERROR_RETURN
 
 	OUTPUT:
-	RETVAL
+		RETVAL
+	
+	CLEANUP:
+		SvREFCNT_dec ( RETVAL );
 
 
 
@@ -8457,6 +8534,7 @@ new ( CLASS, event_type_name )
 #endif /* AWXS_WARNS */
 			XSRETURN_UNDEF;
 		}
+
 		/* initialize the error cleanly */
 		RETVAL->err    = AW_NO_ERROR;
 		RETVAL->errMsg = NULL;
@@ -8881,6 +8959,7 @@ new ( CLASS, client, event_type_name, filter_string )
 #endif /* AWXS_WARNS */
 			XSRETURN_UNDEF;
 		}
+
 		/* initialize the error cleanly */
 		RETVAL->err    = AW_NO_ERROR;
 		RETVAL->errMsg = NULL;
@@ -8995,6 +9074,7 @@ new ( CLASS, ... )
 #endif /* AWXS_WARNS */
 			XSRETURN_UNDEF;
 		}
+
 		/* initialize the error cleanly */
 		RETVAL->err    = AW_NO_ERROR;
 		RETVAL->errMsg = NULL;
@@ -9307,7 +9387,11 @@ verify ( self, ... )
 		RETVAL = awValidateLicense ( self->license_string, product, version_major, version_minor );
 
 	OUTPUT:
-	RETVAL
+		RETVAL
+
+	CLEANUP:
+		if ( items == 1 )
+			free ( product );
 
 
 
@@ -9347,6 +9431,7 @@ new ( CLASS, ... )
 
 	CODE:
 		RETVAL = (xsAdapterLog *)safemalloc ( sizeof(xsAdapterLog) );	
+
 		if ( RETVAL == NULL ) {
 			setErrMsg ( &gErrMsg, 1, "unable to malloc new adapter log" );
 #ifdef AWXS_WARNS
@@ -9591,7 +9676,10 @@ _getMessage ( self, msgId, strings )
 		  }
 
 	OUTPUT:
-	RETVAL
+		RETVAL
+
+	CLEANUP:
+		XS_release_charPtrPtr ( strings );
 
 
 
@@ -9740,7 +9828,10 @@ parseOptions ( self, progName, argv )
 #endif /* ( AW_VERSION_31 || AW_VERSION_40 ) */
 
 	OUTPUT:
-	RETVAL
+		RETVAL
+
+	CLEANUP:
+		XS_release_charPtrPtr ( argv );
 
 
 
@@ -9792,6 +9883,7 @@ new ( CLASS, ... )
 #endif /* AWXS_WARNS */
 			XSRETURN_UNDEF;
 		}
+
 		/* initialize the error cleanly */
 		RETVAL->err    = AW_NO_ERROR;
 		RETVAL->errMsg = NULL;
@@ -10020,6 +10112,7 @@ new ( CLASS, ... )
 
 	CODE:
 		RETVAL = (xsBrokerTypeDefCache *)safemalloc ( sizeof(xsBrokerTypeDefCache) );
+
 		if ( RETVAL == NULL ) {
 			setErrMsg ( &gErrMsg, 1, "unable to malloc new type def cache" );
 #ifdef AWXS_WARNS
@@ -10028,6 +10121,7 @@ new ( CLASS, ... )
 #endif /* AWXS_WARNS */
 			XSRETURN_UNDEF;
 		}
+
 		/* initialize the error cleanly */
 		RETVAL->err    = AW_NO_ERROR;
 		RETVAL->errMsg = NULL;
@@ -10122,6 +10216,7 @@ new ( CLASS, adapter )
 
 	CODE:
 		RETVAL = (xsAdapterReplies *)safemalloc ( sizeof(xsAdapterReplies) );
+
 		if ( RETVAL == NULL ) {
 			setErrMsg ( &gErrMsg, 1, "unable to malloc new replies" );
 #ifdef AWXS_WARNS
@@ -10163,7 +10258,7 @@ cancel ( self )
 	Aw::Replies self
 
 	CODE:
-		awAdapterReplyEventsCancel ( self-> handle );
+		awAdapterReplyEventsCancel ( self->handle );
 
 
 
@@ -10209,7 +10304,6 @@ MODULE = Aw			PACKAGE = Aw::SSLCertificate
 #	::getIssuerDistinguishedName-A
 #	::getStatus
 #	::toString-A			   C ??
-#	::toIndentedString		   C ??
 #===============================================================================
 
 
@@ -10289,19 +10383,6 @@ getDistinguishedName ( self )
 
 
 
-char *
-toIndentedString ( self, indent )
-	Aw::SSLCertificate self
-	int indent
-
-	CODE:
-		RETVAL = awSSLCertificateToIndentedString ( self, indent );
-
-	OUTPUT:
-	RETVAL
-
-
-
 #===============================================================================
 
 MODULE = Aw			PACKAGE = Aw::Subscription
@@ -10326,6 +10407,7 @@ new ( CLASS, ... )
 
 	CODE:
 		RETVAL = (BrokerSubscription *)safemalloc ( sizeof(BrokerSubscription) );
+
 		if ( RETVAL == NULL ) {
 			setErrMsg ( &gErrMsg, 1, "unable to malloc new filter" );
 #ifdef AWXS_WARNS
@@ -10334,7 +10416,6 @@ new ( CLASS, ... )
 #endif /* AWXS_WARNS */
 			XSRETURN_UNDEF;
 		}
-
 
 		if ( items > 1 ) {
 			char * event_type_name = NULL;
@@ -10368,9 +10449,9 @@ getEventTypeName ( self )
 	Aw::Subscription self
 
 	ALIAS:
-		AW::Subscription::getFilter       = 1
-		AW::Subscription::filter          = 3
-		AW::Subscription::event_type_name = 2
+		Aw::Subscription::getFilter       = 1
+		Aw::Subscription::filter          = 3
+		Aw::Subscription::event_type_name = 2
 
 	CODE:
 		if ( ix%2 ) {
@@ -10456,6 +10537,7 @@ new ( CLASS, adapter, ... )
 
 	CODE:
 		RETVAL = (xsAdapterUtil *)safemalloc ( sizeof(xsAdapterUtil) );
+
 		if ( RETVAL == NULL ) {
 			setErrMsg ( &gErrMsg, 1, "unable to malloc new adapter util" );
 #ifdef AWXS_WARNS
@@ -10464,6 +10546,7 @@ new ( CLASS, adapter, ... )
 #endif /* AWXS_WARNS */
 			XSRETURN_UNDEF;
 		}
+
 		/* initialize the error cleanly */
 		RETVAL->err    = AW_NO_ERROR;
 		RETVAL->errMsg = NULL;
@@ -11132,7 +11215,10 @@ getStructSeqInfoRef ( self, field_name )
 		}
 
 	OUTPUT:
-	RETVAL
+		RETVAL
+	
+	CLEANUP:
+		SvREFCNT_dec ( RETVAL );
 
 
 

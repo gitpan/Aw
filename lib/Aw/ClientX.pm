@@ -39,13 +39,13 @@ __END__
 
 =head1 NAME
 
-Aw::Client - ActiveWorks Client Module.
+Aw::ClientX - ActiveWorks Client Module.
 
 =head1 SYNOPSIS
 
-require Aw::Client;
+require Aw::ClientX;
 
-my $client = new Aw::Client;
+my $client = newEZ Aw::ClientX ( "myGroup", "myApp" );
 
 
 =head1 DESCRIPTION

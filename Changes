@@ -1,5 +1,13 @@
 Revision history for Perl extension Aw.
 
+0.14.0 Thu Apr  4 18:22:54 EST 2002
+
+	- Aw::Admin reference web pages added.
+	- many leaks plugged over last release.
+	- Aw::Info added for awadmin.h structures that are other represented as hashes
+	  but can benefit from their respective "ToString" functions.
+	- some code clean up with XS "CLEANUP".
+
 0.13.7 Tue Feb 26 16:40:50 EST 2002
 
 	- fixed numerous small Aw::Admin problems in methods not used previously 

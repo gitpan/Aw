@@ -11,7 +11,7 @@ require Aw::Admin;
 
 sub getUserNames
 {
-	my $result = Aw::Admin::Client::getUserNamesRef ( @_ );
+	my $result = Aw::Admin::AccessControlList::getUserNamesRef ( @_ );
 	( wantarray ) ? @{ $result } : $result ;
 }
 
@@ -19,7 +19,7 @@ sub getUserNames
 
 sub getAuthNames
 {
-	my $result = Aw::Admin::Client::getAuthNamesRef ( @_ );
+	my $result = Aw::Admin::AccessControlList::getAuthNamesRef ( @_ );
 	( wantarray ) ? @{ $result } : $result ;
 }
 

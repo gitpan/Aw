@@ -19,7 +19,7 @@
 <tr align="center"><th align="left"><a name="cancelCallbackForTag"></a>cancelCallbackForTag</th><td>( tag )</td><td>Boolean</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="cancelSubscription"></a>cancelSubscription</th><td>( event_type_name, filter )</td><td>Boolean</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="cancelSubscriptions"></a>cancelSubscriptions</th><td>( @Aw::Subscription )</td><td>Boolean</td><td>YES</td></tr>
-<tr align="center"><th align="left"><a name="cancellCallbacks"></a>cancellCallbacks</th><td>( client )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="cancelCallbacks"></a>cancelCallbacks</th><td>( client )</td><td>Boolean</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="clearQue"></a>clearQue</th><td>( client )</td><td>Boolean</td><td>YES</td></tr>
 <tr align="center"><th align="left" valign="top"><a name="connect"></a>connect</th><td>( %Configuration )<hr width="90%" noshade align="left"><font size=-1><div align="left">%Config must contain the 'clientGroup' key and value.  Optional keys are<dir>brokerHost<br>brokerName<br>clientId<br>applicationName<br>connectionDescriptor</dir>The connect method will work like newOrReconnect with error reporting.</div></font></td><td>Aw::Client</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="deliver"></a>deliver</th><td>( dest_id, [@]Aw::Event )</td><td>Boolean</td><td>YES</td></tr>
@@ -29,12 +29,12 @@
 <tr align="center"><th align="left"><a name="deliverPartialReplyEvents"></a>deliverPartialReplyEvents</th><td>( request_event, @Aw::Event )</td><td>Number</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="deliverReplyEvent"></a>deliverReplyEvent</th><td>( request_event, [@]Aw::Event )</td><td>Boolean</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="deliverReplyEvents"></a>deliverReplyEvents</th><td>( request_event, @Aw::Event )</td><td>Number</td><td>YES</td></tr>
-<tr align="center"><th align="left"><a name="deliverRequestAndWait"></a>deliverRequestAndWait</th><td>( dest_id, event, msecs )</td><td>@Aw::Event</td><td>NO</td></tr>
+<tr align="center"><th align="left"><a name="deliverRequestAndWait"></a>deliverRequestAndWait</th><td>( dest_id, event, msecs )</td><td>@Aw::Event</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="disconnect"></a>disconnect</th><td>( )</td><td>Boolean</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="dispatch"></a>dispatch</th><td>( msecs )</td><td>Boolean</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="doesSubscriptionExist"></a>doesSubscriptionExist</th><td>( event_type_name, filter )</td><td>Boolean</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="endTransaction"></a>endTransaction</th><td>( transaction_id, mode )</td><td>Number</td><td>YES</td></tr>
-<tr align="center"><th align="left"><a name="getAccessLabel"></a>getAccessLabel</th><td>( )</td><td>@Ints</td><td>NO</td></tr>
+<tr align="center"><th align="left"><a name="getAccessLabel"></a>getAccessLabel</th><td>( )</td><td>@Ints</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="getApplicationName"></a>getApplicationName</th><td>( )</td><td>String</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="getBrokerHost"></a>getBrokerHost</th><td>( )</td><td>String</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="getBrokerName"></a>getBrokerName</th><td>( )</td><td>String</td><td>YES</td></tr>
@@ -83,7 +83,6 @@
 <tr align="center"><th align="left"><a name="makeTag"></a>makeTag</th><td>( )</td><td>Number</td><td>NO</td></tr>
 <tr align="center"><th align="left"><a name="makeTransactionId"></a>makeTransactionId</th><td>( )</td><td>String</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="makeUniqueSubId"></a>makeUniqueSubId</th><td>( )</td><td>Number</td><td>YES</td></tr>
-<tr align="center"><th align="left"><a name="nameTest"></a>nameTest</th><td>( )</td><td>String</td><td>NO</td></tr>
 <tr align="center"><th align="left"><a name="newEZ"></a>newEZ</th><td>( client_group [, app_name] )</td><td>Aw::Client</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="newOrReconnect"></a>newOrReconnect</th><td>( broker_host, broker_name, client_id, client_group, app_name [, desc] )</td><td>Aw::Client</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="newOrReconnectEZ"></a>newOrReconnectEZ</th><td>( client_id, client_group [, app_name] )</td><td>Aw::Client</td><td>YES</td></tr>
@@ -95,7 +94,7 @@
 <tr align="center"><th align="left"><a name="primeAllClients"></a>primeAllClient</th><td>( )</td><td>Boolean</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="publish"></a>publish</th><td>( [@]Aw::Event )</td><td>Boolean</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="publishEvents"></a>publishEvents</th><td>( @Aw::Event )</td><td>Boolean</td><td>YES</td></tr>
-<tr align="center"><th align="left"><a name="publishRequestAndWait"></a>publishRequestAndWait</th><td>( event, msecs )</td><td>@Aw::Event</td><td>NO</td></tr>
+<tr align="center"><th align="left"><a name="publishRequestAndWait"></a>publishRequestAndWait</th><td>( event, msecs )</td><td>@Aw::Event</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="reconnect"></a>reconnect</th><td>( broker_host, broker_name, client_id )</td><td>Aw::Client</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="reconnectEZ"></a>reconnectEZ</th><td>( client_id )</td><td>Aw::Client</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="registerCallback"></a>registerCallback</th><td>( method )</td><td>Boolean</td><td>YES</td></tr>

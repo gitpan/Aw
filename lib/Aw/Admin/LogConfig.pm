@@ -9,9 +9,20 @@ require Aw::Admin;
 
 
 
-sub getLogOutputsRef
+sub getOutput
 {
-	my $result = Aw::Admin::Client::getLogOutputs ( @_ );
+	return Aw::Admin::LogConfig::getOutput ( @_ ) if ( scalar @_ == 2 );
+
+	my $result = Aw::Admin::LogConfig::getOutputsRef ( @_ );
+	( wantarray ) ? @{ $result } : $result ;
+}
+
+
+sub getTopic
+{
+	return Aw::Admin::LogConfig::getTopic ( @_ ) if ( scalar @_ == 2 );
+
+	my $result = Aw::Admin::LogConfig::getTopicsRef ( @_ );
 	( wantarray ) ? @{ $result } : $result ;
 }
 

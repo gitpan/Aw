@@ -73,9 +73,9 @@ BrokerBoolean isSet;
 			break;
 
 		hv_store ( hv, Keys[i], strlen ( Keys[i] ), sv, 0 );
-		// Safefree ( &Keys[i] );
 	}
 
+	free ( Keys );
 
 	return ( gErr );
 
@@ -98,7 +98,7 @@ BrokerEvent newEvent;
 
 	awxsSetHashFromEvent ( newEvent, hv );
 
-	Safefree ( newEvent );
+	free ( newEvent );
 
 	return ( newRV_noinc((SV*) hv) );
 }
@@ -132,7 +132,7 @@ int x;
 	// if ( type == FIELD_TYPE_DATE  /* because we had to copy dates */
 	  //    || type == FIELD_TYPE_STRUCT )
 	// 	Safefree ( seqValue );
-	Safefree ( seqValue );
+	free ( seqValue );
 
 	return ( newRV_noinc((SV*) av) );
 }
@@ -165,6 +165,8 @@ void * value;
 
 	sv = getValue ( type, value );
 
+	free ( value );
+
 	return ( sv );
 }
 
@@ -185,7 +187,6 @@ SV * sv;
 		 */
 		case FIELD_TYPE_BOOLEAN:
 			sv = boolSV ( ((BrokerBoolean *)value)[i] );
-	  		// Safefree ( &((BrokerBoolean *)value)[i] );
 			break;
 
 		case FIELD_TYPE_BYTE:
@@ -195,7 +196,6 @@ SV * sv;
 
 		case FIELD_TYPE_CHAR:
 	  		sv = newSVpv ( (char*)value+i, 1 );
-	  		// Safefree ( (char*)value+i );
 			break;
 
 		case FIELD_TYPE_INT:
@@ -218,13 +218,11 @@ SV * sv;
 
 		case FIELD_TYPE_DATE:
 			sv = sv_newmortal();
-			if ( array  ) {
-				BrokerDate * bd = (BrokerDate *)safemalloc ( sizeof (BrokerDate) );
-				memcpy ( bd, ((BrokerDate*)value+i), sizeof(BrokerDate) );
-				sv_setref_pv( sv, "Aw::Date", (void*)bd );
+			{
+			BrokerDate * bd = (BrokerDate *)safemalloc ( sizeof (BrokerDate) );
+			memcpy ( bd, ((BrokerDate*)value+i), sizeof(BrokerDate) );
+			sv_setref_pv( sv, "Aw::Date", (void*)bd );
 			}
-			else
-				sv_setref_pv( sv, "Aw::Date", (void*)&(((BrokerDate*)value)[i]) );
 			SvREFCNT_inc(sv);
 			break;
 

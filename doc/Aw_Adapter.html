@@ -16,38 +16,39 @@
 <tr align="center"><th align="left"><a name="createAdapterClient"></a>createAdapterClient</th><td>( stateShare )</td><td>Boolean</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="createClient"></a>createClient</th><td>( )</td><td>Boolean</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="deliverErrorEvent"></a>deliverErrorEvent</th><td>( category, msgId, @Strings )</td><td>void</td><td>NO</td></tr>
+<tr align="center"><th align="left"><a name="destroyClient"></a>destroyClient</th><td>( )<br><div align="right">disconnects and destroys the adapter's broker client if present</div></td><td>void</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="eventDef"></a>eventDef</th><td>( )</td><td>Aw::EventType</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="getAdapterEventName"></a>getAdapterEventName</th><td>( )</td><td>String</td><td>NO</td></tr>
+<tr align="center"><th align="left"><a name="getAdapterInfo"></a>getAdapterInfo</th><td>( )</td><td>Aw::Event</td><td>NO</td></tr>
 <tr align="center"><th align="left"><a name="getAdapterType"></a>getAdapterType<br>&nbsp;&nbsp;<font size=-1>adapterType</font></th><td>( )</td><td>String</td><td>NO</td></tr>
 <tr align="center"><th align="left"><a name="getAdapterVersion"></a>getAdapterVersion<br>&nbsp;&nbsp;<font size=-1>adapterVersion</font></th><td>( )</td><td>String</td><td>NO</td></tr>
+<tr align="center"><th align="left"><a name="getAdminClient"></a>getAdminClient</th><td>( )</td><td>Aw::Client</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="getBroker"></a>getBroker<br>&nbsp;&nbsp;<font size=-1>brokerClient</font></th><td>( )</td><td>String</td><td>NO</td></tr>
+<tr align="center"><th align="left"><a name="getBrokerClient"></a>getBrokerClient</th><td>( )</td><td>Aw::Client</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="getBrokerHost"></a>getBrokerHost<br>&nbsp;&nbsp;<font size=-1>brokerHost</font></th><td>( )</td><td>String</td><td>NO</td></tr>
 <tr align="center"><th align="left"><a name="getBrokerName"></a>getBrokerName<br>&nbsp;&nbsp;<font size=-1>brokerName</font></th><td>( )</td><td>String</td><td>NO</td></tr>
+<tr align="center"><th align="left"><a name="getClient"></a>getClient</th><td>( )</td><td>Aw::Client</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="getClientGroup"></a>getClientGroup<br>&nbsp;&nbsp;<font size=-1>clientGroup</font></th><td>( )</td><td>String</td><td>NO</td></tr>
 <tr align="center"><th align="left"><a name="getClientId"></a>getClientId<br>&nbsp;&nbsp;<font size=-1>clientId</font></th><td>( )</td><td>String</td><td>NO</td></tr>
 <tr align="center"><th align="left"><a name="getClientName"></a>getClientName<br>&nbsp;&nbsp;<font size=-1>clientName</font></th><td>( )</td><td>String</td><td>NO</td></tr>
 <tr align="center"><th align="left"><a name="getEventDefs"></a>getEventDefs<br>&nbsp;&nbsp;<font size=-1>eventDefs</font></th><td>( )</td><td>@Aw::EventType</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="getEvents"></a>getEvents</th><td>( )</td><td>Boolean</td><td>YES</td></tr>
+<tr align="center"><th align="left"><a name="getEventDef"></a>getEventDef</th><td>( name )</td><td>Aw::EventType</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="getPublishWaitTime"></a>getPublishWaitTime</th><td>( )</td><td>Number</td><td>NO</td></tr>
 <tr align="center"><th align="left"><a name="init"></a>init</th><td>( )</td><td>Boolean</td><td>NO</td></tr>
 <tr align="center"><th align="left"><a name="initStatusSubscriptions"></a>initStatusSubscriptions</th><td>( )</td><td>Boolean</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="isConnectTest"></a>isConnectTest</th><td>( )</td><td>Boolean</td><td>NO</td></tr>
 <tr align="center"><th align="left"><a name="isEventFieldSet"></a>isEventFieldSet</th><td>( event, field_name )</td><td>Boolean</td><td>NO</td></tr>
 <tr align="center"><th align="left"><a name="isMaster"></a>isMaster</th><td>( )</td><td>Boolean</td><td>NO</td></tr>
+<tr align="center"><th align="left"><a name="loadProperties"></a>loadProperties</th><td>( @Strings )</td><td>Aw::Properties</td><td>NO</td></tr>
 <tr align="center"><th align="left"><a name="newSubscription"></a>newSubscription</th><td>( event_type_name, filter, [ [requestEvent], [requestDef] ]  )</td><td>Boolean</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="publishStatus"></a>publishStatus</th><td>( )</td><td>Boolean</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="removeEvent"></a>removeEvent</th><td>( event_name )</td><td>void</td><td>NO</td></tr>
+<tr align="center"><th align="left"><a name="requestEvent"></a>requestEvent</th><td>( )</td><td>Aw::Event</td><td>NO</td></tr>
 <tr align="center"><th align="left"><a name="setConnectionDescriptorSSL"></a>setConnectionDescriptorSSL</th><td>( desc )</td><td>Boolean</td><td>YES</td></tr>
 <tr align="center"><th align="left"><a name="setEventField"></a>setEventField</th><td>(event, field_name, typeDef, value)</td><td>Boolean</td><td>NO</td></tr>
 <tr align="center"><th align="left"><a name="setStatusProperty"></a>setStatusProperty</th><td>( propertyName )</td><td>void</td><td>NO</td></tr>
 <tr align="center"><th align="left"><a name="verifyLicense"></a>verifyLicense</th><td>( licenseKeyPrefix )</td><td>void</td><td>NO</td></tr>
-<tr align="center"><th align="left"><a name="getAdminClient"></a>getAdminClient</th><td>( )</td><td>Aw::Client</td><td>YES</td></tr>
-<tr align="center"><th align="left"><a name="getBrokerClient"></a>getBrokerClient</th><td>( )</td><td>Aw::Client</td><td>YES</td></tr>
-<tr align="center"><th align="left"><a name="getClient"></a>getClient</th><td>( )</td><td>Aw::Client</td><td>YES</td></tr>
-<tr align="center"><th align="left"><a name="getAdapterInfo"></a>getAdapterInfo</th><td>( )</td><td>Aw::Event</td><td>NO</td></tr>
-<tr align="center"><th align="left"><a name="requestEvent"></a>requestEvent</th><td>( )</td><td>Aw::Event</td><td>NO</td></tr>
-<tr align="center"><th align="left"><a name="eventDef"></a>eventDef</th><td>( )</td><td>Aw::EventType</td><td>YES</td></tr>
-<tr align="center"><th align="left"><a name="getEventDef"></a>getEventDef</th><td>( name )</td><td>Aw::EventType</td><td>YES</td></tr>
-<tr align="center"><th align="left"><a name="loadProperties"></a>loadProperties</th><td>( @Strings )</td><td>Aw::Properties</td><td>NO</td></tr>
 
 
   <tr><td colspan=4 bgcolor="#bfbfbf" align="center"><strong><i>methods requiring an AdapterHandle are accessible from Aw::Adapter</i></strong></td></tr>

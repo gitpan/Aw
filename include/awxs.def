@@ -46,6 +46,7 @@ typedef BrokerSSLCertificate * Aw__SSLCertificate;
 typedef xsBrokerTypeDef      * Aw__TypeDef;
 typedef xsBrokerTypeDefCache * Aw__TypeDefCache;
 typedef xsAdapterUtil        * Aw__Util;
+// typedef O_HvRV               * Aw__Info;
 
 
 

@@ -118,6 +118,7 @@ char **s;
 		sv = newSVpv( *c, 0 );
 		av_push( av, sv );
 	}
+	free ( s );
 	sv = newSVrv( st, NULL );	/* upgrade stack SV to an RV */
 	SvREFCNT_dec( sv );	/* discard */
 	SvRV( st ) = (SV*)av;	/* make stack RV point at our AV */

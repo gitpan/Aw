@@ -11,7 +11,7 @@ require Aw::Admin;
 
 sug getFieldNames
 {
-	my $result = Aw::Admin::Client::getFieldNamesRef ( @_ )
+	my $result = Aw::Admin::TypeDef::getFieldNamesRef ( @_ )
 	( wantarray ) ? @{ $result } : $result ;
 }
 
@@ -28,13 +28,13 @@ __END__
 
 =head1 NAME
 
-Aw::TypeDef - ActiveWorks TypeDef Module.
+Aw::Admin::TypeDef - ActiveWorks TypeDef Module.
 
 =head1 SYNOPSIS
 
-require Aw::TypeDef;
+require Aw::Admin::TypeDef;
 
-my $client = new Aw::TypeDef;
+my $typedef = new Aw::Admin::TypeDef;
 
 
 =head1 DESCRIPTION
