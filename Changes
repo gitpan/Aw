@@ -1,5 +1,9 @@
 Revision history for Perl extension Aw.
 
+0.16.6 Thu Feb 20 08:38:26 EST 2003
+	
+	- INSTALL instructions are expanded.
+
 0.16.5 Sun Feb  9 13:19:10 EST 2003
 
 	- bin/PerlDemo.data renamed bin/PerDemo.adl

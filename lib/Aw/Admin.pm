@@ -53,7 +53,7 @@ require AutoLoader;
 	AW_TRACE_OTHER
 );
 
-$VERSION = '0.16.5';
+$VERSION = '0.16.6';
 $VERSION_NAME = 'Dromedary Samurai';
 $SPAM = 0;
 

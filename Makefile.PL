@@ -14,14 +14,6 @@ WriteMakefile(
 	'DEFINE'	=>
 		($] < 5.0045 ? '-DPERL5004_COMPAT -DAWXS_WARNS' : '-DAWXS_WARNS'),
 	'PREREQ_PM' 	=> { 'CORBA::LongLong' => 0 },
-	#
-	# Uncomment for 3.0
-	#
-	# 'LIBS'	=> ['-L/opt/active30/samples/adapter_devkit/c_lib -lcustcadk30 -L/opt/active30/lib -lawalog30 -lawl30 -lawc30 -lsocket -lnsl'],
-	# 'INC'		=> '-I./include -I/opt/active30/include -I/opt/active30/samples/adapter_devkit/c_lib',
-	#
-	# Uncomment for 4.0
-	#
 	dist		=>	{ 
 		COMPRESS	=>	"gzip -9f",
 		SUFFIX		=>	"gz",

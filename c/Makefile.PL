@@ -20,12 +20,10 @@ WriteMakefile(
 	#
 	# Uncomment for 3.0
 	#
-	# 'LIBS'	=> ['-L/opt/active30/samples/adapter_devkit/c_lib -lcustcadk30 -L/opt/active30/lib -lawalog30 -lawl30 -lawc30 -lsocket -lnsl'],
 	# 'INC'		=> '-I./../include -I/opt/active30/include -I/opt/active30/samples/adapter_devkit/c_lib',
 	#
 	# Uncomment for 4.0
 	#
-		#'LIBS'	=> ['-L/opt/active40/samples/adapter_devkit/c_lib -lcustcadk31 -L/opt/active40/lib -lawcadk31 -lawalog40 -lawl40 -lawc40 -lsocket -lnsl'],
 	'INC'		=> '-I../include -I/opt/active40/include -I/opt/active40/samples/adapter_devkit/c_lib',
 	'OBJECT'	=> '$(O_FILES)',
 	'AUTHOR'	=> "Daniel Yacob <Yacob\@wMUsers.Com>",
