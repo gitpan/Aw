@@ -1,29 +1,17 @@
 #!/usr/bin/perl -I. -w
 
-$| =1;
-
 package TimeAdapter;
+use base qw( Aw::Adapter );
 
-# use Aw;
-use Aw 'test@active:6449';
+use Aw 'test@active:7449';
 use Aw::Event;
 require Aw::Adapter;
-
-@TimeAdapter::ISA=qw(Aw::Adapter);
 
 
 my ($false, $true) = (0,1);
 
 #  for use in the AdapterDevKit::time event
 my $eventTime = new Aw::Date;   # should be empty and must be in the scope of startup and createTimeEvent
-
-sub beginTransaction {
-	my $self = shift;
-	my $transactionId = shift;
-	print "  Hello from beginTansaction Method\n";
-	print "  [",$transactionId,"]\n" if ( $transactionId );
-	$true;
-}
 
 
 
@@ -36,13 +24,12 @@ sub startup {
 
 
 	#  register the event
-	my $event = new Aw::EventType ( "AdapterDevKit::timeRequest" );
-	$self->addEvent( $event );
+	$self->addEvent( new Aw::EventType ( "AdapterDevKit::timeRequest" ) );
 
 	
 	if ( $self->isMaster ) {
 	 	#  set up the periodic publication of AdapterDevKit::time
-		$event = new Aw::EventType ( "AdapterDevKit::time" );
+		my $event = new Aw::EventType ( "AdapterDevKit::time" );
 	 	$event->isPublish ( $true );
 	 	$event->publishInterval ( 15 );
 	 	$event->nextPublish ( time );
@@ -54,7 +41,7 @@ sub startup {
     
 	#  set up subscriptions for the Adapter::lookup and Adapter::refresh events
 	
-	return ( $self->initStatusSubscriptions ) ? $false : $true ;  # init also does publishStatus
+	( $self->initStatusSubscriptions ) ? $false : $true ;  # init also does publishStatus
     
 }
 
@@ -126,7 +113,7 @@ sub processRequest {
 
 	my ( $self, $reqEvent, $eventDef ) = @_;
 
-	print "Hello from processRequest Method\n";
+	# print "Hello from processRequest Method\n";
 
 	my $reply = $self->createTimeEvent ( $self );
 
@@ -148,7 +135,7 @@ main: {
 	my @properties = (
 	        # "XS Time Adapter",
 	        "TimeAdapter",
-	        "test_broker\@localhost:8849",
+	        "test\@active:7449",
 	        "0",
 		"./adapters.cfg",
 	        "debug=1",
@@ -159,7 +146,7 @@ main: {
 	);
 	my %properties = (
 	        clientId	=> 'TimeAdapter',
-	        broker		=> "test\@localhost:7449",
+	        broker		=> "test\@active:7449",
 	        adapterId	=> 0,
 	        debug		=> 1,
 	        clientGroup	=> 'devkitAdapter',

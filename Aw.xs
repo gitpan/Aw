@@ -7338,7 +7338,7 @@ getFieldRef ( self, field_name )
 
 		if ( RETVAL == Nullsv ) {
 			gErr = self->err = getEventToHashErr(); 
-			XSRETURN_UNDEF;
+			AWXS_CHECKSETERROR_RETURN
 		}
 
 	OUTPUT:
@@ -7509,7 +7509,7 @@ getSequenceFieldRef ( self, field_name, ... )
 
 		if ( RETVAL == Nullsv  ) {
 			gErr = self->err = getEventToHashErr(); 
-			XSRETURN_UNDEF;
+			AWXS_CHECKSETERROR_RETURN
 		}
 
 	OUTPUT:
@@ -10560,6 +10560,33 @@ createEvent ( self, ... )
 #endif /* AWXS_WARNS */
 			XSRETURN_UNDEF;
 		}
+
+
+		if ( items == 3 )
+		  {
+			HV * hv;
+
+    			if( SvROK(ST(2)) && (SvTYPE(SvRV(ST(2))) == SVt_PVHV) )
+			        hv = (HV*)SvRV( ST(2) );
+			    else {
+			        warn( "Aw::Event::new() -- hv is not an HV reference" );
+			        XSRETURN_UNDEF;
+			    };
+
+			gErr = RETVAL->err = awxsSetEventFromHash ( RETVAL->event, hv );
+
+			if ( RETVAL->err != AW_NO_ERROR ) {
+				setErrMsg ( 2, "unable to instantiate new event: %s", awErrorToCompleteString ( RETVAL->err ) );
+				Safefree ( RETVAL );
+#ifdef AWXS_WARNS
+				if ( gWarn )
+					warn ( gErrMsg );
+#endif /* AWXS_WARNS */
+				XSRETURN_UNDEF;
+			}
+
+		  }
+
 
 		RETVAL->deleteOk = (ix==2) ? 0 : 1;
 

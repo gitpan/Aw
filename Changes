@@ -1,5 +1,11 @@
 Revision history for Perl extension Aw.
 
+0.13.3 Wed Feb  7 16:02:19 EST 2001
+
+	- Aw::Adapter::createTypeEvent accepts an initialization hash as a last
+	  argument (like Aw::Event::new).  Clobbered this by mistake in previous
+	  release.
+
 0.13.2 Mon Feb  5 14:06:27 EST 2001
 
 	- $! should be used through out the package now wherever a BrokerError
