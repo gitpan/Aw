@@ -53,7 +53,7 @@ require AutoLoader;
 	AW_TRACE_OTHER
 );
 
-$VERSION = '0.15.0';
+$VERSION = '0.15.1';
 $VERSION_NAME = 'Tadpole Samurai';
 $SPAM = 0;
 
@@ -146,7 +146,7 @@ __END__
 
 =head1 NAME
 
-Aw::Admin - Perl extension for the ActiveWorks C Application Development Kit
+Aw::Admin - Perl extension for the ActiveWorks C Administration Libraries
 
 =head1 SYNOPSIS
 
@@ -181,7 +181,7 @@ Everything in the CADK include files I<should> be exported as constants.
 
 =head1 AUTHOR
 
-Daniel Yacob Mekonnen,  L<Yacob@RCN.Com|mailto:Yacob@RCN.Com>
+Daniel Yacob Mekonnen,  L<Yacob@wmUsers.Com|mailto:Yacob@wmUsers.Com>
 
 =head1 SEE ALSO
 

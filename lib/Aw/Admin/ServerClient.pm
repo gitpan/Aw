@@ -1,13 +1,15 @@
 package Aw::Admin::ServerClient;
 
-use strict;
-use vars qw($VERSION);
 
-$VERSION = '0.1';
+BEGIN
+{
+	use strict;
+	use vars qw($VERSION);
 
-require Aw::Admin;
+	$VERSION = '0.2';
 
-
+	require Aw::Admin;
+}
 
 
 sub getBrokers
@@ -61,7 +63,7 @@ Enhanced interface for the Aw/Admin.xs ServerClient methods.
 
 =head1 AUTHOR
 
-Daniel Yacob Mekonnen,  L<Yacob@RCN.Com|mailto:Yacob@RCN.Com>
+Daniel Yacob Mekonnen,  L<Yacob@wMUsers.Com|mailto:Yacob@wMUsers.Com>
 
 =head1 SEE ALSO
 

@@ -1,12 +1,16 @@
 package Aw::ClientX;
 
-use strict;
-use vars qw($VERSION);
 
-$VERSION = '0.2';
+BEGIN
+{
+	use strict;
+	use vars qw($VERSION);
 
-use Aw;
-require Aw::Client;
+	$VERSION = '0.3';
+
+	use Aw;
+	require Aw::Client;
+}
 
 
 
@@ -42,17 +46,26 @@ sub AUTOLOAD
 
 }
 
+
+
+#########################################################
+# Do not change this, Do not put anything below this.
+# File must return "true" value at termination
+1;
+##########################################################
+
+
 __END__
 
 =head1 NAME
 
-Aw::ClientX - ActiveWorks Client Module.
+Aw::ClientX - ActiveWorks Client as Blessed Hash.
 
 =head1 SYNOPSIS
 
 require Aw::ClientX;
 
-my $client = newEZ Aw::ClientX ( "myGroup", "myApp" );
+my $client = new Aw::ClientX ( "myGroup", "myApp" );
 
 
 =head1 DESCRIPTION
@@ -62,7 +75,7 @@ Demonstative module that allows for a blessed hash to act as a client.
 
 =head1 AUTHOR
 
-Daniel Yacob Mekonnen,  L<Yacob@RCN.Com|mailto:Yacob@RCN.Com>
+Daniel Yacob Mekonnen,  L<Yacob@wMUsers.Com|mailto:Yacob@wMUsers.Com>
 
 =head1 SEE ALSO
 

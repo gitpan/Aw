@@ -1,15 +1,17 @@
 package Aw::Admin::Client;
 use base qw(Aw::Client);
 
-use strict;
-use vars qw($VERSION);
 
-$VERSION = '0.1';
+BEGIN
+{
+	use strict;
+	use vars qw($VERSION);
 
-require Aw::Admin;
-require Aw::Client;
+	$VERSION = '0.2';
 
-
+	require Aw::Admin;
+	require Aw::Client;
+}
 
 
 sub getBrokersInTerritory
@@ -207,7 +209,7 @@ Enhanced interface for the Aw/Admin.xs Client methods.
 
 =head1 AUTHOR
 
-Daniel Yacob Mekonnen,  L<Yacob@RCN.Com|mailto:Yacob@RCN.Com>
+Daniel Yacob Mekonnen,  L<Yacob@wMUsers.Com|mailto:Yacob@wMUsers.Com>
 
 =head1 SEE ALSO
 

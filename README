@@ -1,6 +1,7 @@
 SPECIAL NOTICE
 ==============
 0.15 introduces the setting and getting event type definitions as hashes.
+0.15.1 includes documentation updates.
 
 See bin/typedef-test1.pl and bin/typedef-test2.pl for examples of hash
 and typedef usage.  bin/eod-autotest.pl has become a "tour de force" of
@@ -44,7 +45,7 @@ GNU GPL vs 2.0 or later.
 DISCLAIMERS
 ===========
 In addition to the disclaimers in the GPL: this interface to the ActiveWorks
-libraries is NOT in any way endorsed by ActiveSoft, WebMethods or RCN.
+libraries is NOT in any way endorsed by ActiveSoft or WebMethods.
 
 
 FEATURES
@@ -57,17 +58,16 @@ No need to fuss with adapter config files unless you really want to (I don't).
 What it Can Do..
 --------------
 The provided classes and their methods are sufficient to run simple
-adapters.  See the "time_adapter.pl" and "time_test.pl" scripts for
-examples.
+clients and adapters.  See the scripts in the bin/ directory for examples.
 
-At RCN we use Perl (5.004_04 and 5.005_03) based adapters in our production
-environment that readily handle over 12,000 requests in a day.
-
-Embeds readily in Apache with mod_perl.  See the apache directory for
-examples.
+The Aw:: package should be compatible with any Perl system, no limitations
+have been encountered.  The package embeds readily in Apache with mod_perl.
+See the bin/apache directory for examples.
 
 Works with either ActiveWorks 3.0 or 4.x libraries.  Comment/Uncomment the
-appropriate lines in the Makefile.PL.
+appropriate lines in the Makefile.PL.  The package has only been used under
+Solaris with Perl version 5.004_04 and 5.005_03.  Reliability on other
+systems is unkown.  Please submit any success stories on other systems.
 
 
 What it Can't Do..
@@ -75,9 +75,9 @@ What it Can't Do..
 Multiple adapters running simultaneously in a single script are not
 guaranteed to operate sanely.
 
-Not every API that has been mapped into Perl has actually be used.  There
-will likely be bugs waiting to snip at the first person to invoke said
-methods.
+Not every API that has been mapped into Perl has actually been used.
+There will likely be bugs waiting to snip at the first person to invoke
+said methods.
 
 Has not been tested against the ActiveWorks 3.1 libraries.
 
@@ -163,4 +163,4 @@ methods available:
 
 
 
-Comments and suggestions to:  yacob@rcn.com
+Comments and suggestions to:  Yacob@wMUsers.Com

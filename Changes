@@ -1,5 +1,9 @@
 Revision history for Perl extension Aw.
 
+0.15.1 Mon Jan 20 14:17:24 EST 2003
+
+	- documentation tweaks only.
+
 0.15.0 Sun Jan 19 21:41:51 EST 2003
 
 	- xs/Aw.xs removed a stray ;

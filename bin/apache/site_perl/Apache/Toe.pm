@@ -1,7 +1,7 @@
 package Apache::Toe;
 #
 # for reasons beyond my comprehension, the package breaks when
-# named Apache::TicTacToe, probably a local issue.
+# named Apache::TicTacToe, probably a local config issue.
 #
 
 use strict;
@@ -280,5 +280,41 @@ OK;
 
 
 
+#########################################################
+# Do not change this, Do not put anything below this.
+# File must return "true" value at termination
 1;
+##########################################################
+
+
 __END__
+
+=head1 NAME
+
+Apache::Toe - A mod_perl for playing TicTacToe with ActiveWorks
+
+=head1 SYNOPSIS
+
+See the apache/conf/perl.conf and apache/conf/startup.pl files.
+
+
+=head1 DESCRIPTION
+
+The Apache::Toe module will play the game of Tic-Tac-Toe thru
+an Apache server and ActiveWorks broker.  The module demonstrates
+an Aw::Client used under mod_perl.  The bin/ttt_adapter.pl must
+be running and attached to the same broker used by this module.
+The Apache::Toe module assumes the default broker configured
+in the local Aw:: module (and may be reset on either lines 11 or 37).
+
+This modules is a bit crufty, but still works as advertised.
+
+=head1 AUTHOR
+
+Daniel Yacob Mekonnen,  L<Yacob@wMUsers.Com|mailto:Yacob@wMUsers.Com>
+
+=head1 SEE ALSO
+
+S<perl(1).  Aw(3).>
+
+=cut

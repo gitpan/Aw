@@ -626,7 +626,7 @@ PROTOTYPES: DISABLE
 BOOT:
 
 	if ( (int)SvIV(perl_get_sv("Aw::Admin::SPAM", FALSE)) )
-		printf ( "\nAw %s [%s] (c) RCN <yacob@rcn.com>\n\n" ,
+		printf ( "\nAw::Admin %s [%s] (c) <Yacob@wMUsers.Com>\n\n" ,
 			 (char *)SvPV(perl_get_sv("Aw::Admin::VERSION", FALSE), PL_na),
 			 (char *)SvPV(perl_get_sv("Aw::Admin::VERSION_NAME", FALSE), PL_na) );
 

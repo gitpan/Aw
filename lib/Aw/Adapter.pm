@@ -1,12 +1,15 @@
 package Aw::Adapter;
 
-use strict;
-use vars qw($VERSION);
 
-$VERSION = '0.2';
+BEGIN
+{
+	use strict;
+	use vars qw($VERSION);
 
-use Aw;
+	$VERSION = '0.3';
 
+	use Aw;
+}
 
 
 sub new
@@ -226,7 +229,7 @@ Enhanced interface for the Aw.xs Adapter methods.
 
 =head1 AUTHOR
 
-Daniel Yacob Mekonnen,  L<Yacob@RCN.Com|mailto:Yacob@RCN.Com>
+Daniel Yacob Mekonnen,  L<Yacob@wmUsers.Com|mailto:Yacob@wmUsers.Com>
 
 =head1 SEE ALSO
 

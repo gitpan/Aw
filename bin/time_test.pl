@@ -63,7 +63,7 @@ devkitClient client group are assumed already set in the target broker.
 
 =head1 AUTHOR
 
-Daniel Yacob Mekonnen,  L<Yacob@RCN.Com|mailto:Yacob@RCN.Com>
+Daniel Yacob Mekonnen,  L<Yacob@wMUsers.Com|mailto:Yacob@wMUsers.Com>
 
 =head1 SEE ALSO
 

@@ -12,7 +12,6 @@ BEGIN
 }
 
 
-
 sub new
 {
 my $self = undef;
@@ -310,7 +309,7 @@ Enhanced interface for the Aw.xs Event methods.
 
 =head1 AUTHOR
 
-Daniel Yacob Mekonnen,  L<Yacob@RCN.Com|mailto:Yacob@RCN.Com>
+Daniel Yacob Mekonnen,  L<Yacob@wMUsers.Com|mailto:Yacob@wMUsers.Com>
 
 =head1 SEE ALSO
 

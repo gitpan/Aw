@@ -1,12 +1,16 @@
 package Aw::Admin::AccessControlList;
 
-use strict;
-use vars qw($VERSION);
 
-$VERSION = '0.1';
+BEGIN
+{
 
-require Aw::Admin;
+	use strict;
+	use vars qw($VERSION);
 
+	$VERSION = '0.2';
+
+	require Aw::Admin;
+}
 
 
 sub getUserNames
@@ -52,7 +56,7 @@ Enhanced interface for the Aw/Admin.xs AccessControlList methods.
 
 =head1 AUTHOR
 
-Daniel Yacob Mekonnen,  L<Yacob@RCN.Com|mailto:Yacob@RCN.Com>
+Daniel Yacob Mekonnen,  L<Yacob@wMUsers.Com|mailto:Yacob@wMUsers.Com>
 
 =head1 SEE ALSO
 

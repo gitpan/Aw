@@ -8,7 +8,7 @@ use base qw( Aw::Adapter );
 require Aw;
 require Aw::Event;
 
-use HelloWorld;
+require HelloWorld;
 
 
 my ($false, $true) = (0,1);
@@ -144,7 +144,7 @@ __END__
 
 =head1 AUTHOR
 
-Daniel Yacob Mekonnen,  L<Yacob@RCN.Com|mailto:Yacob@RCN.Com>
+Daniel Yacob Mekonnen,  L<Yacob@wMUsers.Com|mailto:Yacob@wMUsers.Com>
 
 =head1 SEE ALSO
 

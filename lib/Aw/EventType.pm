@@ -1,10 +1,13 @@
 package Aw::EventType;
 
-use strict;
-use vars qw($VERSION);
 
-$VERSION = '0.1';
+BEGIN
+{
+	use strict;
+	use vars qw($VERSION);
 
+	$VERSION = '0.2';
+}
 
 
 sub getStringSeqInfo
@@ -66,7 +69,7 @@ Enhanced interface for the Aw.xs EventType methods.
 
 =head1 AUTHOR
 
-Daniel Yacob Mekonnen,  L<Yacob@RCN.Com|mailto:Yacob@RCN.Com>
+Daniel Yacob Mekonnen,  L<Yacob@wMUsers.Com|mailto:Yacob@wMUsers.Com>
 
 =head1 SEE ALSO
 

@@ -2512,7 +2512,7 @@ PROTOTYPES: DISABLE
 BOOT:
 
 	if ( (int)SvIV(perl_get_sv("Aw::SPAM", FALSE)) )
-		printf ( "\nAw %s [%s] (c) RCN <yacob@rcn.com>\n\n" ,
+		printf ( "\nAw %s [%s] (c) <Yacob@wMUsers.Com>\n\n" ,
 			 (char *)SvPV(perl_get_sv("Aw::VERSION", FALSE), PL_na),
 			 (char *)SvPV(perl_get_sv("Aw::VERSION_NAME", FALSE), PL_na) );
 

@@ -5,7 +5,7 @@ require Aw::Adapter;
 require Aw::Client;
 require Aw::Event;
 
-use HelloWorld;
+require HelloWorld;
 use Data::Dumper;
 
 my $EXIT_FAILURE = 1;
@@ -45,7 +45,12 @@ my $c = shift;
 		my %eventData = $e->getField ( "_env" );
 
 		foreach my $key (sort keys %eventData) {
-			print STDERR "  $key => $eventData{$key}\n";
+			if ( ref($eventData{$key}) eq "Aw::Date" ) {
+				print STDERR "  $key => ", $eventData{$key}->toString, "\n";
+			}
+			else {
+				print STDERR "  $key => $eventData{$key}\n";
+			}
 		}
 	} else {
 		print STDERR $e->toString;
@@ -192,7 +197,7 @@ __END__
 
 =head1 AUTHOR
 
-Daniel Yacob Mekonnen,  L<Yacob@RCN.Com|mailto:Yacob@RCN.Com>
+Daniel Yacob Mekonnen,  L<Yacob@wMUsers.Com|mailto:Yacob@wMUsers.Com>
 
 =head1 SEE ALSO
 

@@ -39,7 +39,7 @@ WriteMakefile(
 	'LIBS'	=> "-L$root -lawperl -L/opt/active40/samples/adapter_devkit/c_lib -lcustcadk31 -L/opt/active40/lib -lawcadk31 -lawalog40 -lawl40 -lawc40 -lsocket -lnsl",
 	'INC'		=> '-I../include -I/opt/active40/include -I/opt/active40/samples/adapter_devkit/c_lib',
 	'OBJECT'	=> '$(O_FILES)',
-	'AUTHOR'	=> "Daniel Yacob <Yacob\@RCN.Com>",
+	'AUTHOR'	=> "Daniel Yacob <Yacob\@wMUsers.Com>",
 	'ABSTRACT'	=> "Interface to the ActiveWorks Libraries.",
 );
 

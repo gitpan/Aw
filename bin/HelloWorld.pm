@@ -1,10 +1,13 @@
 package HelloWorld;
-use base qw(Exporter);
-
-$VERSION = '0.2';
 
 
-require 5.000;
+BEGIN
+{
+	use strict;
+	use vars qw($VERSION);
+
+	$VERSION = '0.2';
+}
 
 
 sub new
@@ -12,7 +15,7 @@ sub new
 my $class = shift;
 my $self  = {};
 
-    bless $self, $class;
+	bless $self, $class;
 
 }
 
@@ -57,3 +60,29 @@ my $self = shift;
 
 
 __END__
+
+=head1 NAME
+
+HelloWorld - A dummy class for Aw:: demonstrations.
+
+=head1 SYNOPSIS
+
+require HelloWorld;
+
+my $world = new HelloWorld;
+
+
+=head1 DESCRIPTION
+
+The HelloWorld module is required by the demo_adapter.pl and demo_client.pl
+demonstration scripts.  It serves no practical purpose.
+
+=head1 AUTHOR
+
+Daniel Yacob Mekonnen,  L<Yacob@wMUsers.Com|mailto:Yacob@wMUsers.Com>
+
+=head1 SEE ALSO
+
+S<perl(1).  Aw(3).>
+
+=cut

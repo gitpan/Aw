@@ -238,7 +238,7 @@ require AutoLoader;
 	PLACE_HOLDER2
 	PLACE_HOLDER1
 );
-$VERSION = '0.15.0';
+$VERSION = '0.15.1';
 $VERSION_NAME = 'Tadpole Samurai';
 $DefaultBrokerHost = 'localhost';
 $DefaultBrokerName = 'Broker #1';
@@ -348,7 +348,7 @@ Everything in the CADK include files I<should> be exported as constants.
 
 =head1 AUTHOR
 
-Daniel Yacob Mekonnen,  L<Yacob@RCN.Com|mailto:Yacob@RCN.Com>
+Daniel Yacob Mekonnen,  L<Yacob@wMUsers.Com|mailto:Yacob@wMUsers.Com>
 
 =head1 SEE ALSO
 

@@ -27,6 +27,6 @@ WriteMakefile(
 		SUFFIX		=>	"gz",
 		POSTOP		=>	'mv $(DISTNAME)-$(VERSION).tar.gz ../'
 	},
-	AUTHOR		=> "Daniel Yacob <Yacob\@RCN.Com>",
+	AUTHOR		=> "Daniel Yacob <Yacob\@wMUsers.Com>",
 	ABSTRACT	=> "Interface to the ActiveWorks Libraries.",
 );
