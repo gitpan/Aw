@@ -1,5 +1,10 @@
 Revision history for Perl extension Aw.
 
+0.16.7 Thu Feb 20 09:21:12 EST 2003
+	
+	- README updated to reflect changes in INSTALL.
+	- moved old CLASSES into doc/.
+
 0.16.6 Thu Feb 20 08:38:26 EST 2003
 	
 	- INSTALL instructions are expanded.

@@ -1,7 +1,6 @@
 Changes
 INSTALL
 MANIFEST
-CLASSES
 README
 Makefile.PL
 bin/eod.pl
@@ -61,6 +60,7 @@ doc/Admin/Aw_Admin_LogConfig.html
 doc/Admin/Aw_Admin_ServerClient.html
 doc/Admin/Aw_Admin_TypeDef.html
 doc/Admin/index.html
+doc/CLASSES
 include/awxs.def
 include/awxs.h
 include/awxs.m

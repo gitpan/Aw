@@ -20,8 +20,8 @@ INTRODUCTION
 ============
 The Aw.pm module provides a Perl interface to the ActiveWorks libraries.
 The Perl script writer may instantiate new Perl objects for ActiveWorks
-adapters, clients, events, adapter events, adapter utilities, and dates
-with a class hierarchy nearly identical to that of the Java API while
+adapters, broker clients, server clients, events, event types, type defs,
+etc, with a class hierarchy nearly identical to that of the Java API while
 maintaining the expected norms and conveniences of Perl.
 
 
@@ -37,13 +37,13 @@ See the "INSTALL" file.
 
 DOCUMENTATION
 =============
-POD is forthcoming, see the doc/Aw.html file for a class and method list.
+POD is forthcoming, see the doc/index.html file for a class and method list.
 See also the Java and C CADK manuals of ActiveWorks.
 
 
 LICENSE
 =======
-GNU GPL vs 2.0 or later.
+GNU GPL version 2.0 or later.
 
 
 DISCLAIMERS
@@ -70,14 +70,15 @@ See the bin/apache directory for examples.
 
 Works with either ActiveWorks 3.0 or 4.x libraries.  Comment/Uncomment the
 appropriate lines in the Makefile.PL.  The package has only been used under
-Solaris with Perl version 5.004_04 and 5.005_03.  Reliability on other
-systems is unkown.  Please submit any success stories on other systems.
+Solaris 2.6 and 8.0 with Perl versions 5.004_04, 5.005_03, 5.6 and 5.8.
+Reliability on other systems is unkown.  Please submit any success stories
+on other systems.
 
 
 What it Can't Do..
 ----------------
-Multiple adapters running simultaneously in a single script are not
-guaranteed to operate sanely.
+Multiple adapters running simultaneously (threaded) in a single script are
+not guaranteed to operate sanely.
 
 Not every API that has been mapped into Perl has actually been used.
 There will likely be bugs waiting to snip at the first person to invoke
